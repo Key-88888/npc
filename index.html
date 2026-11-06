@@ -8,12 +8,20 @@
 <title>Не По Сценарию</title>
 <meta name="apple-mobile-web-app-title" content="НПС">
 <meta name="description" content="Не По Сценарию. А если самим выбирать, как жить?">
-<!-- Экран загрузки и сторож: встроен в саму страницу, чтобы приехать с первыми килобайтами. Игра лежит на российском сервере;
-     у игрока с включённым VPN до устройства доходят только первые ~15 КБ на соединение, стили и код не догружаются (журнал сервера и
-     проверка на iPhone 05.11.2026). Сторож ненавязчив (владелец 06.11: «должен быть ненавязчив, распространять её будут через тг» — там VPN
-     включён у многих): экран загрузки остаётся как был, через 8 с под ним проявляется тихая строка и маленькая кнопка «Обновить».
-     Утверждений «у тебя VPN», заголовка-тревоги и большой кнопки нет. Игра снимает экран сама: __npcBooted() в app.js.
-     Таблицы стилей ниже подключены в body после этого экрана: иначе Chrome не рисует ничего, пока стили не пришли. -->
+<link rel="canonical" href="https://npc.chillistica.online/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Не По Сценарию">
+<meta property="og:description" content="А если самим выбирать, как жить?">
+<meta property="og:url" content="https://npc.chillistica.online/">
+<meta property="og:image" content="https://key-88888.github.io/npc/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Экран загрузки и сторож встроены в страницу, чтобы приехать с первыми килобайтами: игра лежит на российском сервере, и у игрока
+     с включённым VPN до устройства доходит только начало страницы (deploy/README.md, «VPN у игрока»). Сторож ненавязчив: на 5-й секунде
+     без запуска молча берёт игру с зарубежной копии; не открылась и она — на 20-й секунде проявляются тихая строка и кнопка «Обновить».
+     Экран снимает сама игра: __npcBooted() в app.js. Карточка ссылки (og) выше — в первых байтах, картинка лежит на копии.
+     Таблицы стилей подключены в body после этого экрана: иначе Chrome не рисует ничего, пока стили не пришли. -->
 <style>
 #npc-wd{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px 22px;overflow:auto;background:#1a2760;color:#fff;font:400 17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;text-align:center}
 #npc-wd .w{width:100%;max-width:330px}
@@ -34,7 +42,8 @@
   /* Запасная копия игры за рубежом (адрес с косой чертой на конце). Пусто — запасной загрузки нет, сторож только подсказывает.
      С копией: если за 5 с игра не запустилась, сторож берёт страницу с копии; как только копия ответила — останавливает застрявшие
      загрузки и собирает игру из её файлов. Адрес страницы не меняется, поэтому прогресс игрока остаётся один. */
-  var MIRROR = '';
+  var MIRROR = 'https://key-88888.github.io/npc/';
+  if (location.href.indexOf(MIRROR) === 0) MIRROR = ''; /* копия, открытая напрямую, сама себя не подхватывает */
   function wd() { return document.getElementById('npc-wd'); }
   function hint() { var e = wd(); if (e) e.className = 'late'; }
   var late = setTimeout(hint, MIRROR ? 20000 : 8000), fo = MIRROR ? setTimeout(failover, 5000) : 0;
