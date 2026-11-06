@@ -1,4 +1,5 @@
 /* «Не По Сценарию» — остальные разделы прототипа: настройки, сцены чата (шаг 2 квеста «Суббота» и Дело второго дня «Должок»), Лупа шага 3, кодекс, бестиарий, скрытый уровень, закулисье.
+   Дело третьего дня «Краски» (SCENES.d3, экран day3, секция #scr-day3 создаётся здесь же) — тот же движок сцены с данными PAINT.
    Подключается до app.js. Данные — в объекте EXT. Без сети и хранилищ: состояние живёт в памяти страницы (S.ext).
    Режимы: по умолчанию «чистый игрок» (второй игровой день, кодекс из итогов первой сессии). Флаги в хэше: demo=1 (насыщенное демо:
    кодекс из девяти записей, седьмой день), day=N (игровой день), t=H (час на устройстве для следа огонька). */
@@ -57,15 +58,16 @@
     loss: { name: 'Огонёк', epi: 'страх потерять то, чего не было', s: ['Пугает потерей. Играть не зовёт — зовёт не пропустить.', 'Серии в играх и приложениях, «подарок за вход», «не теряй прогресс».', 'Спроси: что именно сгорит и кому от этого выгода?'] },
     fact: { name: 'Решала', epi: 'решает за тебя и объявляет всем', s: ['Объявляет твоё решение раньше тебя. Отказаться потом — всё равно что поссориться.', 'Чаты, компании, семейные планы: «я уже всем сказал, что ты идёшь».', 'Спокойно: «Пока не решено». Решение возвращается к тебе.'] },
     recip: { name: 'Должок', epi: 'помогает в долг, о котором не предупредил', s: ['Напоминает, что тебе помогли, — и выставляет счёт. Сразу и в своей валюте.', 'Личка, друзья, родственники: «я же тебе тогда…», «с тебя должок».', 'Помощь — не кредит. Вернуть добро можно, но по-своему и когда можешь.'] },
-    fakec: { name: 'Развилка', epi: 'два пути там, где их пять', s: ['Оставляет тебе два варианта, хотя их больше. Оба — чужие.', 'Ультиматумы: «или с нами, или никак», «или покупаешь, или потом пожалеешь».', 'Спроси: «А третий вариант?» Почти всегда он есть.'] }
+    fakec: { name: 'Развилка', epi: 'два пути там, где их пять', s: ['Оставляет тебе два варианта, хотя их больше. Оба — чужие.', 'Ультиматумы: «или с нами, или никак», «или покупаешь, или потом пожалеешь».', 'Спроси: «А третий вариант?» Почти всегда он есть.'] },
+    guilt: { name: 'Обидка', epi: 'обижается так, чтобы стыдно стало тебе', s: ['Вешает на тебя чужую обиду — заранее, пока ты ещё ничего не решаешь. И твоё «нет» уже звучит как «из-за тебя всё зря».', 'Друзья, семья, пары: «мы на тебя рассчитывали», «ну и ладно, сами», «из-за тебя всё сорвётся».', 'Спроси себя два раза: человеку обидно? И это правда моя вина? Первое часто бывает без второго.'] }
   };
   Object.keys(BEASTS).forEach(function (k) { var b = BEASTS[k]; b.power = b.s[0]; b.where = b.s[1]; b.weak = b.s[2]; });
   /* имя существа для карточки поимки: «Пойман кто-то по имени Таймер» (без верхнего регистра) */
   function beastTag(id) { var b = BEASTS[id]; return b.tag || b.name; }
   /* внутреннее имя приёма (оно же data-n кнопки) → слово на кнопке: приём называется глаголом того, что делают с тобой */
-  var TRAY = { 'ЛЕСТЬ': 'Льстит', 'ВСЕ УЖЕ': 'Давит толпой', 'СРОЧНОСТЬ': 'Торопит', 'ПЕРЕД ФАКТОМ': 'Решили за тебя', 'ВЗАИМНОСТЬ': 'Напоминает про должок', 'ЛОЖНЫЙ ВЫБОР': 'Или-или', 'СТРАХ ПОТЕРИ': 'Пугает потерей', 'ЧИСТО': 'Без подвоха' };
+  var TRAY = { 'ЛЕСТЬ': 'Льстит', 'ВСЕ УЖЕ': 'Давит толпой', 'СРОЧНОСТЬ': 'Торопит', 'ПЕРЕД ФАКТОМ': 'Решили за тебя', 'ВЗАИМНОСТЬ': 'Напоминает про должок', 'ЛОЖНЫЙ ВЫБОР': 'Или-или', 'СТРАХ ПОТЕРИ': 'Пугает потерей', 'ВИНА': 'Давит на совесть', 'ЧИСТО': 'Без подвоха' };
   function tray(n) { return TRAY[n] || n; }
-  var TECH_BEAST = { 'ЛЕСТЬ': 'lest', 'ВСЕ УЖЕ': 'vse', 'СРОЧНОСТЬ': 'sro', 'ПЕРЕД ФАКТОМ': 'fact', 'ВЗАИМНОСТЬ': 'recip', 'ЛОЖНЫЙ ВЫБОР': 'fakec', 'СТРАХ ПОТЕРИ': 'loss' };
+  var TECH_BEAST = { 'ЛЕСТЬ': 'lest', 'ВСЕ УЖЕ': 'vse', 'СРОЧНОСТЬ': 'sro', 'ПЕРЕД ФАКТОМ': 'fact', 'ВЗАИМНОСТЬ': 'recip', 'ЛОЖНЫЙ ВЫБОР': 'fakec', 'СТРАХ ПОТЕРИ': 'loss', 'ВИНА': 'guilt' };
 
   /* «Лупа дня» (Р15): ОДИН артефакт в день, конечная порция: результат, затем конец дня. Бесконечного переключения нет.
      Ротация по игровым дням: артефакт N из 24; в прототипе шесть образцов по кругу. Честных не меньше трети, не меньше пятой части — с верным ходом «пауза»
@@ -133,14 +135,14 @@
   }
   /* первый след: подпись под огоньком только с 16:00 до 21:00 */
   function traceOn(U) { var h = hour(U); return h >= 16 && h < 21; }
-  function allCands(U) { return U.cands().concat((ex(U).d2 || {}).cr || [], ex(U).drafts || []); }
+  function allCands(U) { return U.cands().concat((ex(U).d2 || {}).cr || [], (ex(U).d3 || {}).cr || [], ex(U).drafts || []); }
   function swInit(s) { if (!s.sw) { s.sw = {}; HOOKS.forEach(function (h) { s.sw[h.id] = h.on; }); } if (s.traps === false) s.sw[0] = false; return s.sw; }
 
   function bar(U, curk) {
     /* огонёк живёт только в шапке главного экрана (ТЗ §8): на кодексе, бестиарии, настройках и в Деле его нет, и в историю показов он там не попадает */
     var s = ex(U), flame = curk === 'home' && flameOn(U);
     if (flame) { s.shown = s.shown || []; if (s.shown.indexOf('flame') < 0) s.shown.push('flame'); } /* история показов: Закулисье раскроет только показанное */
-    var tab = function (k, href, label, extra) { return '<a data-insp="вкладка «' + label + '»" class="' + ((curk === k || (k === 'home' && curk === 'day2')) ? 'cur' : '') + '" href="#s=' + href + '">' + label + (extra || '') + '</a>'; };
+    var tab = function (k, href, label, extra) { return '<a data-insp="вкладка «' + label + '»" class="' + ((curk === k || (k === 'home' && (curk === 'day2' || curk === 'day3'))) ? 'cur' : '') + '" href="#s=' + href + '">' + label + (extra || '') + '</a>'; };
     return '<header class="appbar"><div class="ab-row"><a class="brand rus" data-insp="название игры" aria-label="Не По Сценарию" href="#s=home"><i class="ini">Н</i>е <i class="ini">П</i>о<br><i class="ini">С</i>ценарию</a><div class="ab-r">' +
       (flame ? '<button class="flame" type="button" data-trap="flame" data-insp="огонёк в шапке" aria-label="Серия: 2 дня"><span class="fi">' + FLAME + '</span><b>2</b>' + (traceOn(U) ? '<small class="trace" aria-hidden="true">сгорит в 00:00</small>' : '') + '</button>' : '') +
       '<button class="helpb mono" type="button" data-help aria-label="Если тяжело">Если тяжело</button>' +
@@ -364,10 +366,10 @@
     /* живая нить — обе противоречащие крупицы оставлены на листе (крупица в Кармане не считается), связь не снята игроком */
     return { thread: mine.some(function (c) { var d = c.contra && crumbBy(cx, c.contra); return !!d && d.status === 'mine' && tensOn(cx, c); }), old: mine.some(function (c) { return !c.fresh; }) };
   }
-  function weekHTML(U) {
+  function weekHTML(U, soon) {
     var today = Math.max(1, U.day());
     return weekCells(startDow(U), today, planCtx(U)).map(function (c) {
-      return '<li class="' + (c.gd === today ? 'today' : '') + (c.gd === null ? ' rest' : '') + '"' + (c.gd === null ? '' : ' data-gd="' + c.gd + '"') + '><span class="mono">' + WD[c.dow] + '</span><b>' + c.kind + '</b><small class="gd mono">' + (c.gd === null ? '' : c.gd) + '</small></li>';
+      return '<li class="' + (c.gd === today ? 'today' : '') + (c.gd === null ? ' rest' : '') + '"' + (c.gd === null ? '' : ' data-gd="' + c.gd + '"') + '><span class="mono">' + WD[c.dow] + '</span><b>' + (soon && c.gd === today ? 'скоро' : c.kind) + '</b><small class="gd mono">' + (c.gd === null ? '' : c.gd) + '</small></li>';
     }).join('');
   }
   /* Р8: Дело открывается со следующего календарного дня в 07:00 после завершения предыдущего, воскресенье пропускается (выпуска нет); #now — не ждать */
@@ -385,10 +387,21 @@
   var CLIFF = { 2: ['Тимур', 'кстати. лёва спрашивал про тебя. говорит, с тебя должок за физику'] };
   /* клиффхэнгер второго дня читает обещание игрока (f-promised) */
   function cliff3(U) { var d = ex(U).d2 || {}; return d.move === 'a' ? ['Лёва · 07:12', 'тогда до шести. краски беру я'] : (d.move === 'b' ? ['Лёва · 07:12', 'тогда с двух до четырёх. краски беру я'] : ['Тимур · 07:12', 'лёва сказал, ты не придёшь. это правда?']); }
+  /* клиффхэнгер третьего дня читает голос игрока в «Красках» (ext.d3.move); нет хода — последний вариант, как у cliff3 */
+  function cliff4(U) { var d = ex(U).d3 || {}; return d.move === 'a' ? ['Алина · 07:40', 'эскиз я всё-таки принесу. вдруг передумаете'] : (d.move === 'b' ? ['Лёва · 07:40', 'взял бирюзовую. два слоя — так что собираемся к часу'] : ['Даня · 07:40', 'пробники высохли. серая как асфальт, бирюзовая — огонь. приходи смотреть']); }
+  var WAIT4 = { kick: 'Продолжение следует', h: 'Дело 4 — скоро', narr: 'Три дня позади: Тимур уговаривал, Лёва выставлял счёт, а сегодня давили на совесть. Четвёртое Дело ещё пишется — как будет готово, появится здесь. А пока Кодекс и Бестиарий на месте: можно перечитать свои выводы и проведать пойманных.' };
   function homeState(U) {
-    var s = ex(U), o = U.opt(), d2 = s.d2, last = d2 && d2.fin ? { n: 3, ts: d2.finTs || Date.now() } : (s.day1Done ? { n: 2, ts: s.day1Done } : null);
-    if (last && last.n === 3) return { wait: true, n: 3, last: last, extra: o.now ? 'Дальше в прототипе нет.' : '' };
+    var s = ex(U), o = U.opt(), d2 = s.d2, d3 = s.d3;
+    if (d2 && d2.fin && !d2.finTs) d2.finTs = s.d2Ts || s.day1Done || 1; /* сохранения без finTs: ожидание не должно быть вечным */
+    if (d3 && d3.fin && !d3.finTs) d3.finTs = s.d3Ts || 1;
+    var last = d3 && d3.fin ? { n: 4, ts: d3.finTs || Date.now() } : (d2 && d2.fin ? { n: 3, ts: d2.finTs || Date.now() } : (s.day1Done ? { n: 2, ts: s.day1Done } : null));
+    if (last && last.n === 4) return { wait: true, n: 4, end: true, last: last };
+    if (last && last.n === 3) {
+      if (!o.now && Date.now() < unlockAt(last.ts)) return { wait: true, n: 3, last: last, extra: '' };
+      return { wait: false, d3: true };
+    }
     if (last && last.n === 2 && !o.now && Date.now() < unlockAt(last.ts)) return { wait: true, n: 2, last: last, extra: '' };
+    if (o.dayFlag && o.day === 3 && !U.S().real) return { wait: false, d3: true };
     return { wait: false };
   }
   /* карточки режимов, которых в прототипе нет в виде игры: показывают, что стоит в расписании сегодня */
@@ -399,6 +412,20 @@
   };
   function homeCard(U, st) {
     var s = ex(U), d2 = s.d2;
+    if (st.wait && st.end) {
+      var c4 = cliff4(U);
+      return '<article class="todaycard wait end" data-insp="карточка Дела"><div class="kick mono"><span class="dot"></span><span>' + WAIT4.kick + '</span></div>' +
+        '<h1>' + WAIT4.h + '</h1><p class="narr">' + esc(WAIT4.narr) + '</p>' +
+        '<div class="waitbub"><b class="mono">' + c4[0] + '</b>' + esc(c4[1]) + '</div>' +
+        '<div class="tc-act"><a class="btn seen" href="#s=codex">Мой кодекс</a><a class="btn" href="#s=bestiary">Бестиарий</a></div></article>';
+    }
+    if (st.d3) {
+      var d3 = s.d3, going3 = d3 && d3.move && !d3.fin, intro3 = '';
+      if (!s.homeIntro3) { intro3 = '<p class="narr home-intro">Лёва, как и обещал, пошёл за краской. И завис у полки: банок две, а решения ни одного.</p><p class="narr home-intro">Чат гаража уже проголосовал — вышло два на два. Угадай, чей голос теперь ждут. И приготовься: сегодня давят тихо, иногда даже вежливо.</p>'; if (U.S().real) s.homeIntro3 = 1; }
+      return '<article class="todaycard d3" data-insp="карточка Дела"><div class="kick mono"><span class="dot"></span><span>Дело 3 · минуты на три</span></div>' +
+        '<h1>Краски</h1><p class="sub">Серая или бирюзовая? В чате ничья, решает твой голос.</p>' + intro3 +
+        '<div class="tc-act"><a class="btn seen" href="#s=day3">' + (going3 ? 'Продолжить' : 'Открыть') + '</a></div></article>';
+    }
     if (st.wait) {
       var cl = st.n === 3 ? cliff3(U) : CLIFF[2], nl = nextLabel(st.last.ts);
       return '<article class="todaycard wait" data-insp="карточка Дела"><div class="kick mono"><span class="dot"></span><span>Пока ждёшь</span></div>' +
@@ -428,7 +455,7 @@
     var hs = homeState(U);
     /* подпись про режимы — только до 6-го игрового дня и не на экране ожидания (там сюжет и Лупа, а не правила) */
     var inner = '<div class="wrap home">' +
-      '<ul class="week" data-insp="расписание недели" aria-label="Игровые дни недели">' + weekHTML(U) + '</ul>' +
+      '<ul class="week" data-insp="расписание недели" aria-label="Игровые дни недели">' + weekHTML(U, hs.end) + '</ul>' +
       (!hs.wait && U.day() < 6 ? '<p class="weeknote mono">Засада выходит на 6-й игровой день, Развилка — на 7-й. Воскресенье — отдых.</p>' : '') +
       homeCard(U, hs) +
       '<div class="tiles' + (hs.wait ? ' one' : '') + '">' + (hs.wait ? '' : '<a class="tile" data-insp="плитка «Лупа дня»" href="#s=bestiary"><b class="rus">Ещё одно на сегодня</b><span>Одно уведомление в день, минута: найди, где давят, или скажи «Без подвоха».</span></a>') +
@@ -475,7 +502,7 @@
       '<p>В интерфейсе встречаются ослабленные приёмы давления — чтобы их было на чём ловить. Их можно выключить выше, а через несколько дней игра сама рассказывает, что и где было.</p>' +
       (s.w0 ? '<p class="mono">Режим проверки (неделя 0): скрытые приёмы выключены с самого начала.</p>' : '') +
       /* для наблюдателя проверки: время старта по часам устройства и штамп сборки записываются в лист */
-      '<ul class="adults-meta mono" aria-label="Для записи в лист наблюдателя"><li>Дело 1 · старт: <b data-meta="d1">' + fmtTs(s.startTs) + '</b></li><li>Дело 2 · старт: <b data-meta="d2">' + fmtTs(s.d2Ts) + '</b></li>' +
+      '<ul class="adults-meta mono" aria-label="Для записи в лист наблюдателя"><li>Дело 1 · старт: <b data-meta="d1">' + fmtTs(s.startTs) + '</b></li><li>Дело 2 · старт: <b data-meta="d2">' + fmtTs(s.d2Ts) + '</b></li><li>Дело 3 · старт: <b data-meta="d3">' + fmtTs(s.d3Ts) + '</b></li>' +
       '<li>Сборка: <b data-meta="build">' + esc(U.build) + '</b></li></ul></details></li>' +
       (U.day() >= 7 ? '<li><a class="srw link" href="#s=backstage"><div><b>Закулисье</b><span>Как устроена игра и рубильники</span></div><span class="arr" aria-hidden="true">→</span></a></li>' : '') +
       '<li class="srw block"><div><b>Забыть всё</b><span>Стирает Кодекс и прогресс с этого устройства.</span></div><button class="btn" type="button" data-set="forget">Забыть</button></li>' +
@@ -528,12 +555,16 @@
     yes: 'Время настоящее, в закрепе то же самое. Это расписание, а не давление.',
     looks: 'Похоже на срок. Настоящий ли? Глянь закреп.',
     info: 'Это просто расписание: с двух до шести. Никто не торопит — тебе говорят, когда.' };
+  /* Дело 3: первая в игре проверка, после которой утверждение оказывается неправдой (truth: false); разбор — в поле no */
+  var CLAIM_KASSA = { truth: false, by: 'Даня', proof: 'Общак на краску — 1 200. Серая — 600, бирюзовая — 1 000.',
+    no: 'В общаке 1 200, бирюзовая стоит тысячу. Доплачивать не придётся никому — ни Лёве, ни тебе. Вина держалась на счёте, которого нет.' };
   var ASK_DANYA = 'из «всех» в гараже только мы с лёвой. больше никого не звали';
   var ASK_NARR = 'Вот и «все наши». Двое. Вопрос «кто именно?» снова сработал — ты задаёшь его не первый раз.';
   /* разбор пойманного приёма: верный ответ начинается словом «Да.» (метки «Вижу» нет) */
   var REVEAL = {
     'ПЕРЕД ФАКТОМ': { h: 'Решили за тебя', t: 'Да. Решили за тебя. Тимур объявил всем, что ты идёшь, раньше, чем спросил тебя. Теперь твоё «нет» выглядит как ссора, хотя обещания от тебя не было. Ответ простой: «Пока не решено».' },
     'ВЗАИМНОСТЬ': { h: 'Напоминает про должок', t: 'Да. Помощь выставили как счёт. Лёва объяснял физику по-дружески, а теперь вдруг оказалось, что это был кредит. Отказать после такого неловко — на это и расчёт. Ответ: «Помогу, но по-своему».' },
+    'ВИНА': { h: 'Давит на совесть', t: 'Да. Давит на совесть. Тебе заранее сообщают, кому будет плохо от твоего решения, — и чужая обида становится твоей заботой. Ответ: «Жаль, что тебе обидно. Но решаю я не из-за этого».' },
     'ЛОЖНЫЙ ВЫБОР': { h: 'Или-или', t: 'Да. Тебе оставили два пути: красить или не приходить вообще. А прийти просто так? А покрасить два часа? Вариантов больше, их просто спрятали. Ответ: «Есть третий вариант».' }
   };
   /* строки сцены: [кто, текст, верный приём, claim, ответы: none (закреп ничего не показывает) · ok (верно «Без подвоха») · miss (мимо) · lever («Без подвоха» на строке с давлением) · name (не то название)]; давит одна-две, остальные честные */
@@ -578,6 +609,47 @@
       c1: { text: 'Говорю «нет» прямо, без торга.', alts: ['Прямой отказ честнее вымученного «да».', 'Не торгуюсь за своё «нет».'] },
       c2: { text: 'Помощь возвращаю — но по-своему и в своё время.', alts: ['Добро друзьям возвращается, и это нормально.', 'Прихожу, когда ждут, даже если неудобно.'] } }
   ];
+  /* Дело 3 «Краски» (s-paint-04): вина в двух лицах — тихом (Алина) и громком (Лёва, с выдуманным счётом); три честные строки, в том числе Тимур с обидой без нажима.
+     Первая реплика Лёвы читает вчерашнее обещание игрока (ext.d2.move); «@ник, » подставляется перед ней, без ника фраза начинается со следующего слова */
+  var LEVA_D3 = {
+    a: 'ты же красишь до шести, как договорились. стою в магазине. серая ложится в один слой, бирюзовую надо в два. я за серую, так быстрее',
+    b: 'ты же красишь с двух до четырёх, как договорились. стою в магазине. серая ложится в один слой, бирюзовую надо в два. я за серую, так быстрее',
+    c: 'красить ты не идёшь, но колонка общая — голосуй. стою в магазине. серая ложится в один слой, бирюзовую надо в два. я за серую, так быстрее'
+  };
+  function paintRows(U) {
+    var mv = (ex(U).d2 || {}).move, v = LEVA_D3[mv] ? mv : 'a', at = nickAt(U);
+    return [['Лёва', at + LEVA_D3[v], 'ЧИСТО', null, { none: 'Тут нечего проверять: Лёва говорит, чего хочет и почему.', ok: 'Да. У Лёвы мнение и довод: один слой — быстрее. С доводом можно спорить, и никто не обидится. Этим он и отличается от давления.', miss: 'Мимо. Лёва объясняет, почему он за серую. Это довод, а не нажим: можно ответить «а мне бирюзовая больше нравится» — и всё.' }],
+      ['Даня', 'короче, 2:2. серая — лёва и тимур. бирюзовая — алина и я. макс воздержался. ' + at + 'твой голос решает', 'ЧИСТО', null, { none: 'Тут нечего проверять: Даня считает голоса вслух.', ok: 'Да. Даня просто считает. Твой голос правда решающий, но это арифметика, а не нажим. За что голосовать, он не подсказывает.', miss: 'Мимо. «Твой голос решает» — это просто 2:2 и ты. Даня не говорит, за что голосовать, и ничего не ждёт, кроме ответа.' }],
+      ['Алина', 'я три вечера сидела над эскизом под бирюзовую. выберешь серую — значит, зря старалась. ну ничего. как-нибудь переживу', 'ВИНА', null, { none: 'В закрепе про эскиз ничего. Да он и правда нарисован — вопрос не в этом.',
+        rev: 'Да. Давит на совесть. Алина не спорит о цвете и ни о чём не просит. Она заранее объявляет, кому будет плохо от твоего голоса, — и её три вечера вдруг становятся твоей заботой. А «ну ничего, переживу» — не отступление, а вторая порция: теперь ещё и жалко. Ответ: «Эскиз классный, правда. Но голосую за цвет, а не из жалости».',
+        name: 'Не то. Алина не вспоминает прошлые услуги и не ставит условий. Что она делает со своей обидой — и на кого её кладёт?',
+        lever: 'Присмотрись. Алина не просит и не спорит. Она сообщает, кому будет плохо, если твой голос окажется не тем. А потом «великодушно» отступает.' }],
+      ['Лёва', 'а если бирюзовая — доплачивать мне. из своих. из-за тебя, между прочим', 'ВИНА', CLAIM_KASSA, {
+        rev: 'Да. Давит на совесть. Голоса ещё не было, а вина уже выписана — на твоё имя: «из-за тебя». Лёва ничего не просит и выбора не отнимает. Он заранее раздаёт вину и подпирает её своей доплатой. Только есть ли она, эта доплата? Ответ: «Давай сначала посчитаем. Сколько в общаке?»',
+        name: 'Не то. Лёва не вспоминает прошлое и не оставляет тебе два пути. На кого он заранее вешает свою доплату?',
+        lever: 'Присмотрись. Голоса ещё не было, а вина уже выписана — на твоё имя. «Из-за тебя» раньше, чем ты что-то решишь.' }],
+      ['Тимур', 'мне серая больше нравится. будет бирюзовая — жалко, но не смертельно. голос твой, выбирай как видишь', 'ЧИСТО', null, { none: 'Тут нечего проверять: Тимур говорит про себя.', ok: 'Да. Тимуру будет жалко, и он так и пишет. Но следом — «голос твой»: вину он ни на кого не вешает и выбор отдаёт обратно. Сравни с Алиной: огорчены оба, а отвечать за огорчение тебе предложили только в одном сообщении. «Мне жалко» — честно. Давит другое: «и это из-за тебя».', miss: 'Мимо. «Жалко» — это про Тимура, а не про тебя. Он честно говорит, что чувствует, и тут же возвращает выбор. Так выглядит обида без нажима: можно ответить «понимаю» — и голосовать как хочется.' }]];
+  }
+  var PAINT = [
+    { id: 'a', text: 'Пишу: «Серая. Один слой — и к шести все свободны».', say: [['Лёва', 'вот. хоть кто-то тут думает головой'], ['Алина', 'ок. эскиз оставлю себе']], view: 'minimal',
+      cost: [['С Алиной', 'обиделась, и уже не для вида.'], ['Со временем', 'один слой, в субботу к шести все свободны.'], ['С обещаниями', 'новых нет.']],
+      mono: 'Минималисты сказали бы: бери то, что проще, и освободи себе субботу. Серая ложится в один слой, стоит дешевле и не требует эскизов. Торо два года и два месяца прожил в хижине у Уолденского пруда — проверял, сколько человеку на самом деле нужно. Вышло: немного. Обратная сторона: если всегда выбирать «попроще», можно сжаться до скуки. Гараж выйдет аккуратным. И никаким.',
+      hotya: { chosen_option: 'a', counter_option: 'b', view_id: 'romantic', text: 'Гараж красят раз в несколько лет. Серая сэкономит пару часов, а потом каждый раз у этой стены будет видно: тут выбрали «сойдёт». И чей-то эскиз так и останется на бумаге.' },
+      c1: { text: 'Беру простое, если оно работает.', alts: ['Лишняя сложность — не достоинство.', 'Проще — значит свободнее.'] },
+      c2: { text: 'Красота — тоже довод, и не самый слабый.', alts: ['Ради красивого не жалко лишнего часа.', 'Удобно — ещё не значит хорошо.'] } },
+    { id: 'b', text: 'Пишу: «Бирюзовая. Эскиз того стоит».', say: [['Алина', 'ааа, спасибо! в субботу несу эскиз'], ['Лёва', 'два слоя. ну, сами напросились']], view: 'romantic',
+      cost: [['С Лёвой', 'ворчит, но краску берёт.'], ['Со временем', 'два слоя, в субботу красят до восьми.'], ['С обещаниями', 'за бирюзовую теперь отвечаешь и ты.']],
+      mono: 'Романтики сказали бы: красота — не каприз, а причина. Над эскизом сидели три вечера, и стена с ним станет вашей, а не просто покрашенной. Шиллер писал, что человек бывает вполне человеком, только когда играет: придумывает, украшает, делает что-то не ради пользы. Цена понятная: порыв сегодня — второй слой и два лишних часа в субботу. А если на стене выйдет не так, как на бумаге, отвечать за это теперь и тебе.',
+      hotya: { chosen_option: 'b', counter_option: 'c', view_id: 'skeptic', text: 'Эскиз хорош на бумаге. Какой бирюзовая выйдет на бетоне при одной лампочке, никто не видел. Пробник стоит сто рублей — и мог бы сберечь два слоя ошибки.' },
+      c1: { text: 'За то, что радует, не жалко заплатить временем.', alts: ['Красота — тоже довод.', 'Выбираю то, от чего загораются глаза.'] },
+      c2: { text: 'Сначала смотрю вживую, потом решаю.', alts: ['Не решаю вслепую.', 'Проба дешевле ошибки.'] } },
+    { id: 'c', text: 'Пишу: «Пока не голосую. Лёв, возьми два пробника — выберем у стены».', say: [['Даня', 'пробник — сто рублей. бери оба, из общака'], ['Лёва', 'то есть я зря тут стою. ладно, беру пробники']], view: 'skeptic',
+      cost: [['С Лёвой и Алиной', 'ждут оба, и оба недовольны.'], ['Со временем', 'решение переехало на завтра.'], ['С обещаниями', 'на тебе — прийти к стене и выбрать.']],
+      mono: 'Скептики сказали бы: не знаешь — не решай. Два цвета на экране телефона и два цвета на стене гаража — разные вещи. Секст Эмпирик советовал воздерживаться от суждения, пока доводы за и против весят одинаково. А тут ровно так: два на два и ни одного мазка на стене. Значит — мазнуть, посмотреть, потом голосовать. Слабое место: «давайте ещё проверим» умеет тянуться вечно. А красить — в субботу.',
+      hotya: { chosen_option: 'c', counter_option: 'a', view_id: 'minimal', text: 'Пока все ждут пробу, решение висит на шестерых, а Лёва второй раз идёт в магазин. Обе краски нормальные. Иногда «достаточно хорошо» сегодня лучше, чем «идеально» к пятнице.' },
+      c1: { text: 'Не решаю вслепую: сначала смотрю.', alts: ['Проба дешевле ошибки.', '«Не знаю» — тоже честный ответ.'] },
+      c2: { text: 'Достаточно хорошо — уже хорошо.', alts: ['Не гонюсь за идеальным.', 'Лучше решить сейчас, чем идеально потом.'] } }
+  ];
   /* сцены: q2 — шаг 2 квеста «Суббота» (чат класса, состояние ext.qs2), d2 — Дело второго дня «Должок» (ext.d2); один движок, разные данные.
      names — приёмы сцены (уже встреченные игроком плюс приём самой сцены) — в лоток строки попадают только они и «Без подвоха» */
   var SCENES = {
@@ -585,35 +657,52 @@
           day: function () { return 'Сегодня'; },
           pre: 'Тимур уже всем пообещал за тебя. Отвечать — тебе.', press: 'Теперь разберём, что тут было. Тапни сообщение, если там давят. Если давления нет нигде — так и скажи.',
           allclean: 'Присмотрись к Тимуру. Он кое-что сделал раньше, чем тебя спросили.' },
-    d2: { key: 'd2', quest: false, ask: true, moves: DEBT, rows: debtRows, names: ['ВЗАИМНОСТЬ', 'ЛОЖНЫЙ ВЫБОР', 'СРОЧНОСТЬ'], beasts: { 'ВЗАИМНОСТЬ': 'recip', 'ЛОЖНЫЙ ВЫБОР': 'fakec' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '16:40',
+    d2: { key: 'd2', quest: false, mine: true, lday: 2, ask: true, moves: DEBT, rows: debtRows, names: ['ВЗАИМНОСТЬ', 'ЛОЖНЫЙ ВЫБОР', 'СРОЧНОСТЬ'], beasts: { 'ВЗАИМНОСТЬ': 'recip', 'ЛОЖНЫЙ ВЫБОР': 'fakec' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '16:40',
           day: function (U) { return cap1(dayName(U, 2)); },
           pre: 'Лёва правда объяснял тебе физику. Вопрос в том, чем за это платить.', press: 'Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
-          allclean: 'Перечитай Лёву. Два его сообщения из трёх — не просто сообщения.' }
+          allclean: 'Перечитай Лёву. Два его сообщения из трёх — не просто сообщения.',
+          crNarr: 'Сегодня кнопок больше. «Подправлю» — перепиши вывод своими словами. «Пока не знаю» — вывод полежит в кармане пару дней, потом спросим ещё раз.',
+          lupaH: 'Ещё одно на сегодня: уведомление от онлайн-школы', lupaP: 'Минута, если хочется. Найди, где давят — тот же расклад, что с толстовкой.' },
+    d3: { key: 'd3', quest: false, mine: true, lday: 3, moves: PAINT, rows: paintRows, names: ['ВИНА', 'ВЗАИМНОСТЬ', 'ЛОЖНЫЙ ВЫБОР'], beasts: { 'ВИНА': 'guilt' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '15:20',
+          day: function (U) { return cap1(dayName(U, 3)); },
+          pre: 'Два на два, и обе половины чата смотрят на тебя. Правильного цвета тут нет. Есть твой голос — и то, что за ним потянется.',
+          press: 'Сегодня давят тише, чем вчера: никто ничего не требует. Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
+          allclean: 'Перечитай Алину и второе сообщение Лёвы. О цвете там уже не спорят — там заранее раздают вину.',
+          crIds: ['e1', 'e2'],
+          crNarr: 'Кнопки те же, что вчера: забрать вывод, отказаться, подправить под себя или отложить на пару дней.',
+          lupaH: 'Ещё одно на сегодня: пересылка из районного чата', lupaP: 'Минута, если хочется. Тут новенькое: давят не всегда. Иногда в сообщении просто не хватает фактов — на такой случай внизу есть кнопка «Мало данных».' }
   };
   function sceneTags(sc) { return sc.names.concat(['ЧИСТО']); }
   function pressureIdx(U, sc) { return sc.rows(U).map(function (r, i) { return r[2] !== 'ЧИСТО' ? i : -1; }).filter(function (i) { return i >= 0; }); }
   function d2state(U, sc) { var s = ex(U); sc = sc || SCENES.d2; if (!s[sc.key]) s[sc.key] = { move: null, stage: 'move', open: null, rows: {}, wrong: {}, fa: 0, hint: '', fb: null, cr: [], fin: false, chk: null, asked: false, lupaGo: false }; return s[sc.key]; }
   function mvOf(d, sc) { return (sc || SCENES.d2).moves.filter(function (m) { return m.id === d.move; })[0]; }
   function d2makeCr(d, sc) {
-    var mv = mvOf(d, sc);
-    d.cr = [{ id: 'd1', view: mv.view, text: mv.c1.text, alts: mv.c1.alts, sph: 'friends', status: 'new', fit: false, contra: 'd2' },
-            { id: 'd2', view: mv.hotya.view_id, text: mv.c2.text, alts: mv.c2.alts, sph: 'friends', status: 'new', fit: false, contra: 'd1' }];
+    var mv = mvOf(d, sc), ids = (sc && sc.crIds) || ['d1', 'd2']; /* у каждого Дела свои идентификаторы выводов, иначе они столкнутся в Кодексе */
+    d.cr = [{ id: ids[0], view: mv.view, text: mv.c1.text, alts: mv.c1.alts, sph: 'friends', status: 'new', fit: false, contra: ids[1] },
+            { id: ids[1], view: mv.hotya.view_id, text: mv.c2.text, alts: mv.c2.alts, sph: 'friends', status: 'new', fit: false, contra: ids[0] }];
   }
   /* первое предложение жирным: «Да.», «Мимо.», «Льстит.» — читается как ответ, а не как справка */
   function leadHTML(t) { var m = /^(.*?[.!?])(\s+|$)([\s\S]*)$/.exec(t); return m ? '<b>' + esc(m[1]) + '</b> ' + esc(m[3]) : esc(t); }
   function chkHTML(d, rows) {
     if (!d.chk) return '';
     var cl = rows[d.chk.r][3], fb = rows[d.chk.r][4] || {};
-    var line = !cl ? fb.none : (cl.truth === true ? cl.yes : (cl.truth === false ? VERDICTS.no : cl.unk));
+    var line = !cl ? fb.none : (cl.truth === true ? cl.yes : (cl.truth === false ? (cl.no || VERDICTS.no) : cl.unk));
     return '<div class="chk"><div class="mono kk">Что в закрепе</div>' +
       (cl && cl.proof ? '<div class="pin"><small class="mono">закреплено · ' + esc(cl.by) + '</small>«' + esc(cl.proof) + '»</div>' : '') +
       '<p>' + esc(line) + '</p></div>';
   }
-  function fbHTML(d) { return d.fb ? '<div class="reveal fbk"><p>' + leadHTML(d.fb) + '</p></div>' : ''; }
+  function fbHTML(d) { return d.fb ? '<div class="reveal fbk">' + revP(d.fb) + '</div>' : ''; }
   var AB = window.NPC_BASE || ''; /* игра поднята с запасной копии (сторож в index.html): картинки брать оттуда же; обычно пусто */
   var AVA = { 'Тимур': 'timur', 'Даня': 'danya', 'Алина': 'alina', 'Макс': 'max', 'Лёва': 'lyova' };
   /* аватар: круг с буквой в цвет персонажа (data-n, data-l) — запасной вид; поверх него портрет из art/, если файл есть */
   function avaImg(name) { return AVA[name] ? '<span class="d2ava" data-n="' + AVA[name] + '" data-l="' + name.charAt(0) + '"><img src="' + AB + 'art/ava-' + AVA[name] + '.webp" alt="" onerror="this.remove()"></span>' : ''; }
+  /* разбор приёма: последнее предложение «Ответ…» выносится отдельной строкой жирным (в данных строки не меняются) */
+  function ansSplit(t) { var m = /^([\s\S]*?[.!?»])\s+(Ответ(?![а-яё])[\s\S]*)$/.exec(t); return m ? [m[1], m[2]] : [t, '']; }
+  function revP(t) { var a = ansSplit(t); return '<p>' + leadHTML(a[0]) + '</p>' + (a[1] ? '<p class="ans"><strong>' + esc(a[1]) + '</strong></p>' : ''); }
+  /* исходящее сообщение игрока: то, что стоит в «ёлочках» хода */
+  function mineBubble(U, mv) { var m = /«([\s\S]*)»/.exec(mv.text), n = String(ex(U).nick || '').trim(); return '<div class="d2msg me"><small>' + esc(n || 'ты') + '</small>' + esc(m ? m[1] : mv.text) + '</div>'; }
+  /* «Ещё одно на сегодня» привязано к дню Дела: внутри сцены — день этого Дела, в Бестиарии — по состоянию главного экрана */
+  function inDay(sc, fn) { var old = LDAY; LDAY = sc && sc.lday ? sc.lday : null; try { return fn(); } finally { LDAY = old; } }
   function sceneBody(U, sc) {
     var d = d2state(U, sc), mv = mvOf(d, sc), thread = d.stage === 'thread', rows = sc.rows(U), press = pressureIdx(U, sc);
     var pinned = d.chk && rows[d.chk.r][3] && rows[d.chk.r][3].proof ? '<div class="d2pin"><span class="mono">закреплено · ' + esc(rows[d.chk.r][3].by) + '</span>«' + esc(rows[d.chk.r][3].proof) + '»</div>' : '';
@@ -624,6 +713,7 @@
         (tap ? '<span class="tag2lab mono" aria-hidden="true">что тут?</span>' : '') +
         (st ? '<span class="vizhu' + (st === 'clean' ? ' clean' : '') + '">' + (st === 'clean' ? 'Без подвоха' : tray(m[2])) + '</span>' : '') + avaImg(m[0]) + '</div>';
     }).join('') + (d.asked ? '<div class="d2msg re"><small>Даня</small>' + esc(ASK_DANYA) + '</div>' : '') +
+      (sc.mine && mv ? mineBubble(U, mv) : '') +
       (mv ? mv.say.map(function (r) { return '<div class="d2msg re"><small>' + r[0] + (r[2] ? ' · в личке' : '') + '</small>' + esc(r[1]) + '</div>'; }).join('') : '') + '</div>';
     var side = '', top = '';
     if (!d.move) {
@@ -633,14 +723,14 @@
       side += '<h2 class="q2-ask">Что делаешь?</h2><p class="narr">' + esc(sc.pre) + '</p><div class="slips">' +
         sc.moves.map(function (m) { return '<button class="slip" type="button" data-d2="move" data-m="' + m.id + '">' + esc(m.text) + '</button>'; }).join('') + '</div>';
     } else if (d.stage === 'thread' || d.stage === 'found') {
-      side = costHTML(mv.cost);
+      side = thread ? costHTML(mv.cost) : '';
       if (thread) {
         var named = press.filter(function (x) { return d.rows[x] === 'named'; }).length;
         top = '<div class="d2top"><h2 class="q2-ask">Кто давил?</h2><p class="narr q2-press">' + esc(sc.press) + '</p></div>';
         side += chkHTML(d, rows) + fbHTML(d);
         if (d.open !== null) {
           var wr = d.wrong[d.open] || [];
-          side += '<div class="d2k mono" style="margin-top:14px">Сообщение · ' + esc(rows[d.open][0]) + '</div><div class="qline">Что в этой фразе?</div>' + (d.hint ? '<div class="hint2">' + esc(d.hint) + '</div>' : '') +
+          side += '<div class="d2k mono" style="margin-top:14px">Сообщение · ' + esc(rows[d.open][0]) + '</div><blockquote class="qquote">' + esc(rows[d.open][1]) + '</blockquote><div class="qline">Что в этой фразе?</div>' + (d.hint ? '<div class="hint2">' + esc(d.hint) + '</div>' : '') +
             '<div class="opts4"><button class="opt chkbtn" type="button" data-d2="check"' + (d.chk ? ' disabled' : '') + '>Глянуть закреп<small>' + (d.chk ? 'Закреп уже открыт — одна проверка на чат' : 'откроет закреплённое сообщение чата, один раз') + '</small></button>' +
             (d.ord && d.ord.length === sceneTags(sc).length ? d.ord : sceneTags(sc)).map(function (n) { return '<button class="opt' + (n === 'ЧИСТО' ? ' clean' : '') + (wr.indexOf(n) >= 0 ? ' no' : '') + '" type="button" data-d2="opt" data-n="' + n + '">' + tray(n) + '</button>'; }).join('') + '</div>';
         } else {
@@ -648,30 +738,30 @@
         }
         side += '<div class="d2btns"><button class="btn" type="button" data-d2="allclean">Никто не давил</button></div>';
       } else {
-        side += press.map(function (x) { var rv = REVEAL[rows[x][2]]; return '<div class="reveal fbk" style="margin-top:14px"><p>' + leadHTML(rv.t) + '</p></div>'; }).join('') +
-          monoHTML(mv.view, mv.mono) + hotyaHTML(mv.hotya.text) +
+        side += press.map(function (x) { var rt = (rows[x][4] || {}).rev || REVEAL[rows[x][2]].t; return '<div class="reveal fbk rvk"><div class="rvh">Разбор · ' + esc(rows[x][0]) + '</div>' + revP(rt) + '</div>'; }).join('') +
+          costHTML(mv.cost) + monoHTML(mv.view, mv.mono) + hotyaHTML(mv.hotya.text) +
           (sc.quest ? '<div class="d2next"><button class="btn seen" type="button" data-d2="qnext">Дальше</button></div>'
                     : '<div class="d2next"><button class="btn seen" type="button" data-d2="tocr">Дальше</button></div>');
       }
     } else if (d.stage === 'crumbs') {
       var k = EXT.counts(U), pend = d.cr.every(function (c) { return c.status !== 'new'; });
       side = '<h2 class="q2-ask">Два вывода из этой истории</h2><p class="narr">Из этой истории — два вывода. Они спорят между собой, и это нормально: у тебя может быть и один, и другой, и ни одного.</p>' +
-        '<p class="narr">Сегодня кнопок больше. «Подправлю» — перепиши вывод своими словами. «Пока не знаю» — вывод полежит в кармане пару дней, потом спросим ещё раз.</p>' +
+        '<p class="narr">' + esc(sc.crNarr) + '</p>' +
         d.cr.map(function (c, i) { return crCard(c, i, 2, d.cr.filter(function (x) { return x.id === c.contra; })[0]); }).join('') +
         '<div class="pocket mono"><span>В Кодексе: ' + k.sheet + ' из 12</span><div class="slots">' + slotsHTML(k) + '</div></div>' +
-        '<div class="d2next"><button class="btn seen" type="button" data-d2="tolupa"' + (pend ? '' : ' disabled') + '>Дальше</button></div>';
+        '<div class="d2next"><button class="btn seen" type="button" data-d2="tolupa"' + (pend ? '' : ' disabled') + '>Дальше</button>' + (pend ? '' : '<p class="prompt mono d2hold">Сначала реши, что делать с каждым выводом.</p>') + '</div>';
     } else {
-      var L = lupaState(U);
+      var L = inDay(sc, function () { return lupaState(U); });
       if (!d.lupaGo && !L.fin) {
-        side = '<h2 class="q2-ask">Ещё одно на сегодня: уведомление от онлайн-школы</h2><p class="narr">Минута, если хочется. Найди, где давят — тот же расклад, что с толстовкой.</p>' +
+        side = '<h2 class="q2-ask">' + esc(sc.lupaH) + '</h2><p class="narr">' + esc(sc.lupaP) + '</p>' +
           (d.lskip ? '<p class="narr">Ок. Ничего не теряется.</p><div class="d2next"><a class="btn seen" href="#s=end" data-d2="end">На сегодня всё</a></div>'
                    : '<div class="d2btns"><button class="btn seen" type="button" data-d2="lgo">Давай</button><button class="btn" type="button" data-d2="lskip">Не сейчас</button></div>');
       } else {
-        side = '<div class="d2k mono">Ещё одно на сегодня</div><div class="lupa-host" id="d2lupa">' + lupaHTML(U) + '</div>' +
+        side = '<div class="d2k mono">Ещё одно на сегодня</div><div class="lupa-host" id="' + sc.key + 'lupa">' + inDay(sc, function () { return lupaHTML(U); }) + '</div>' +
           '<div class="d2next"><a class="btn seen" href="#s=end" data-d2="end">' + (L.fin ? 'На сегодня всё' : 'Пропустить') + '</a></div>';
       }
     }
-    return top + '<div class="d2grid"><div class="phone warm d2p"><div class="sbar"><span>' + sc.time + '</span><span class="ic">▮▮▮</span></div>' +
+    return '<div class="d2grid">' + top + '<div class="phone warm d2p"><div class="sbar"><span>' + sc.time + '</span><span class="ic">▮▮▮</span></div>' +
       '<div class="chead"><span class="back" aria-hidden="true">‹</span><span class="ava g">' + sc.ava + '</span><div><b>' + sc.chat + '</b><small>' + sc.members + '</small></div></div>' + ph +
       '<div class="cinput" aria-hidden="true"><i>＋</i><span>Сообщение</span><i>➤</i></div></div><div class="d2side">' + side + '</div></div>';
   }
@@ -679,6 +769,23 @@
     var ps = '', base = k.sheet - k.newOnSheet;
     for (var q = 0; q < 12; q++) ps += '<i class="' + (q < base ? 'on' : (q < k.sheet ? 'new' : (q < k.sheet + k.pocket ? 'pk' : ''))) + '"></i>';
     return ps;
+  }
+  /* узкая раскладка — одна колонка (граница та же, что у .d2grid в more.css); прокручивается сама секция экрана, плавно, при prefers-reduced-motion — сразу */
+  function sceneNarrow() { return !(window.matchMedia && window.matchMedia('(min-width:900px)').matches); }
+  function sceneScroll(el, sel, off) {
+    var t = $(sel, el); if (!t) return;
+    var ab = $('.appbar', el), abh = ab ? ab.offsetHeight : 0; /* шапка разделов липкая: цель должна оказаться под ней */
+    var y = t.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop - (off === undefined ? 10 : off) - abh, red = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    try { el.scrollTo({ top: Math.max(0, y), behavior: red ? 'auto' : 'smooth' }); } catch (x) { el.scrollTop = Math.max(0, y); }
+  }
+  function scrollAfter(el, sc, k, dd) {
+    var narrow = sceneNarrow();
+    if (k === 'tocr' || k === 'tolupa') { if (narrow) sceneScroll(el, '.d2side'); else el.scrollTop = 0; return; }
+    if (!narrow) return;
+    if (k === 'lgo') sceneScroll(el, '.d2side');
+    else if (k === 'move' && !sc.quest) sceneScroll(el, '.d2m .d2msg.me, .d2m .d2msg.re', 14);
+    else if (k === 'tag' && dd.open !== null) sceneScroll(el, '.d2side .d2k', 8);
+    else if (k === 'check') sceneScroll(el, '.d2side .chk', 8);
   }
   /* обработчик кликов сцены: один на экран, сцена лежит в el._sc (экран «Дела» и экран шага 2 квеста) */
   function sceneWire(U, el, sc) {
@@ -688,7 +795,7 @@
     var redraw = function () { var b = $('.scbody', el); if (b) b.innerHTML = sceneBody(U, el._sc); };
     var onTap = function (e) {
       var sc = el._sc, dd = d2state(U, sc);
-      var lp = e.target.closest('[data-lp]'); if (lp) { U.S().real = true; U.buzz(8); lupaAct(U, lp); redraw(); return; }
+      var lp = e.target.closest('[data-lp]'); if (lp) { U.S().real = true; U.buzz(8); inDay(sc, function () { lupaAct(U, lp); }); redraw(); return; }
       var ca = e.target.closest('.cr2 [data-a]');
       if (ca) {
         var art = ca.closest('.cr2'), c = dd.cr.filter(function (x) { return x.id === art.getAttribute('data-c'); })[0];
@@ -710,7 +817,7 @@
         var rws = sc.rows(U), i = dd.open, truth = rws[i][2], cl = rws[i][3], fb = rws[i][4] || {}, pick = b.getAttribute('data-n');
         if (pick === truth) {
           dd.rows[i] = truth === 'ЧИСТО' ? 'clean' : 'named'; dd.open = null; dd.hint = '';
-          dd.fb = truth === 'ЧИСТО' ? fb.ok : REVEAL[truth].t;
+          dd.fb = truth === 'ЧИСТО' ? fb.ok : (fb.rev || REVEAL[truth].t);
           if (truth !== 'ЧИСТО') {
             caught = truth;
             if (!pressureIdx(U, sc).some(function (x) { return dd.rows[x] !== 'named'; })) dd.stage = 'found';
@@ -731,9 +838,10 @@
       else if (k === 'tocr') { d2makeCr(dd, sc); dd.stage = 'crumbs'; }
       else if (k === 'tolupa') { dd.stage = 'lupa'; }
       redraw();
-      if (k === 'tocr' || k === 'tolupa') el.scrollTop = 0;
+      scrollAfter(el, sc, k, dd);
       if (caught && sc.beasts[caught] && U.catchBeast) U.catchBeast(sc.beasts[caught], function () {
         if (dd.stage === 'found' && sc.quest) { var sd = $('.d2side', el); if (sd && sd.scrollIntoView) sd.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        else if (dd.stage === 'found' && sceneNarrow()) sceneScroll(el, '.d2side');
       });
     };
     el.addEventListener('click', onTap);
@@ -760,6 +868,55 @@
     }
     var el = mount(U, 'scr-day2', 'day2', '<div class="wrap d2"><div class="d2head"><div class="kick mono"><span class="dot"></span><span>Дело 2 · ' + dayName(U, 2) + '</span></div>' +
       '<h1>Должок</h1><p class="narr d2-intro">Даня завёл отдельный чат: гараж надо покрасить, иначе колонке там стыдно стоять. Красить зовут всех, кто «в деле». То есть тебя.</p></div><div class="scbody" id="d2body">' + sceneBody(U, sc) + '</div></div>');
+    sceneWire(U, el, sc);
+  }
+  /* ================= ЭКРАН: Дело третьего дня «Краски» ================= */
+  /* секции #scr-day3 в index.html нет (разметку страницы это Дело не трогает): создаём её здесь, сразу после #scr-day2 */
+  (function () {
+    var host = document.getElementById('scr-day2');
+    if (!host || document.getElementById('scr-day3')) return;
+    var sec = document.createElement('section');
+    sec.className = 'screen scroll'; sec.id = 'scr-day3'; sec.setAttribute('data-screen', 'day3'); sec.setAttribute('aria-label', 'Дело третьего дня');
+    host.parentNode.insertBefore(sec, host.nextSibling);
+  })();
+  /* рендер без прохождения: Дело 2 считается законченным ходом «a» (первая реплика Лёвы — версия «a», игровой день — третий), Должок и Развилка уже в Бестиарии */
+  function d3prep(U) {
+    if (U.S().real) return;
+    var s = ex(U); s.day1Done = s.day1Done || Date.now();
+    var d2s = d2state(U, SCENES.d2);
+    if (!d2s.fin) { d2s.move = d2s.move || 'a'; d2s.stage = 'lupa'; d2s.fin = true; d2s.finTs = d2s.finTs || Date.now(); }
+    s.beasts = s.beasts || [];
+    ['recip', 'fakec'].forEach(function (id) { if (s.beasts.indexOf(id) < 0) s.beasts.push(id); });
+  }
+  function d3beast(U) { var s = ex(U); s.beasts = s.beasts || []; if (s.beasts.indexOf('guilt') < 0) s.beasts.push('guilt'); }
+  function screenDay3(U, o) {
+    var sc = SCENES.d3, s = ex(U);
+    if (!U.S().real && (o.step === 'wait' || o.step === 'done')) {
+      d3prep(U);
+      if (o.step === 'done') {
+        var dn = d2state(U, sc); dn.move = 'c'; dn.stage = 'lupa'; markPressure(U, sc, dn); d2makeCr(dn, sc); dn.cr[0].status = 'keep'; dn.cr[1].status = 'pocket'; dn.fin = true; dn.finTs = Date.now(); d3beast(U);
+      }
+      return screenHome(U, { step: o.step === 'wait' ? 'wait' : '' });
+    }
+    if (U.S().real && !(s.d2 && s.d2.fin)) return screenHome(U, { step: '' }); /* Дело 3 открывается только после Дела 2 */
+    if (U.S().real) { homeState(U); if (!U.opt().now && !(s.d3 && s.d3.move) && Date.now() < unlockAt(s.d2.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
+    if (!o.step && U.S().real && !s.d3Ts) s.d3Ts = Date.now(); /* время первого открытия Дела 3 — в «Для взрослых» */
+    d3prep(U);
+    cur = { name: 'day3', opts: o };
+    var d = d2state(U, sc);
+    if (!d.move && o.step) {
+      var rows = sc.rows(U);
+      if (['moved', 'named', 'check', 'found', 'crumbs', 'lupa'].indexOf(o.step) >= 0) {
+        d.move = 'a'; d.stage = 'thread';
+        if (o.step === 'named') { d.rows[2] = 'named'; d.fb = rows[2][4].rev; d3beast(U); }
+        if (o.step === 'check') { d.open = 3; d.chk = { r: 3 }; }
+        if (o.step === 'found' || o.step === 'crumbs' || o.step === 'lupa') { markPressure(U, sc, d); d.stage = 'found'; d3beast(U); }
+        if (o.step === 'crumbs' || o.step === 'lupa') { d2makeCr(d, sc); d.stage = 'crumbs'; }
+        if (o.step === 'lupa') { d.cr[0].status = 'keep'; d.cr[1].status = 'pocket'; d.stage = 'lupa'; }
+      }
+    }
+    var el = mount(U, 'scr-day3', 'day3', '<div class="wrap d2 d3"><div class="d2head"><div class="kick mono"><span class="dot"></span><span>Дело 3 · ' + dayName(U, 3) + '</span></div>' +
+      '<h1>Краски</h1><p class="narr d2-intro d3-intro">Лёва в магазине, в руках две банки: серая и бирюзовая. Чат разделился ровно пополам, и последний голос — твой. Это уже все знают. И у каждого есть что тебе сказать.</p></div><div class="scbody" id="d3body">' + sceneBody(U, sc) + '</div></div>');
     sceneWire(U, el, sc);
   }
   /* шаг 2 квеста «Суббота»: та же сцена без шапки разделов; ход, «Кто давил?», поимка Решалы, разбор и «А с другой стороны —» */
@@ -977,11 +1134,12 @@
       lest: '<path d="M20 50 q40 -30 80 0" fill="none" stroke="#1C1411" stroke-width="2.4"/><path d="M38 44 l6 6 6 -6 M72 44 l6 6 6 -6" stroke="#1C1411" stroke-width="2.2" fill="none"/><path d="M52 66 q8 8 16 0" stroke="#1C1411" stroke-width="2.4" fill="none"/><path d="M102 22 v10 M97 27 h10 M12 30 v8 M8 34 h8" stroke="#1C1411" stroke-width="2.4"/>',
       vse: '<g fill="#1C1411"><circle cx="30" cy="52" r="7"/><circle cx="60" cy="48" r="7"/><circle cx="90" cy="52" r="7"/><circle cx="45" cy="40" r="5"/><circle cx="75" cy="40" r="5"/></g><path d="M28 66 q32 10 64 0" stroke="#1C1411" stroke-width="2.4" fill="none" stroke-dasharray="3 4"/>',
       sro: '<path d="M44 26 H76 M44 70 H76" stroke="#1C1411" stroke-width="4" stroke-linecap="round"/><path d="M48 27 C48 44 72 46 72 48 S48 52 48 69 M72 27 C72 44 48 46 48 48 S72 52 72 69" fill="none" stroke="#1C1411" stroke-width="3"/><path d="M52 64 h16 l-8 -9 z" fill="#1C1411"/>',
+      guilt: '<path d="M38 33 l14 4 M82 33 l-14 4" fill="none" stroke="#1C1411" stroke-width="2.4" stroke-linecap="round"/><path d="M46 47 q-6 9 0 13 q6 -4 0 -13z" fill="#8fd3ff" stroke="#1C1411" stroke-width="2.2" stroke-linejoin="round"/><path d="M47 67 q13 -10 26 0" fill="none" stroke="#1C1411" stroke-width="2.6" stroke-linecap="round"/>',
       loss: '<path d="M60 20 c2 12 20 18 20 38 a20 20 0 0 1 -40 0 c0 -9 5 -14 8 -19 3 7 8 9 10 7 -3 -12 -3 -20 2 -26z" fill="#FFC247" stroke="#1C1411" stroke-width="2.6" stroke-linejoin="round"/><path d="M60 48 c8 7 10 12 10 17 a10 10 0 0 1 -20 0 c0 -5 4 -10 10 -17z" fill="#E8432B" opacity=".9"/><path d="M52 62 h5 M64 62 h5" stroke="#1C1411" stroke-width="2.6" stroke-linecap="round"/>' };
     return '<svg class="creat" viewBox="0 0 120 84" aria-hidden="true"><ellipse cx="60" cy="78" rx="38" ry="4" fill="#1C1411" opacity=".25"/>' + (id === 'loss' ? '' : '<path d="M14 62 Q10 22 60 16 Q110 22 106 62 Q104 74 60 74 Q16 74 14 62Z" fill="#F6F0DF" stroke="#1C1411" stroke-width="3"/><circle cx="46" cy="40" r="5" fill="#1C1411"/><circle cx="74" cy="40" r="5" fill="#1C1411"/>') + core[id] + '</svg>';
   }
   /* картинки существ делает генератор (art/creature-*.webp); пока файла нет, на его месте прежний значок — подмена по событию error без битых иконок */
-  var CR_IMG = { sro: 'timer', lest: 'podliza', vse: 'tolpa', fact: 'reshala', recip: 'dolzhok', fakec: 'razvilka', loss: 'ogonek' };
+  var CR_IMG = { sro: 'timer', lest: 'podliza', vse: 'tolpa', fact: 'reshala', recip: 'dolzhok', fakec: 'razvilka', loss: 'ogonek', guilt: 'obidka' };
   function creature(id) {
     if (!CR_IMG[id]) return creatureSvg(id);
     return '<img class="creimg" src="' + AB + 'art/creature-' + CR_IMG[id] + '.webp" alt="" data-cr="' + id + '">';
@@ -992,7 +1150,9 @@
   }, true);
   /* игровой день и ротация: один артефакт в день. «N из M»: N — сколько артефактов игрок уже видел, M — размер пула ротации (ТЗ §7: в MVP 30; прототип показывает шесть образцов по кругу) */
   var LUPA_POOL = 30;
-  function lupaDay(U) { return Math.max(1, U.day()); }
+  var LDAY = null; /* день «Ещё одного на сегодня», заданный сценой Дела (inDay) */
+  /* вне сцены: пока идёт ожидание после Дела 2 и позже — день последнего законченного выпуска, пока Дело открыто — игровой день; ожидание после первой сессии прежнее (в квесте своя лупа) */
+  function lupaDay(U) { if (LDAY !== null) return LDAY; var hs = homeState(U); return Math.max(1, hs.wait && hs.n >= 3 ? U.day() - 1 : U.day()); }
   function lupaIdx(U) { var f = ex(U).lpForce; return f !== undefined ? f : (lupaDay(U) - 1) % LUPA.length; }
   /* записи просмотров лежат в s.lpH: по одной на показанный артефакт; из них считаются N, число честных просмотров и общий счёт */
   function lupaState(U, Q) {
@@ -1040,7 +1200,7 @@
       return '<button class="lz' + (L.sel === k ? ' sel' : '') + (done !== undefined ? ' done' : '') + '" type="button" data-lp="zone" data-k="' + k + '">' + esc(zn.t) + shown + '</button>';
     }).join('');
     var tr = '';
-    if (L.fin) tr = '<div class="lp-res"><b>' + L.res + '</b><p class="lp-tomorrow mono">Такое — раз в день. Следующее завтра утром.</p></div>';
+    if (L.fin) tr = '<div class="lp-res"><b>' + L.res + '</b><p class="lp-tomorrow mono">Такое — раз в день. ' + (LDAY === 3 || homeState(U).end ? 'Следующее появится вместе с новым Делом.' : 'Следующее завтра утром.') + '</p></div>';
     else if (L.sel !== null) {
       /* первый ответ на строку остаётся: перебора нет, поэтому названия не гаснут после промаха */
       tr = '<div class="qline">Что в «' + esc(a.zones[L.sel].t) + '»?</div>' + hintHTML(L) + trayHTML(a, false);
@@ -1262,6 +1422,6 @@
       '<div class="d2btns"><a class="btn seen" href="#s=home">Понятно</a><a class="btn" href="#s=bestiary">Что ещё спрятано?</a></div></div>');
   }
 
-  var EXT = window.EXT = { dowOf: dowOf, nextLabel: nextLabel, rawMode: rawMode, VIEWS: VIEWS, TONE: TONE, TRAPS: TRAPS, BEASTS: BEASTS, MOVES: MOVES, CLIFF: CLIFF, d2rows: d2rows, debtRows: debtRows, DEBT: DEBT, SCENES: SCENES, REVEAL: REVEAL, ASK_DANYA: ASK_DANYA, d2state: d2state, markPressure: markPressure, questScene: questScene, qlupaMount: qlupaMount, qlExpire: qlExpire, lupaStateQ: function (U) { return lupaState(U, true); }, LUPA_Q: LUPA_Q, beastTag: beastTag, creature: creature, VERDICTS: VERDICTS, LUPA: LUPA, weekCells: weekCells, modeOf: modeOf, TIMUR_D2: TIMUR_D2, counts: function (U) { return EXT_counts(U); }, crCard: crCard, crAct: crAct, costHTML: costHTML, monoHTML: monoHTML, hotyaHTML: hotyaHTML, tray: tray, TRAY: TRAY, cliff3: cliff3, leadHTML: leadHTML, QUEST_TRAY: QUEST_TRAY, zoneWhy: zoneWhy, words: words, slotsHTML: slotsHTML, sphName: sphName,
-    screens: { whatwas: screenWhatWas, lupa: function (U, o) { return screenBestiary(U, { step: 'lp-' + (o.step || 'result') }); }, home: screenHome, settings: screenSettings, day2: screenDay2, codex: screenCodex, bestiary: screenBestiary, backstage: screenBackstage } };
+  var EXT = window.EXT = { dowOf: dowOf, nextLabel: nextLabel, rawMode: rawMode, VIEWS: VIEWS, TONE: TONE, TRAPS: TRAPS, BEASTS: BEASTS, MOVES: MOVES, CLIFF: CLIFF, d2rows: d2rows, debtRows: debtRows, DEBT: DEBT, SCENES: SCENES, REVEAL: REVEAL, ASK_DANYA: ASK_DANYA, d2state: d2state, markPressure: markPressure, questScene: questScene, qlupaMount: qlupaMount, qlExpire: qlExpire, lupaStateQ: function (U) { return lupaState(U, true); }, LUPA_Q: LUPA_Q, beastTag: beastTag, creature: creature, VERDICTS: VERDICTS, LUPA: LUPA, weekCells: weekCells, modeOf: modeOf, TIMUR_D2: TIMUR_D2, counts: function (U) { return EXT_counts(U); }, crCard: crCard, crAct: crAct, costHTML: costHTML, monoHTML: monoHTML, hotyaHTML: hotyaHTML, tray: tray, TRAY: TRAY, cliff3: cliff3, cliff4: cliff4, PAINT: PAINT, paintRows: paintRows, LEVA_D3: LEVA_D3, CLAIM_KASSA: CLAIM_KASSA, leadHTML: leadHTML, QUEST_TRAY: QUEST_TRAY, zoneWhy: zoneWhy, words: words, slotsHTML: slotsHTML, sphName: sphName,
+    screens: { whatwas: screenWhatWas, lupa: function (U, o) { return screenBestiary(U, { step: 'lp-' + (o.step || 'result') }); }, home: screenHome, settings: screenSettings, day2: screenDay2, day3: screenDay3, codex: screenCodex, bestiary: screenBestiary, backstage: screenBackstage } };
 })();
