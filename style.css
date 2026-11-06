@@ -1,0 +1,508 @@
+/* «Софист» — прототип первой сессии. Палитра и шрифты из МУД.md. Снаружи только Google Fonts. */
+:root{
+  --canvas:#E6D8B8; --chalk:#F6F0DF; --soot:#1C1411; --velvet:#6B1B26;
+  --thread:#E8432B; --lamp:#FFC247; --seen:#19A39B;
+  --canvas-dk:#D3C39C;
+  --light:var(--lamp);
+  --ink-soft:rgba(28,20,17,.68);
+  --shadow:4px 4px 0 var(--soot);
+  --shadow-lg:7px 8px 0 var(--soot);
+  --gut:16px;
+  --handh:calc(min(30vh,196px) + 18px); /* высота руки: на ней стоят и карты, и штамп (сцена не прыгает, когда карты кончились); 18 px сверху — место под пузырь подсказки T1 (карта больше не приподнимается) */
+}
+body.turn{ --light:var(--seen); }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  background-color:var(--canvas);
+  color:var(--soot);
+  font:400 15px/1.35 "Golos Text",system-ui,sans-serif;
+  overflow:hidden;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 .11  0 0 0 0 .08  0 0 0 0 .07  0 0 0 .16 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:3px solid var(--seen);outline-offset:2px}
+.mono{font-family:"Golos Text",sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.rus{font-family:"Russo One",sans-serif;font-weight:400}
+
+/* ---------- каркас ---------- */
+.app{height:100dvh;position:relative;max-width:600px;margin:0 auto}
+.screen{display:none;height:100%;position:relative}
+.screen.on{display:flex;flex-direction:column;overflow-x:hidden}
+.screen.scroll.on{display:block;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.head{flex:none;padding:calc(10px + env(safe-area-inset-top)) var(--gut) 8px;position:relative;z-index:9}
+.kick{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-soft);min-height:16px}
+.kick .dot{width:7px;height:7px;background:var(--soot);border-radius:50%}
+h1{font:400 29px/1.02 "Russo One",sans-serif;margin-top:5px;letter-spacing:.005em}
+.sub{margin-top:5px;font-size:14.5px;color:var(--ink-soft)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 16px;background:var(--chalk);border:2px solid var(--soot);border-radius:4px;box-shadow:var(--shadow);font-weight:700;font-size:15px;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--soot)}
+.btn.seen{background:var(--seen);color:var(--soot)}
+.btn.ghost{background:transparent;box-shadow:none;border-style:dashed}
+.btn .mono{font-size:12px}
+
+/* ---------- ИГРА: сцена ---------- */
+.stage{position:relative;flex:1 1 auto;min-height:200px;overflow:hidden;background:var(--canvas)}
+.valance{position:absolute;left:0;right:0;top:0;height:30px;background:
+  repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 7px,transparent 7px 19px,rgba(255,255,255,.05) 19px 22px,transparent 22px 30px),var(--velvet);z-index:6}
+.valance::after{content:"";position:absolute;left:0;right:0;top:100%;height:12px;
+  background:radial-gradient(circle at 50% 0,var(--velvet) 0 12px,transparent 12.6px) 0 0/30px 12px repeat-x;filter:drop-shadow(0 3px 0 rgba(28,20,17,.3))}
+.fresnel{position:absolute;left:14px;top:18px;width:38px;height:32px;z-index:7}
+.fresnel .lens{fill:var(--light);transition:fill .5s}
+.lockers{position:absolute;left:0;right:0;top:22%;bottom:11%;opacity:.95;
+  background:
+   linear-gradient(rgba(28,20,17,.2) 0 0) 9px 12% / 24px 3px repeat-x,
+   linear-gradient(rgba(28,20,17,.2) 0 0) 9px calc(12% + 7px) / 24px 3px repeat-x,
+   linear-gradient(rgba(28,20,17,.2) 0 0) 9px calc(12% + 14px) / 24px 3px repeat-x,
+   linear-gradient(rgba(28,20,17,.24) 0 0) 31px 46% / 6px 22px repeat-x,
+   repeating-linear-gradient(90deg,rgba(28,20,17,.2) 0 2px,transparent 2px 42px),
+   repeating-linear-gradient(90deg,rgba(28,20,17,.06) 0 42px,transparent 42px 84px);
+  background-position:9px 12%,9px calc(12% + 7px),9px calc(12% + 14px),30px 46%,0 0,0 0}
+.dado{position:absolute;left:0;right:0;bottom:11%;height:14%;background:rgba(28,20,17,.12);border-top:2px solid rgba(28,20,17,.22)}
+.floor{position:absolute;left:0;right:0;bottom:0;height:11%;background:repeating-linear-gradient(90deg,transparent 0 58px,rgba(246,240,223,.09) 58px 60px),var(--soot)}
+.cone{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,color-mix(in srgb,var(--light) 62%,transparent) 0%,color-mix(in srgb,var(--light) 20%,transparent) 55%,transparent 82%);
+  clip-path:polygon(2% 0,38% 0,86% 100%,26% 100%)}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 52% 52%,transparent 42%,rgba(28,20,17,.5) 112%)}
+.wing{position:absolute;top:0;bottom:0;width:clamp(10px,4vw,56px);z-index:5;background:repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 6px,transparent 6px 15px),var(--velvet)}
+.wing.l{left:0;box-shadow:5px 0 0 rgba(28,20,17,.25)} .wing.r{right:0;box-shadow:-5px 0 0 rgba(28,20,17,.25)}
+.rig{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:3;overflow:visible}
+
+.sway{transform-origin:180px 18px;animation:sway 5.2s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-.9deg)}50%{transform:rotate(1deg)}}
+.jerk{transform-box:fill-box;transform-origin:50% 0;animation:jerk .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes jerk{0%{transform:rotate(0)}30%{transform:rotate(-3deg) translateY(-5px)}100%{transform:rotate(0)}}
+.head-bob{transform-box:fill-box;transform-origin:50% 100%;animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(2.5deg)}}
+.hang{transform-box:fill-box;transform-origin:50% 0;animation:hang 3.8s ease-in-out infinite}
+@keyframes hang{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.draw{stroke-dasharray:var(--len,360);stroke-dashoffset:var(--len,360);animation:draw .45s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.snap{transform-box:fill-box;transform-origin:50% 0;animation:snap .6s cubic-bezier(.2,1.8,.4,1) .3s both}
+@keyframes snap{from{transform:scaleY(.2) rotate(8deg);opacity:0}to{transform:none;opacity:1}}
+.static .draw{animation:none;stroke-dashoffset:0}
+.static .snap{animation:none}
+
+/* реплика Тимура — бумажка с хвостиком к сцене */
+.say{flex:none;position:relative;margin:12px var(--gut) 0;background:var(--chalk);border:2px solid var(--soot);border-radius:3px;box-shadow:var(--shadow);padding:9px 14px 10px 16px;z-index:4}
+.say::before{content:"";position:absolute;left:52%;top:-10px;width:16px;height:16px;background:var(--chalk);border-left:2px solid var(--soot);border-top:2px solid var(--soot);transform:rotate(45deg) translateX(-50%)}
+.say .who{font-size:11px;color:var(--ink-soft);margin-bottom:2px}
+.say q{display:block;quotes:none;font-weight:600;font-size:17px;line-height:1.25}
+.say.pop{animation:pop .38s cubic-bezier(.3,1.7,.5,1)}
+@keyframes pop{from{transform:scale(.94);opacity:.4}to{transform:none;opacity:1}}
+
+/* шкала «Готов пойти» видна с нулевой секунды; лампочки найденных слабостей появляются по ходу */
+.info{flex:none;padding:19px var(--gut) 4px;display:block}
+.lamps:empty{display:none}
+.gauge{display:flex;align-items:center;gap:8px;font-size:11px}
+.gauge .notches{display:flex;gap:3px;flex:1}
+.gauge i{flex:1;height:13px;border:1.5px solid var(--soot);background:transparent;transition:background .25s}
+.gauge i.on{background:var(--soot)}
+.gauge i.goal{position:relative}
+.gauge i.goal::after{content:"";position:absolute;left:50%;bottom:100%;width:2px;height:6px;background:var(--soot)}
+.gauge i.goal::before{content:attr(data-lab);position:absolute;left:50%;bottom:calc(100% + 7px);transform:translateX(-50%);font:600 9.5px/1 "Golos Text",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap}
+.gauge b{min-width:34px;text-align:right}
+.lamps{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.lamp{display:inline-flex;gap:6px;align-items:center;background:var(--chalk);border:2px solid var(--soot);border-radius:3px;padding:2px 9px 2px 4px;font-size:13.5px;font-weight:600;box-shadow:2px 2px 0 var(--soot)}
+.lamp svg{width:24px;height:24px}
+.lamp .glass{fill:var(--lamp)}
+.lamp.new{animation:pop .5s cubic-bezier(.3,1.9,.5,1)}
+.lamp em{font-style:normal;font-family:"Golos Text",sans-serif;font-weight:600;font-size:12px;margin-left:2px}
+
+/* рука */
+.hand{flex:none;padding:10px 12px calc(12px + env(safe-area-inset-bottom));position:relative}
+.cards{display:flex;justify-content:center;align-items:flex-end;gap:6px;height:var(--handh);padding-top:44px}
+.card{position:relative;flex:0 1 112px;min-width:0;height:100%;max-height:170px;background:var(--chalk);border:2px solid var(--soot);border-radius:6px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;padding:8px 7px 8px 8px;text-align:left;transform:rotate(var(--r,0deg));transform-origin:50% 120%;
+  transition:transform .28s cubic-bezier(.3,1.6,.5,1),box-shadow .2s,opacity .25s}
+.cards.n3 .card:nth-child(1){--r:-4deg} .cards.n3 .card:nth-child(2){--r:0deg;z-index:2} .cards.n3 .card:nth-child(3){--r:4deg}
+.cards.n2 .card:nth-child(1){--r:-3deg} .cards.n2 .card:nth-child(2){--r:3deg}
+.cards.n1 .card{--r:0deg}
+.card.shake-hint{animation:tremor 2.6s ease-in-out infinite}
+@keyframes tremor{0%,86%,100%{transform:rotate(var(--r,0deg))}89%{transform:rotate(calc(var(--r,0deg) - 1.4deg)) translateY(-1px)}93%{transform:rotate(calc(var(--r,0deg) + 1.4deg))}}
+.card::after{content:"";position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:0 6px 0 0;
+  background:linear-gradient(225deg,var(--canvas) 0 50%,var(--canvas-dk) 50% 100%);border-left:2px solid var(--soot);border-bottom:2px solid var(--soot);border-bottom-left-radius:3px}
+.cname{font:400 13.5px/1 "Russo One",sans-serif;letter-spacing:0;white-space:nowrap}
+.cico{width:100%;height:34px;margin:6px 0 5px;flex:none}
+.creply{margin-top:auto;font-size:14px;line-height:1.2;font-weight:600}
+.card:active{transform:rotate(var(--r,0deg)) scale(.97);transition-duration:.08s}
+/* один тап — ход: карта за ~220 мс улетает к точке крепления на Тимуре (--fx, --fy считает app.js), затем рисуется нить */
+.card.fly{animation:none;transform-origin:50% 50%;transform:translate(var(--fx,0),var(--fy,-160px)) scale(.28) rotate(0deg);opacity:0;pointer-events:none;z-index:20;transition:transform .22s cubic-bezier(.45,0,.9,.55),opacity .12s ease-in .1s}
+
+/* штамп «Тимур идёт» вместо руки */
+.verdict-zone{display:none;padding:6px 0 4px;text-align:center}
+body.done .verdict-zone{display:flex;align-items:center;justify-content:center;height:var(--handh);padding:0}
+body.done .cards{display:none}
+.stampbtn{position:relative;display:inline-block;padding:12px 22px 10px;border:4px solid var(--soot);border-radius:6px;font:400 34px/1 "Russo One",sans-serif;transform:rotate(-4deg);background:var(--chalk);box-shadow:var(--shadow);animation:slam .5s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes slam{from{transform:rotate(-12deg) scale(2.2);opacity:0}to{transform:rotate(-4deg) scale(1);opacity:1}}
+.stampbtn:active{transform:rotate(-4deg) translate(2px,2px)}
+
+/* тетрадь суфлёра — десктоп */
+.log{display:none}
+#scr-play .side{display:contents}
+
+/* ---------- ПЕРЕВЁРНУТАЯ СЦЕНА: чат ---------- */
+#scr-chat .head h1{color:var(--soot)}
+.lightbar{flex:none;height:8px;background:var(--seen);border-bottom:2px solid var(--soot)}
+.chatzone{flex:1 1 auto;min-height:0;position:relative;display:flex;justify-content:center;padding:0 var(--gut)}
+.minstage{display:none}
+.phonewrap{position:relative;width:100%;max-width:372px;display:flex;flex-direction:column;min-height:0;animation:riseph .6s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes riseph{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.vaga{position:relative;flex:none;height:30px}
+.vaga .bar{position:absolute;right:0;top:12px;width:62%;height:9px;border-radius:2px;background:var(--soot)}
+.vaga .bar i{position:absolute;top:3px;width:4px;height:4px;border-radius:50%;background:var(--chalk)}
+.vaga .rod{position:absolute;right:30%;top:-40px;width:8px;height:56px;background:var(--soot)}
+.phone{position:relative;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;border:3px solid var(--soot);border-radius:26px;box-shadow:6px 7px 0 var(--soot);overflow:hidden;
+  background:
+   radial-gradient(circle at 20% 15%,color-mix(in srgb,var(--seen) 24%,transparent) 0 30%,transparent 62%),
+   repeating-linear-gradient(45deg,color-mix(in srgb,var(--seen) 9%,transparent) 0 2px,transparent 2px 14px),
+   color-mix(in srgb,var(--seen) 14%,var(--chalk))}
+.sbar{flex:none;display:flex;justify-content:space-between;align-items:center;padding:9px 18px 0;font:600 11px "Golos Text",sans-serif;position:relative}
+.sbar::after{content:"";position:absolute;left:50%;top:7px;width:52px;height:10px;margin-left:-26px;border-radius:6px;background:var(--soot)}
+.sbar .ic{display:flex;gap:4px;align-items:center;width:62px;justify-content:flex-end;opacity:0}
+.chead{flex:none;display:flex;align-items:center;gap:10px;padding:8px 14px 9px;background:var(--chalk);border-bottom:2px solid var(--soot);margin-top:6px}
+.chead .back{font-size:20px;line-height:1;font-weight:700}
+.ava{width:34px;height:34px;border-radius:50%;background:var(--soot);color:var(--chalk);display:grid;place-items:center;font:400 17px "Russo One",sans-serif;flex:none;position:relative}
+.ava::after{content:"";position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-radius:50%;background:var(--seen);border:2px solid var(--chalk)}
+.chead b{display:block;font-size:15.5px;line-height:1.1}
+.chead small{font-size:12px;color:var(--ink-soft)}
+.msgs{flex:1 1 auto;min-height:0;position:relative;padding:10px 10px 6px;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+.day{align-self:center;font:600 10.5px "Golos Text",sans-serif;text-transform:uppercase;letter-spacing:.05em;background:color-mix(in srgb,var(--canvas) 70%,transparent);padding:2px 9px;border-radius:10px;color:var(--ink-soft)}
+.msg{position:relative;align-self:flex-start;max-width:60%;background:var(--chalk);border:2px solid var(--soot);border-radius:4px 16px 16px 16px;padding:7px 11px 6px;font-size:15.5px;line-height:1.25;box-shadow:2px 2px 0 var(--soot);animation:msgin .4s cubic-bezier(.3,1.5,.5,1) both}
+.msg.m0{max-width:78%}
+.msg time{display:block;text-align:right;font:600 10px "Golos Text",sans-serif;color:var(--ink-soft);margin-top:2px}
+@keyframes msgin{from{transform:translateX(-14px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+.msg.seen::before{content:"";position:absolute;left:-2px;right:-2px;bottom:-2px;height:7px;background:var(--seen);opacity:.9;z-index:-1}
+.msg .vizhu{position:absolute;right:-10px;top:-12px;transform:rotate(9deg);font:600 11px "Golos Text",sans-serif;letter-spacing:.06em;color:var(--seen);border:2.5px solid var(--seen);background:var(--chalk);padding:1px 6px;border-radius:3px;animation:slam2 .45s cubic-bezier(.2,1.9,.4,1) both}
+@keyframes slam2{from{transform:rotate(-4deg) scale(2.4);opacity:0}to{transform:rotate(9deg) scale(1);opacity:1}}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:9px 12px;background:var(--chalk);border:2px solid var(--soot);border-radius:16px 16px 16px 4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--soot);animation:dots 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.18s}.typing i:nth-child(3){animation-delay:.36s}
+@keyframes dots{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.caught{flex:none;display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 6px;min-height:6px}
+.chip{font:600 10.5px "Golos Text",sans-serif;letter-spacing:.04em;background:var(--seen);color:var(--soot);border:2px solid var(--soot);padding:2px 7px;border-radius:3px;animation:chipfall .6s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes chipfall{from{transform:translateY(-140px) rotate(-14deg);opacity:0}to{transform:none;opacity:1}}
+.cinput{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px 10px;background:var(--chalk);border-top:2px solid var(--soot)}
+.cinput span{flex:1;border:2px solid var(--soot);border-radius:18px;padding:6px 12px;font-size:14px;color:var(--ink-soft)}
+.cinput i{width:30px;height:30px;border-radius:50%;border:2px solid var(--soot);display:grid;place-items:center;font-style:normal;font-size:13px}
+/* нити и бирки поверх телефона */
+.threads{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible}
+.threads path{fill:none;stroke:var(--thread);stroke-width:2.6;stroke-linecap:round}
+.threads path.cut{animation:cutline .5s ease-in forwards}
+@keyframes cutline{to{stroke-dashoffset:-400;opacity:0}}
+.tag{position:absolute;z-index:6;width:42px;height:42px;margin:-4px 0 0 -21px;display:grid;place-items:center;transform-origin:50% 0;animation:hang 3.8s ease-in-out infinite}
+.tag span{display:grid;place-items:center;width:36px;height:30px;background:var(--chalk);border:2px solid var(--soot);box-shadow:2px 2px 0 var(--soot);font:700 17px "Golos Text",sans-serif;border-radius:2px;transition:transform .1s}
+.tag::before{content:"";position:absolute;left:50%;top:-3px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--thread)}
+.tag:active span{transform:translateY(2px) scale(.94)}
+.tag.open span{background:var(--lamp);box-shadow:3px 3px 0 var(--soot)}
+.tag.fall{animation:tagfall .55s cubic-bezier(.5,0,1,.6) forwards}
+@keyframes tagfall{to{transform:translateY(240px) rotate(40deg);opacity:0}}
+.tag.err{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-5px) rotate(-6deg)}75%{transform:translateX(5px) rotate(6deg)}}
+
+/* лоток под телефоном: подсказка / выбор бирки / раскрытие */
+.tray{flex:none;padding:12px var(--gut) calc(12px + env(safe-area-inset-bottom));min-height:116px;position:relative}
+.tray .prompt{font-size:12px;color:var(--ink-soft);text-align:center;padding-top:20px}
+.opts{display:flex;gap:7px;margin-top:8px}
+.opt{flex:1;min-height:58px;background:var(--chalk);border:2px solid var(--soot);border-radius:4px;box-shadow:var(--shadow);font:400 15px/1.05 "Russo One",sans-serif;padding:6px 3px;transition:transform .08s,box-shadow .08s,opacity .2s}
+.opt:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--soot)}
+.opt.no{opacity:.35;text-decoration:line-through}
+.qline{font-size:13px;font-weight:600}
+.reveal{position:relative;background:var(--chalk);border:2px solid var(--soot);border-radius:3px;box-shadow:var(--shadow);padding:10px 14px 11px 14px;animation:pop .45s cubic-bezier(.3,1.7,.5,1)}
+.reveal .lab{font-size:11px;color:var(--seen);font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.reveal h3{font:400 24px/1 "Russo One",sans-serif;margin:4px 0 4px}
+.reveal p{font-size:14.5px;line-height:1.3;font-weight:500}
+.reveal .more{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.reveal .more .btn{min-height:40px;font-size:14px}
+.pipsline{display:inline-flex;gap:4px}
+.pipsline i{width:12px;height:12px;border:1.5px solid var(--soot);display:block}
+.pipsline i.on{background:var(--seen)}
+
+/* ---------- ОПОРА, ВЕРДИКТ ---------- */
+.frame .val{position:fixed;left:0;right:0;top:0;height:22px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 7px,transparent 7px 19px,rgba(255,255,255,.05) 19px 22px,transparent 22px 30px),var(--velvet);z-index:6;border-bottom:2px solid var(--soot)}
+.frame .wing{position:fixed;z-index:5}
+#scr-pillar .head,#scr-verdict .head{padding-top:32px}
+.pocket{margin-top:18px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--ink-soft)}
+.pocket .slots{max-width:none}
+.center-col{width:100%;max-width:560px;margin:0 auto;padding:0 var(--gut) calc(20px + env(safe-area-inset-bottom))}
+.slips{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.slip{position:relative;text-align:left;background:var(--chalk);border:2px solid var(--soot);padding:14px 16px 14px 18px;box-shadow:var(--shadow);font-size:17px;line-height:1.28;font-weight:600;transform:rotate(var(--r,0deg));transition:transform .15s,box-shadow .15s,opacity .25s;
+}
+.slip:nth-child(1){--r:-.6deg}.slip:nth-child(2){--r:.5deg}.slip:nth-child(3){--r:-.3deg}
+.slip:active{transform:translate(2px,2px) rotate(var(--r,0deg))}
+.slip .stampv{display:none;position:absolute;right:12px;top:-8px;transform:rotate(5deg);background:var(--seen);border:2.5px solid var(--soot);padding:1px 8px;font-size:12px;color:var(--soot)}
+.slips.done .slip{pointer-events:none}
+.slips.done .slip:not(.chosen){opacity:.55}
+.slips.done .slip .stampv{display:block}
+.slips.done .slip:not(.chosen) .stampv{background:var(--chalk);color:var(--ink-soft);border-color:var(--ink-soft)}
+.slip.chosen{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.viewcard{margin-top:18px;background:var(--chalk);border:2px solid var(--soot);box-shadow:var(--shadow);padding:14px 16px;animation:pop .45s cubic-bezier(.3,1.7,.5,1)}
+.viewcard h3{font:400 25px/1.05 "Russo One",sans-serif}
+.viewcard .rowv{display:grid;grid-template-columns:78px 1fr;gap:10px;margin-top:10px;font-size:14.5px;line-height:1.3;align-items:baseline}
+.viewcard .rowv .mono{font-size:11px;color:var(--ink-soft)}
+.viewcard .src{margin-top:10px;font-size:12px;color:var(--ink-soft)}
+.viewcard .note{margin-top:10px;padding-top:8px;border-top:1px dashed var(--ink-soft);font-size:13.5px;color:var(--ink-soft)}
+
+.bignote{position:relative;margin:22px auto 0;max-width:420px;background:var(--chalk);border:2px solid var(--soot);box-shadow:var(--shadow-lg);padding:30px 22px 22px;transform:rotate(-1deg);touch-action:pan-y;transition:transform .25s cubic-bezier(.3,1.4,.5,1),opacity .25s;user-select:none}
+.bignote::before{content:"";position:absolute;top:-12px;left:50%;width:84px;height:24px;margin-left:-42px;background:color-mix(in srgb,var(--lamp) 80%,transparent);border:1.5px solid rgba(28,20,17,.3);transform:rotate(-3deg)}
+.bignote q{display:block;quotes:none;font:600 23px/1.22 "Golos Text",sans-serif}
+.bignote .bsrc{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px}
+.vstamp{border:2.5px solid var(--soot);padding:2px 9px;font-size:12px;transform:rotate(-3deg)}
+.bignote .moe{position:absolute;right:14px;top:34px;font:400 46px "Russo One",sans-serif;color:var(--seen);border:4px solid var(--seen);padding:0 12px;transform:rotate(-12deg);opacity:0;pointer-events:none;background:color-mix(in srgb,var(--chalk) 60%,transparent)}
+.bignote.keep{animation:keep .6s cubic-bezier(.2,1.2,.4,1) forwards}
+.bignote.keep .moe{animation:slam3 .45s cubic-bezier(.2,1.9,.4,1) forwards}
+@keyframes slam3{from{transform:rotate(-12deg) scale(2.4);opacity:0}to{transform:rotate(-12deg) scale(1);opacity:1}}
+@keyframes keep{0%{transform:rotate(-1deg)}60%{transform:rotate(-1deg) translateY(0)}100%{transform:translateY(-60px) rotate(-1deg);opacity:0}}
+.bignote.toss{animation:toss .5s ease-in forwards}
+@keyframes toss{to{transform:translate(-120%,40px) rotate(-30deg);opacity:0}}
+.actions{display:flex;gap:10px;margin-top:22px}
+.actions .btn{flex:1;flex-direction:column;gap:2px;min-height:62px;padding:6px 8px}
+.actions .btn small{font:600 10.5px "Golos Text",sans-serif;color:var(--ink-soft);letter-spacing:.03em}
+.actions .btn.keep{background:var(--seen)}
+.actions .btn.keep small{color:var(--soot)}
+.fit{margin-top:16px;display:flex;flex-direction:column;gap:9px;animation:pop .35s}
+.fit button.v{text-align:left;background:var(--chalk);border:2px solid var(--soot);border-radius:4px;padding:10px 14px;font-size:15.5px;font-weight:600;box-shadow:3px 3px 0 var(--soot)}
+.fit button.v:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--soot)}
+.fit input{border:2px dashed var(--soot);background:transparent;padding:10px 12px;font:500 15px "Golos Text",sans-serif;border-radius:4px;color:var(--soot);width:100%}
+.fit .hint{font-size:12px;color:var(--ink-soft)}
+.gesture{margin-top:10px;text-align:center;font-size:11px;color:var(--ink-soft)}
+
+/* ---------- КОНЕЦ СЕССИИ ---------- */
+#scr-end{background:var(--velvet);overflow:hidden}
+#scr-end .folds{position:absolute;inset:0;background:
+  repeating-linear-gradient(90deg,rgba(0,0,0,.26) 0 9px,transparent 9px 24px,rgba(255,255,255,.06) 24px 28px,transparent 28px 38px);
+  box-shadow:inset 0 0 0 0 transparent}
+#scr-end .folds::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35),transparent 18%,transparent 82%,rgba(0,0,0,.35))}
+#scr-end .light{position:absolute;inset:0;background:radial-gradient(ellipse 46% 52% at 50% 44%,rgba(255,194,71,.3),transparent 70%);pointer-events:none}
+#scr-end .val{position:absolute;left:0;right:0;top:0;height:34px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.28) 0 7px,transparent 7px 19px,rgba(255,255,255,.06) 19px 22px,transparent 22px 30px),#52141d;z-index:3;border-bottom:3px solid var(--soot)}
+#scr-end .flr{position:absolute;left:0;right:0;bottom:0;height:34px;background:repeating-linear-gradient(90deg,transparent 0 58px,rgba(246,240,223,.09) 58px 60px),var(--soot);z-index:3}
+#scr-end .seam{position:absolute;left:50%;top:0;bottom:0;width:6px;margin-left:-3px;background:rgba(0,0,0,.5);box-shadow:2px 0 0 rgba(246,240,223,.08)}
+#scr-end .endwrap{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(18px + env(safe-area-inset-top)) var(--gut) calc(18px + env(safe-area-inset-bottom));overflow-y:auto;gap:14px}
+.poster{position:relative;width:100%;max-width:420px;background:var(--chalk);border:3px solid var(--soot);box-shadow:var(--shadow-lg);padding:22px 20px 18px;text-align:center;transform:rotate(-.8deg);animation:pop .5s cubic-bezier(.3,1.5,.5,1)}
+.poster::before,.poster::after{content:"";position:absolute;top:-8px;width:12px;height:12px;border-radius:50%;background:var(--soot);box-shadow:inset 2px 2px 0 rgba(246,240,223,.4)}
+.poster::before{left:16px}.poster::after{right:16px}
+.poster h2{font:400 36px/1 "Russo One",sans-serif;letter-spacing:.005em}
+.poster p.s{margin-top:8px;font-size:14.5px;color:var(--ink-soft)}
+.grid{margin:16px auto 4px;display:inline-grid;grid-template-columns:auto repeat(3,40px);gap:6px 6px;align-items:center;justify-items:center;text-align:left}
+.grid .lab{justify-self:start;font-size:11px;color:var(--ink-soft);padding-right:8px}
+.cell{width:40px;height:40px;border:2.5px solid var(--soot);background:transparent;display:grid;place-items:center}
+.cell.f{background:var(--soot)}
+.cell.t{background:var(--seen)}
+.cell svg{width:22px;height:22px}
+.cell.p{background:var(--chalk)}
+.gridcap{font-size:11px;color:var(--ink-soft);margin-top:6px}
+.tomorrow{margin-top:14px;border-top:2px dashed var(--soot);padding-top:12px;font-size:15px;font-weight:600;line-height:1.3}
+.tomorrow em{font-style:normal;font-family:"Golos Text",sans-serif;font-size:11px;color:var(--ink-soft);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.endbtns{display:flex;flex-direction:column;gap:9px;width:100%;max-width:420px}
+.endbtns .btn{width:100%;justify-content:space-between}
+.endbtns .row{display:flex;gap:9px}
+.endbtns .row .btn{flex:1}
+.badge{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;background:var(--seen);border:2px solid var(--soot);font:700 12px "Golos Text",sans-serif;padding:0 5px}
+
+/* ---------- ВКЛАДКИ (кодекс / закулисье) ---------- */
+.topnav{position:sticky;top:0;z-index:20;display:flex;gap:6px;align-items:center;padding:calc(8px + env(safe-area-inset-top)) var(--gut) 8px;background:color-mix(in srgb,var(--canvas) 94%,transparent);border-bottom:2px solid var(--soot)}
+.topnav a{font:600 11px "Golos Text",sans-serif;text-transform:uppercase;letter-spacing:.05em;padding:7px 10px;border:2px solid var(--soot);border-radius:3px;background:var(--chalk);color:var(--soot);text-decoration:none;min-height:34px;display:inline-flex;align-items:center}
+.topnav a.cur{background:var(--soot);color:var(--chalk)}
+.topnav .sp{flex:1}
+.wrap{padding:16px var(--gut) calc(40px + env(safe-area-inset-bottom));max-width:1180px;margin:0 auto}
+
+/* ---------- МОЙ КОДЕКС ---------- */
+.cx-head h1{font-size:36px}
+.cx-count{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:11.5px}
+.slots{display:flex;gap:4px;flex:1;max-width:300px}
+.slots i{flex:1;height:12px;border:1.5px solid var(--soot);background:transparent}
+.slots i.on{background:var(--soot)}
+.slots i.new{background:var(--seen)}
+.cx-grid{display:flex;flex-direction:column;gap:18px;margin-top:20px}
+.note{position:relative;background:var(--chalk);border:2px solid var(--soot);box-shadow:var(--shadow);padding:16px 14px 12px 16px;transform:rotate(var(--r,0deg));transition:box-shadow .2s,transform .2s}
+.note:nth-child(odd){--r:-.5deg}.note:nth-child(even){--r:.4deg}
+.note.mine{border-left:9px solid var(--seen)}
+.note.fresh{border-color:var(--seen);border-width:3px;box-shadow:5px 5px 0 var(--soot)}
+.note.fresh::after{content:"НОВАЯ";position:absolute;right:12px;top:-11px;background:var(--seen);border:2px solid var(--soot);font:700 10.5px "Golos Text",sans-serif;padding:1px 7px;transform:rotate(3deg)}
+.note q{display:block;quotes:none;font-size:18px;font-weight:600;line-height:1.25}
+.note .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:11px;flex-wrap:wrap}
+.vst{font-size:11px;border:2px solid var(--soot);padding:2px 8px;border-radius:2px;display:inline-block;transform:rotate(-1.5deg)}
+.vst.modern{border-style:dashed}
+.mini{display:flex;gap:6px;flex-wrap:wrap}
+.mini button{font:600 11px "Golos Text",sans-serif;text-transform:uppercase;letter-spacing:.03em;border:2px solid var(--soot);background:transparent;padding:5px 8px;border-radius:3px;min-height:32px}
+.mini button:active{background:var(--soot);color:var(--chalk)}
+.mini button.on{background:var(--seen)}
+.note .price{margin-top:10px;padding-top:8px;border-top:1px dashed var(--ink-soft);font-size:13.5px;line-height:1.3;color:var(--ink-soft);display:none}
+.note.open .price{display:block}
+.note .moe-st{position:absolute;right:10px;bottom:10px;font:400 18px "Russo One",sans-serif;color:var(--seen);border:3px solid var(--seen);padding:0 7px;transform:rotate(-8deg);display:none}
+.note.mine .moe-st{display:block}
+.note.out{opacity:.5}
+.note.out q{text-decoration:line-through}
+.pickcard{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-soft);cursor:pointer;user-select:none}
+.pickcard input{appearance:none;width:20px;height:20px;border:2px solid var(--soot);background:var(--chalk);display:grid;place-items:center;border-radius:3px}
+.pickcard input:checked{background:var(--seen)}
+.pickcard input:checked::after{content:"✓";font-weight:700;font-size:14px;line-height:1}
+.empty{border:2px dashed var(--ink-soft);border-radius:3px;min-height:56px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink-soft)}
+.cross{position:relative;margin:-4px 0;display:flex;align-items:center;gap:10px;padding:0 4px}
+.cross svg{width:56px;height:60px;flex:none}
+.cross .ct{flex:1;font-size:14px;line-height:1.3}
+.cross .ct b{display:block;font-size:11px;color:var(--ink-soft);font-weight:600;margin-bottom:2px}
+.cross .btn{min-height:40px;font-size:13.5px;padding:0 12px;box-shadow:3px 3px 0 var(--soot)}
+.fork{background:var(--chalk);border:2px dashed var(--soot);padding:12px 14px;margin-top:6px;animation:pop .35s}
+.fork p{font-size:14.5px;line-height:1.3;font-weight:600}
+.fork .fo{display:flex;gap:8px;margin-top:10px}
+.fork .fo .btn{flex:1;min-height:44px;font-size:14px;padding:0 6px;box-shadow:3px 3px 0 var(--soot)}
+.fork .res{margin-top:10px;font-size:13.5px;font-style:italic;color:var(--ink-soft)}
+.basket{margin-top:12px;font-size:12px;color:var(--ink-soft)}
+.basket button{text-decoration:underline;font-weight:600;color:var(--soot)}
+.cside{margin-top:30px}
+.cside h2{font:400 26px/1 "Russo One",sans-serif}
+.cside .cap{margin-top:5px;font-size:13.5px;color:var(--ink-soft)}
+.sharecard{position:relative;margin:16px auto 0;width:min(100%,258px);aspect-ratio:9/16;background:var(--canvas);border:3px solid var(--soot);box-shadow:var(--shadow-lg);padding:12px 12px 10px;display:flex;flex-direction:column;gap:7px;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent 0 21px,rgba(28,20,17,.08) 21px 22px)}
+.sharecard .sc-top{display:flex;justify-content:space-between;align-items:center;font-size:9.5px;color:var(--ink-soft)}
+.sharecard h3{font:400 24px/1 "Russo One",sans-serif;margin-top:2px}
+.sharecard .sc-n{flex:1;display:flex;flex-direction:column;justify-content:center;gap:11px}
+.sc-note{background:var(--chalk);border:2px solid var(--soot);box-shadow:3px 3px 0 var(--soot);padding:8px 9px 7px;transform:rotate(var(--r,0deg));font-size:12.5px;font-weight:600;line-height:1.22}
+.sc-note:nth-child(1){--r:-1.2deg}.sc-note:nth-child(2){--r:.9deg}.sc-note:nth-child(3){--r:-.5deg}
+.sc-note .vst{font-size:8.5px;margin-top:5px;padding:1px 5px;display:inline-block}
+.sc-note.blank{border-style:dashed;box-shadow:none;background:transparent;color:var(--ink-soft);font-weight:500}
+.sharecard .sc-foot{font-size:9px;color:var(--ink-soft);display:flex;justify-content:space-between}
+.sharebtns{display:flex;gap:9px;margin-top:16px;justify-content:center}
+.sharebtns .btn{min-height:42px;font-size:14px;box-shadow:3px 3px 0 var(--soot);padding:0 12px}
+.cmp{margin-top:26px;background:var(--chalk);border:2px solid var(--soot);box-shadow:var(--shadow);padding:14px 14px 12px}
+.cmp h3{font:400 22px/1 "Russo One",sans-serif}
+.cmp .cap{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+.cmp .grp{margin-top:12px}
+.cmp .grp h4{font-size:10.5px;display:flex;justify-content:space-between;color:var(--ink-soft);margin-bottom:6px;border-bottom:1px dashed var(--ink-soft);padding-bottom:3px}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.cmp li{font-size:14px;line-height:1.25;font-weight:600;padding-left:14px;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:6px;width:7px;height:7px;background:var(--soot)}
+.cmp .g-same li::before{background:var(--seen);border:1.5px solid var(--soot)}
+.cmp .g-diff li::before{background:var(--lamp);border:1.5px solid var(--soot)}
+.cmp .ask{margin-top:10px;background:var(--canvas);border:2px dashed var(--soot);padding:8px 10px;font-size:13.5px;font-weight:600}
+.cmp .ask i{font-style:normal;font-family:"Golos Text",sans-serif;font-size:10.5px;display:block;color:var(--ink-soft);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.localnote{margin-top:22px;font-size:12.5px;color:var(--ink-soft);display:flex;gap:8px;align-items:flex-start;line-height:1.35}
+.localnote svg{flex:none;width:20px;height:20px}
+
+/* ---------- ЗАКУЛИСЬЕ ---------- */
+.bs-band{position:relative;background:var(--canvas-dk);border-bottom:2px solid var(--soot);padding:0 0 0;overflow:hidden}
+.bs-band::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+   linear-gradient(35deg,transparent 48.6%,rgba(28,20,17,.5) 49% 51%,transparent 51.4%) 0 0/160px 100%,
+   linear-gradient(-35deg,transparent 48.6%,rgba(28,20,17,.5) 49% 51%,transparent 51.4%) 80px 0/160px 100%,
+   repeating-linear-gradient(90deg,transparent 0 79px,rgba(28,20,17,.45) 79px 83px)}
+.bs-band .bs-in{position:relative;max-width:1180px;margin:0 auto;padding:16px var(--gut) 0}
+.bs-band h1{font-size:38px}
+.bs-quote{position:relative;margin-top:14px;background:var(--chalk);border:2px solid var(--soot);box-shadow:var(--shadow);padding:12px 14px 12px;max-width:560px;transform:rotate(-.4deg)}
+.bs-quote .who{font-size:11px;color:var(--ink-soft);margin-bottom:3px}
+.bs-quote q{display:block;quotes:none;font-size:18px;font-weight:600;line-height:1.25}
+.bs-quote .tape{position:absolute;right:12px;top:-11px;background:var(--seen);border:2px solid var(--soot);font-size:10.5px;padding:1px 8px;transform:rotate(2deg)}
+.bs-rig{display:block;width:100%;height:auto;margin-top:6px}
+.score{display:flex;align-items:center;gap:12px;margin:18px 0 6px;padding:10px 12px;background:var(--chalk);border:2px dashed var(--soot);font-size:14px;line-height:1.3}
+.score b{font:400 30px/1 "Russo One",sans-serif;color:var(--seen);-webkit-text-stroke:1.2px var(--soot);white-space:nowrap}
+.hooks{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+.hook{position:relative;background:var(--chalk);border:2px solid var(--soot);box-shadow:var(--shadow);padding:12px 14px 12px 54px;transition:opacity .25s,background .25s}
+.hook .no{position:absolute;left:-2px;top:-2px;bottom:-2px;width:40px;background:var(--soot);color:var(--chalk);display:grid;place-items:center;font:700 16px "Golos Text",sans-serif;border:2px solid var(--soot)}
+.hook .no::after{content:"";position:absolute;right:-6px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--chalk);border:2px solid var(--soot)}
+.hook h3{font:400 21px/1.05 "Russo One",sans-serif}
+.hook .tt{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.hook p{margin-top:6px;font-size:14.5px;line-height:1.32}
+.hook .cnt{margin-top:7px;font-size:11px;color:var(--ink-soft)}
+.hook .eff{margin-top:6px;font-size:12.5px;color:var(--ink-soft)}
+.hook.off{background:color-mix(in srgb,var(--canvas) 70%,var(--chalk));}
+.hook.off h3,.hook.off p{opacity:.55}
+.sw{flex:none;position:relative;width:56px;height:32px;border:2.5px solid var(--soot);border-radius:16px;background:var(--chalk);transition:background .15s}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:21px;height:21px;border-radius:50%;background:var(--soot);transition:transform .18s cubic-bezier(.3,1.6,.5,1)}
+.sw[aria-checked="true"]{background:var(--seen)}
+.sw[aria-checked="true"]::after{transform:translateX(24px)}
+.instead{margin-top:22px;background:var(--soot);color:var(--chalk);padding:18px 18px 20px;border:2px solid var(--soot);position:relative;box-shadow:var(--shadow)}
+.instead h2{font:400 26px/1.05 "Russo One",sans-serif;color:var(--lamp)}
+.instead p{margin-top:8px;font-size:15.5px;line-height:1.38}
+.instead .t{margin-top:12px;border-top:1px dashed rgba(246,240,223,.4);padding-top:10px;font-size:14px;color:rgba(246,240,223,.82)}
+
+/* ---------- десктоп ---------- */
+@media (min-width:900px){
+  :root{--gut:32px}
+  body{font-size:16px}
+  .app{max-width:none}
+  h1{font-size:46px;margin-top:8px}
+  .sub{font-size:16px}
+  .kick{font-size:12px}
+  #scr-play.on{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"head" "stage" "hand"}
+  body.has-info #scr-play.on{grid-template-columns:minmax(0,1fr) 400px;grid-template-areas:"head side" "stage side" "hand side"}
+  #scr-play .head{grid-area:head}
+  #scr-play .stage{grid-area:stage;min-height:0}
+  #scr-play .say{grid-area:stage;align-self:center;justify-self:start;margin:0 0 0 calc(50% + 150px);width:330px;z-index:8}
+  #scr-play .say::before{left:-10px;top:50%;margin-top:-8px;transform:rotate(-45deg);border-right:0;border-bottom:0}
+  body.has-info #scr-play .say{grid-area:auto;margin:0;width:auto;align-self:auto;justify-self:auto}
+  body.has-info #scr-play .say::before{left:34px;top:-10px;margin-top:0;transform:rotate(45deg);border-right:2px solid transparent;border-bottom:0}
+  #scr-play .hand{grid-area:hand;padding:8px 32px 20px}
+  #scr-play .side{grid-area:side;display:contents;flex-direction:column;gap:20px;padding:40px 32px 28px 28px;border-left:2px solid var(--soot);background:var(--canvas);position:relative;z-index:8;box-shadow:-6px 0 0 rgba(28,20,17,.1)}
+  body.has-info #scr-play .side{display:flex}
+  body.has-info #scr-play .say{order:-1}
+  body.has-info #scr-play .info{display:block;padding:16px 0 0}
+  body.has-info .info{animation:none}
+  .gauge{font-size:12px}.gauge i{height:16px}
+  .lamp{font-size:15px}
+  .valance{height:40px}.valance::after{height:15px;background-size:34px 15px;background-image:radial-gradient(circle at 50% 0,var(--velvet) 0 15px,transparent 15.6px)}
+  .fresnel{left:5vw;top:26px;width:52px;height:44px}
+  .wing{width:clamp(30px,5vw,80px)}
+  .say q{font-size:21px}.say .who{font-size:12px}
+  :root{--handh:272px}
+  .cards{gap:16px;padding-top:30px}
+  .card{flex:0 1 178px;max-height:242px;padding:12px 12px 12px 13px;border-radius:8px}
+  .cname{font-size:21px}
+  .cico{height:62px;margin:10px 0 8px}
+  .creply{font-size:18px}
+  body.has-info .log{display:block;border-top:2px solid var(--soot);padding-top:14px}
+  .log h4{font-size:11.5px;color:var(--ink-soft);margin-bottom:10px}
+  .log ol{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .log li{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed rgba(28,20,17,.35);padding-bottom:6px;font:600 12.5px "Golos Text",sans-serif;text-transform:uppercase;letter-spacing:.03em}
+  .log li.dim{color:var(--ink-soft)}
+  .stampbtn{font-size:46px;padding:14px 30px 12px}
+
+  /* чат на десктопе: слева сцена, справа телефон */
+  #scr-chat.on{display:grid;grid-template-columns:minmax(0,1fr) 440px;grid-template-rows:auto 8px minmax(0,1fr) auto;grid-template-areas:"head head" "bar bar" "zone zone" "tray tray"}
+  #scr-chat .head{grid-area:head}
+  #scr-chat .lightbar{grid-area:bar}
+  #scr-chat .chatzone{grid-area:zone;grid-template-columns:minmax(0,1fr) 400px;display:grid;gap:40px;padding:10px 6vw 0 0}
+  #scr-chat .tray{grid-area:tray;max-width:880px;width:100%;margin:0 auto}
+  .minstage{display:block;position:relative;overflow:hidden;border-right:2px solid var(--soot)}
+  .minstage .rig{z-index:3}
+  .phonewrap{justify-self:center;max-width:400px}
+  .msg{font-size:16px}
+  .opt{font-size:18px;min-height:64px}
+  .reveal h3{font-size:28px}.reveal p{font-size:16px}
+  .center-col{max-width:680px;padding-bottom:40px}
+  #scr-pillar .center-col,#scr-verdict .center-col{min-height:100%;display:flex;flex-direction:column;justify-content:center;padding-top:20px}
+  #scr-pillar .head,#scr-verdict .head{padding-top:36px}
+  .frame .val{height:30px}
+  .slip{font-size:19px}
+  .bignote{max-width:560px;padding:38px 32px 28px}
+  .bignote q{font-size:32px}
+  .actions .btn{min-height:72px;font-size:17px}
+  #scr-end .poster{max-width:560px;padding:30px 30px 24px}
+  #scr-end .poster h2{font-size:52px}
+  #scr-end .poster p.s{font-size:17px}
+  #scr-end .cell{width:52px;height:52px}
+  #scr-end .grid{grid-template-columns:auto repeat(3,52px);gap:8px}
+  #scr-end .tomorrow{font-size:18px}
+  .endbtns{max-width:560px}
+  .wrap{padding:28px 40px 60px}
+  .cx-head h1{font-size:54px}
+  .cx-wrap{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:56px;align-items:start}
+  .cx-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 22px;align-items:stretch}
+  .cx-grid .cross,.cx-grid .span2{grid-column:1/-1}
+  .cside{margin-top:0;position:sticky;top:76px}
+  .hooks{grid-template-columns:1fr 1fr;gap:18px 22px}
+  .bs-band h1{font-size:54px}
+  .bs-band .bs-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:0 40px;align-items:end;padding-top:24px}
+  .bs-band .bs-in .ttl{grid-column:1}
+  .bs-band .bs-in .bs-rig{grid-column:2;grid-row:1/3;margin:0}
+  .bs-quote{align-self:start}
+}
+@media (min-width:1280px){
+  .card{flex-basis:200px;max-height:270px}
+}
+@media (max-height:700px) and (max-width:899px){
+  h1{font-size:25px}.sub{font-size:13.5px}
+  :root{--handh:calc(min(28vh,170px) + 18px)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

@@ -1,0 +1,347 @@
+/* «Не По Сценарию» · перенос в стиль «как Brawl Stars», часть 2 · поток A:
+   общий мир служебных экранов, главный экран, Дело 2 «Должок», настройки, Закулисье.
+   Задание — look/BRIEF-PORT-2.md. Подключается после brawl.css. Поток B пишет в brawl3.css.
+   Три материала (значения едины с brawl3.css): ПАНЕЛЬ (тёмная), КАРТА (светлая), СЛОТ (пусто / закрыто). */
+
+/* ======================================================================
+   1. ОБЩИЙ МИР: фон «меню», шапка, вкладки, подписи, нижняя строка
+   Правила действуют и на #scr-codex, #scr-bestiary (их внутренности — в brawl3.css).
+   ====================================================================== */
+body.dk.dk :is(#scr-home, #scr-settings, #scr-codex, #scr-bestiary, #scr-backstage).screen:not(#scr-play):not(#scr-honest) {
+  background:
+    radial-gradient(120% 55% at 50% 0%, rgba(74, 134, 255, .38), rgba(74, 134, 255, 0) 70%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, .04) 0 22px, rgba(255, 255, 255, 0) 22px 44px),
+    linear-gradient(180deg, #2a2f9e 0%, #1a2760 46%, #121b4a 100%);
+}
+/* Дело 2 — действие в чате гаража: обложка Дела (пока файла нет — виден гараж) под затемнением */
+body.dk.dk #scr-day2.screen:not(#scr-play):not(#scr-honest) {
+  background:
+    linear-gradient(180deg, rgba(10, 18, 52, .88), rgba(10, 18, 52, .94)),
+    url("art/d2-cover.webp") 86% center / cover no-repeat fixed,
+    url("art/garage.webp") 86% center / cover no-repeat fixed,
+    var(--night);
+}
+body.dk :is(#scr-home, #scr-settings, #scr-backstage, #scr-day2) .wrap { color: #fff; }
+
+/* шапка приложения: одно семейство тёмных кнопок — «Если тяжело», огонёк, поиск, профиль */
+body.dk .appbar .ab-r { gap: 8px; }
+body.dk .appbar .helpb, body.dk .appbar .flame, body.dk .appbar .lupa, body.dk .appbar .gear {
+  border: 2px solid rgba(255, 255, 255, .45); background-color: rgba(18, 30, 80, .78); background-image: none; box-shadow: 0 3px 0 var(--ink); color: #fff;
+  transition: transform .09s ease-out, box-shadow .09s ease-out;
+}
+body.dk .appbar .helpb {
+  min-height: 44px; padding: 0 10px 0 26px; border-radius: 999px; white-space: nowrap; text-transform: none; letter-spacing: 0;
+  font: 650 12.5px/1 "Golos Text", sans-serif; -webkit-text-stroke: 0; text-shadow: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 14s-5.6-3.4-5.6-7.3C2.4 4.6 3.9 3 5.7 3c1 0 1.8.5 2.3 1.3C8.5 3.5 9.3 3 10.3 3c1.8 0 3.3 1.6 3.3 3.7C13.6 10.6 8 14 8 14z' fill='%23ff8fb8'/></svg>");
+  background-repeat: no-repeat; background-position: 9px 50%; background-size: 14px;
+}
+@media (max-width: 420px) { body.dk .appbar .ab-r { gap: 5px; } body.dk .appbar .lupa, body.dk .appbar .gear { width: 42px; height: 42px; } body.dk .appbar .helpb { font-size: 12px; } body.dk .brand { font-size: 13.5px; } body.dk .appbar .flame { padding: 0 8px 0 6px; } }
+body.dk .appbar .flame { min-height: 44px; border-radius: 999px; }
+body.dk .appbar .flame b { color: #fff; font: 400 15px "Russo One", sans-serif; }
+body.dk .appbar .flame .trace { color: rgba(255, 255, 255, .8); opacity: 1; font-size: 9px; }
+body.dk .appbar .lupa, body.dk .appbar .gear { width: 44px; height: 44px; border-radius: 50%; }
+body.dk .appbar .lupa svg, body.dk .appbar .gear svg { filter: brightness(0) invert(1); }
+body.dk .appbar .lupa[aria-pressed="true"] { background-image: none; background-color: var(--green-2); background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+body.dk .appbar .lupa[aria-pressed="true"] svg, body.dk .appbar .gear.cur svg { filter: none; }
+body.dk .appbar .gear.cur { background-color: var(--yellow); background: linear-gradient(180deg, #fff08a, var(--yellow-2)); }
+body.dk .appbar .gear.cur svg * { stroke: var(--ink); }
+body.dk .appbar :is(.helpb, .lupa, .gear, .flame):active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+body.dk .brand { font-size: 15px; }
+/* вкладки: активная жёлтая, остальные синие — из brawl.css; тут только лента-подложка и «лупа включена» */
+body.dk .tabs a { min-height: 40px; display: grid; place-items: center; padding: 6px; }
+body.dk .lupastrip { background: linear-gradient(180deg, #8bff8a, var(--green-2)); color: var(--ink); border-top: 3px solid var(--ink); font: 800 11.5px "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; padding: 6px 0 7px; }
+body.dk .lupastrip b { font: 400 14px "Russo One", sans-serif; }
+
+/* подписи и нижняя строка по фону: светлые, не серые */
+body.dk :is(#scr-home, #scr-settings, #scr-codex, #scr-bestiary, #scr-backstage) :is(.weeknote, .fineprint, .lgnote, .pocketnote, .sub:not(.narr), .cmpsum, .lp-score, .lp-tomorrow) { color: rgba(255, 255, 255, .8); }
+body.dk .fineprint { font: 600 11.5px/1.35 "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; margin-top: 24px; padding: 0 8px; }
+/* заголовки разделов — как в первой сессии, без наклона */
+body.dk :is(.sect, .pocketcard h3, .instead h2, .help b) { font: 400 21px/1.05 "Russo One", sans-serif; text-transform: none; color: #fff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); letter-spacing: 0; }
+body.dk .sect { margin-top: 28px; margin-bottom: 4px; }
+/* материалы */
+body.dk :is(.tile, .srw, .stats div, .trap, .score, .pocketcard, .help, .instead) {
+  background: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96)); border: 3px solid var(--ink); border-radius: 16px; color: #fff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink), 0 12px 18px -8px rgba(0, 0, 0, .5);
+}
+body.dk .tile { animation: cardUp .35s var(--ease-out) both; }
+@keyframes cardUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ======================================================================
+   2. ГЛАВНЫЙ ЭКРАН
+   ====================================================================== */
+body.dk .wrap.home { max-width: 720px; padding-top: 16px; }
+
+/* лента дней — жетоны тропы: число в круге, день над ним, режим под ним */
+body.dk .week { gap: 3px; align-items: start; margin-top: 2px; }
+body.dk .week li { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 0; border: 0; background: none; box-shadow: none; transform: none; opacity: 1; min-width: 0; }
+body.dk .week li .mono { order: 1; font: 400 10.5px/1 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; color: rgba(255, 255, 255, .85); }
+body.dk .week li .gd {
+  order: 2; display: grid; place-items: center; width: 36px; height: 36px; margin: 0; border-radius: 50%; border: 3px solid var(--ink);
+  font: 400 17px/1 "Russo One", sans-serif; color: #cfd8ff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; letter-spacing: 0;
+  background: radial-gradient(circle at 50% 18%, rgba(255, 255, 255, .3) 0, rgba(255, 255, 255, 0) 45%), linear-gradient(180deg, #55609e, #38427f); box-shadow: 0 3px 0 var(--ink);
+}
+body.dk .week li b { order: 3; font: 400 10px/1.1 "Russo One", sans-serif; color: rgba(255, 255, 255, .82); -webkit-text-stroke: 0; text-align: center; white-space: nowrap; }
+body.dk .week li:has(~ li.today) .gd, body.dk .week li:has(~ li.today):not(.rest) .gd { color: #fff; background: radial-gradient(circle at 50% 18%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 45%), linear-gradient(180deg, #8bff8a, var(--green-2)); }
+body.dk .week li.today .gd { width: 44px; height: 44px; font-size: 21px; margin: -4px 0 -2px; color: #fff; background: radial-gradient(circle at 50% 18%, rgba(255, 255, 255, .7) 0, rgba(255, 255, 255, 0) 45%), linear-gradient(180deg, var(--yellow), var(--yellow-2)); animation: hopPin 1.5s var(--ease-out) infinite; }
+body.dk .week li.today .mono, body.dk .week li.today b { color: var(--yellow); }
+body.dk .week li.rest .gd { width: 36px; height: 36px; background: rgba(255, 255, 255, .06); border: 2px dashed rgba(255, 255, 255, .34); box-shadow: none; }
+body.dk .week li.rest .gd::before { content: "z"; font: 400 15px "Russo One", sans-serif; color: rgba(255, 255, 255, .6); -webkit-text-stroke: 0; }
+body.dk .week li.rest b { color: rgba(255, 255, 255, .7); }
+body.dk .weeknote { margin-top: 12px; font: 600 12px/1.35 "Golos Text", sans-serif; text-align: center; text-transform: none; }
+
+/* карточка Дела — афиша: арт сверху (обложка Дела 2, пока файла нет — гараж), низ уходит в затемнение */
+body.dk .todaycard {
+  position: relative; overflow: hidden; margin-top: 18px; padding: 82px 14px 16px; isolation: isolate; text-align: left;
+  background: linear-gradient(180deg, rgba(36, 52, 130, .98), rgba(22, 34, 96, .98)); border: 3px solid var(--ink); border-radius: 18px; color: #fff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 5px 0 var(--ink), 0 16px 22px -8px rgba(0, 0, 0, .55);
+  animation: cardUp .4s var(--ease-out) both;
+}
+body.dk .todaycard::before {
+  content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; height: 168px;
+  background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
+    url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 45%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 45%, transparent 100%);
+}
+body.dk .todaycard.wait::before { filter: saturate(.55) brightness(.8); }
+body.dk .todaycard.wait::after {
+  content: ""; position: absolute; z-index: 0; right: 14px; top: 14px; width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--ink);
+  background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect x='5' y='10.5' width='14' height='10' rx='2.5' fill='%23ffc61a' stroke='%230b1633' stroke-width='2'/><path d='M8 10.5V8a4 4 0 0 1 8 0v2.5' fill='none' stroke='%230b1633' stroke-width='2' stroke-linecap='round'/><circle cx='12' cy='15.5' r='1.5' fill='%230b1633'/></svg>") center / 26px no-repeat; box-shadow: 0 3px 0 var(--ink);
+}
+body.dk .todaycard .kick { position: absolute; left: 14px; top: 14px; margin: 0; max-width: calc(100% - 80px); }
+body.dk .todaycard .kick > span:last-child {
+  display: inline-block; padding: 4px 9px 3px; border: 2.5px solid var(--ink); border-radius: 8px; box-shadow: 0 2px 0 var(--ink); rotate: -2deg;
+  background: linear-gradient(180deg, #fff08a, var(--yellow) 45%, var(--yellow-2)); color: var(--ink); font: 400 11px/1.1 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; text-shadow: none; -webkit-text-stroke: 0;
+}
+body.dk .todaycard .kick .dot { display: none; }
+body.dk .todaycard h1 { font-size: 36px; line-height: .98; margin: 0 0 8px; rotate: -1.2deg; -webkit-text-stroke: 7px var(--ink); }
+body.dk .todaycard.wait h1 { font-size: 26px; margin-top: 0; max-width: calc(100% - 60px); }
+body.dk .todaycard .sub { margin: 2px 0 0; color: rgba(255, 255, 255, .92); font: 600 14.5px/1.35 "Golos Text", sans-serif; text-wrap: pretty; text-shadow: 0 1px 0 var(--ink); }
+body.dk .todaycard .narr { margin-top: 10px; }
+body.dk .todaycard .tc-act { margin-top: 16px; gap: 12px; align-items: stretch; }
+body.dk .todaycard .tc-act .btn { margin-bottom: 6px; }
+body.dk .todaycard:not(.wait) .tc-act .btn { width: 100%; min-height: 62px; font: 400 26px/1 "Russo One", sans-serif; -webkit-text-stroke: 6px var(--ink); text-shadow: 0 3px 0 var(--ink); letter-spacing: .02em; }
+body.dk .todaycard .tc-act .btn.seen::after { display: none; }
+body.dk .todaycard.wait .tc-act .btn { flex: 1 1 140px; }
+/* ожидание: «На сегодня всё…» — слот «место свободно», пузырь Тимура/Лёвы — светлая карта */
+body.dk .todaycard.wait .narr { background: rgba(255, 255, 255, .06); border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; color: rgba(255, 255, 255, .86); box-shadow: none; font-weight: 600; }
+body.dk .waitbub { margin-top: 14px; padding: 16px 14px 9px; max-width: 100%; position: relative; background: linear-gradient(180deg, #fff, var(--cream)); color: var(--ink); border: 3px solid var(--ink); border-radius: 6px 18px 18px 18px; box-shadow: inset 0 -3px 0 rgba(11, 22, 51, .08), 0 5px 0 var(--ink); font: 700 16px/1.3 "Golos Text", sans-serif; }
+body.dk .waitbub b {
+  position: absolute; left: 10px; top: -13px; margin: 0; padding: 3px 9px 2px; border-radius: 8px; rotate: -3deg; font: 400 11px/1 "Russo One", sans-serif; letter-spacing: .03em; text-transform: none; color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill;
+  background: linear-gradient(180deg, var(--blue), var(--blue-2)); border: 2.5px solid var(--ink); box-shadow: 0 2px 0 var(--ink);
+}
+
+/* плитки — панели, нажимается вся */
+body.dk .tiles { gap: 14px; margin-top: 20px; }
+body.dk .tile { padding: 12px 13px 14px; min-height: 96px; text-decoration: none; transition: transform .09s ease-out, box-shadow .09s ease-out; }
+body.dk .tile b { font: 400 19px/1.08 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); letter-spacing: .01em; }
+body.dk .tile span { color: rgba(255, 255, 255, .92); font: 600 13px/1.32 "Golos Text", sans-serif; margin-top: 6px; }
+body.dk .tile:active { transform: translateY(4px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 0 0 var(--ink); }
+body.dk .tile:hover { filter: brightness(1.08); }
+
+/* «Всё ещё твоё?» — панель; вывод внутри — карта */
+body.dk .pocketcard { margin-top: 20px; padding: 14px 12px 14px; border-style: solid; }
+body.dk .pocketcard .pcs { gap: 14px; margin-top: 14px; }
+body.dk .pocketcard .pc { display: block; position: relative; padding: 16px 12px 12px; border: 3px solid var(--ink); border-radius: 14px; color: var(--ink); background: linear-gradient(180deg, #fff, var(--cream)); box-shadow: inset 0 -3px 0 rgba(11, 22, 51, .08), 0 4px 0 var(--ink); font: 700 15px/1.3 "Golos Text", sans-serif; }
+body.dk .pocketcard .pc > i { position: absolute; left: 12px; top: -10px; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--ink); box-shadow: 0 2px 0 var(--ink); }
+body.dk .pocketcard .pc small { display: inline-block; margin-top: 8px; padding: 2px 8px 1px; border: 2.5px solid var(--ink); border-radius: 8px; background: var(--tc, var(--blue)); color: var(--ink); font: 400 11px/1.1 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; box-shadow: 0 2px 0 var(--ink); }
+body.dk .pocketcard .pcb { display: flex; gap: 10px; margin-top: 12px; }
+body.dk .pocketcard .pcb button { flex: 1; min-height: 48px; border: 3px solid var(--ink); border-radius: 14px; color: #fff; font: 400 16px/1 "Russo One", sans-serif; text-transform: none; letter-spacing: .01em; -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); position: relative; transition: transform .09s ease-out, box-shadow .09s ease-out; }
+body.dk .pocketcard .pcb button[data-pk="keep"] { background: linear-gradient(180deg, #8bff8a 0%, var(--green) 30%, var(--green-2) 100%); box-shadow: 0 5px 0 0 var(--green-lip), 0 5px 0 3px var(--ink); }
+body.dk .pocketcard .pcb button[data-pk="out"] { background: linear-gradient(180deg, #55609e, #38427f 55%, #2a3366); box-shadow: 0 5px 0 0 #1a2050, 0 5px 0 3px var(--ink); }
+body.dk .pocketcard .pcb button:active { transform: translateY(4px); box-shadow: 0 1px 0 0 var(--ink), 0 1px 0 3px var(--ink); }
+body.dk .pocketcard .pcb { margin-bottom: 6px; }
+
+@media (min-width: 900px) {
+  body.dk .wrap.home { max-width: 760px; padding-top: 22px; }
+  body.dk .week li .gd { width: 42px; height: 42px; font-size: 19px; }
+  body.dk .week li.today .gd { width: 52px; height: 52px; font-size: 24px; }
+  body.dk .week li .mono { font-size: 12px; } body.dk .week li b { font-size: 11.5px; }
+  body.dk .todaycard { padding: 120px 22px 22px; }
+  body.dk .todaycard::before { height: 230px; }
+  body.dk .todaycard .kick { left: 22px; top: 20px; }
+  body.dk .todaycard .kick > span:last-child { font-size: 13px; padding: 5px 11px 4px; }
+  body.dk .todaycard h1 { font-size: 54px; -webkit-text-stroke-width: 9px; }
+  body.dk .todaycard.wait h1 { font-size: 36px; }
+  body.dk .todaycard .sub { font-size: 17px; }
+  body.dk .todaycard:not(.wait) .tc-act .btn { font-size: 32px; min-height: 72px; max-width: 560px; margin-inline: auto; }
+  body.dk .tile b { font-size: 24px; } body.dk .tile span { font-size: 15px; }
+  body.dk .waitbub { font-size: 19px; }
+}
+
+/* ======================================================================
+   3. НАСТРОЙКИ, «ДЛЯ ВЗРОСЛЫХ», СКРЫТЫЙ УРОВЕНЬ
+   ====================================================================== */
+body.dk .wrap.set { max-width: 680px; }
+body.dk .setlist { gap: 14px; margin-top: 16px; }
+body.dk .srw { padding: 13px 14px 14px; gap: 14px; }
+body.dk .srw b { font: 400 18px/1.1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
+body.dk .srw span { color: rgba(255, 255, 255, .92); font: 600 14px/1.35 "Golos Text", sans-serif; }
+body.dk .srw strong { color: #fff; font-weight: 800; }
+body.dk .srw.block { flex-wrap: wrap; }
+body.dk .srw .btn { min-height: 48px; width: auto; }
+body.dk .srw.block:has(> .btn), body.dk .srw.block:has(> div + .btn) { }
+body.dk a.srw.link { transition: transform .09s ease-out, box-shadow .09s ease-out; }
+body.dk a.srw.link:active { transform: translateY(4px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 0 0 var(--ink); }
+body.dk .srw .arr { color: var(--yellow); font: 400 26px "Russo One", sans-serif; }
+body.dk .adults summary { font: 400 18px/1.1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); min-height: 44px; }
+body.dk .adults summary::marker { color: var(--yellow); }
+body.dk .adults p { color: rgba(255, 255, 255, .92); font: 550 14px/1.4 "Golos Text", sans-serif; margin-top: 10px; text-wrap: pretty; }
+body.dk .adults-meta { margin-top: 14px; padding: 10px 12px; background: rgba(255, 255, 255, .06); border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; color: rgba(255, 255, 255, .9); font: 600 12.5px/1.7 "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; }
+body.dk .adults-meta b { color: #fff; font: 800 12.5px "Golos Text", sans-serif; }
+
+/* переключатель: паз с вмятиной и круглая кнопка; включено — зелёный */
+body.dk .sw { position: relative; width: 66px; height: 38px; flex: none; border: 3px solid var(--ink); border-radius: 19px; background: #0a1230; box-shadow: inset 0 3px 5px rgba(0, 0, 0, .6); transition: background .15s; }
+body.dk .sw::before { content: ""; position: absolute; inset: -8px -4px; }
+body.dk .sw::after { left: 3px; top: 3px; width: 26px; height: 26px; border: 3px solid var(--ink); background: radial-gradient(circle at 50% 22%, #fff 0, #dfe6ff 60%, #aab8f0 100%); box-shadow: 0 2px 0 var(--ink); transition: transform .18s var(--ease-snap); }
+body.dk .sw[aria-checked="true"] { background: linear-gradient(180deg, #2bd45a, var(--green-2)); box-shadow: inset 0 3px 5px rgba(0, 60, 20, .5); }
+body.dk .sw[aria-checked="true"]::after { transform: translateX(28px); }
+body.dk .sw:active::after { width: 30px; }
+
+/* ======================================================================
+   4. ЗАКУЛИСЬЕ, «ЧТО ЭТО БЫЛО»
+   ====================================================================== */
+body.dk .bs-band { background: none; border-bottom: 0; overflow: visible; }
+body.dk .bs-band::before { display: none; }
+body.dk .bs-band .bs-in { padding-top: 16px; }
+body.dk .bs-band h1 { margin-bottom: 10px; }
+body.dk .bs-quote { margin-top: 12px; padding: 20px 14px 12px; transform: none; max-width: 560px; }
+body.dk .bs-quote .tape { right: 12px; top: -14px; background: linear-gradient(180deg, #8bff8a, var(--green-2)); color: #fff; border: 2.5px solid var(--ink); border-radius: 8px; padding: 3px 9px 2px; font: 400 11px/1.1 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; -webkit-text-stroke: 2.4px var(--ink); paint-order: stroke fill; box-shadow: 0 2px 0 var(--ink); rotate: 2deg; }
+body.dk .bs-quote .who { color: var(--blue-2); font: 400 11.5px "Russo One", sans-serif; text-transform: none; letter-spacing: 0; margin-bottom: 3px; }
+body.dk .bs-quote q { font: 700 16.5px/1.3 "Golos Text", sans-serif; color: var(--ink); }
+body.dk .bs-rig { display: block; width: 100%; height: auto; margin-top: 14px; padding: 10px 10px 4px; box-sizing: border-box; border: 3px solid var(--ink); border-radius: 16px; background: linear-gradient(180deg, #fff, var(--cream)); box-shadow: inset 0 -3px 0 rgba(11, 22, 51, .08), 0 5px 0 var(--ink); }
+body.dk .score { padding: 12px 14px 13px; margin-top: 4px; }
+body.dk .score b { display: block; font: 400 30px/1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 6px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); }
+body.dk .score span { display: block; margin-top: 6px; color: rgba(255, 255, 255, .92); font: 600 14px/1.38 "Golos Text", sans-serif; }
+body.dk .traps { gap: 14px; margin-top: 18px; }
+body.dk .trap { padding: 12px 14px 13px; grid-template-columns: 22px minmax(0, 1fr); gap: 11px; }
+body.dk .trap .tdot { width: 20px; height: 20px; margin-top: 2px; border: 3px solid var(--ink); background: #55609e; box-shadow: 0 2px 0 var(--ink); }
+body.dk .trap.caught .tdot { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+body.dk .trap.open .tdot { background: linear-gradient(180deg, #fff08a, var(--yellow-2)); }
+body.dk .trap.revealed .tdot { background: linear-gradient(180deg, #ff8a7a, var(--red)); }
+body.dk .trap b { font: 400 17px/1.15 "Russo One", sans-serif; color: #fff; }
+body.dk .trap em { display: inline-block; margin: 6px 0 6px; padding: 2px 8px 1px; border: 2.5px solid var(--ink); border-radius: 8px; box-shadow: 0 2px 0 var(--ink); background: linear-gradient(180deg, #8ab6ff, var(--blue-2)); color: #fff; font: 400 10.5px/1.2 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill; }
+body.dk .trap.caught em { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+body.dk .trap p { color: rgba(255, 255, 255, .94); font: 550 14px/1.4 "Golos Text", sans-serif; }
+body.dk .trap small { color: rgba(255, 255, 255, .78); font: 650 11.5px/1.35 "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; }
+body.dk .trap.later { opacity: 1; background: rgba(255, 255, 255, .06); border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; box-shadow: none; color: rgba(255, 255, 255, .8); }
+body.dk .trap.later b { color: rgba(255, 255, 255, .85); }
+body.dk .trap.later em { background: none; border-color: rgba(255, 255, 255, .34); box-shadow: none; color: rgba(255, 255, 255, .78); -webkit-text-stroke: 0; }
+body.dk .trap.later .tdot { background: none; border: 2px dashed rgba(255, 255, 255, .45); box-shadow: none; }
+/* пульт: светлые карты-крючки с номером-жетоном и переключателем */
+body.dk .hooks { margin-top: 18px; gap: 16px; }
+body.dk .hook { padding: 14px 14px 12px 56px; border-radius: 16px; overflow: hidden; }
+body.dk .hook .no { left: 0; top: 0; bottom: 0; width: 42px; border: 0; border-right: 3px solid var(--ink); border-radius: 0; background: linear-gradient(180deg, var(--blue), var(--blue-2)); color: #fff; font: 400 18px "Russo One", sans-serif; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+body.dk .hook h3 { font: 400 18px/1.15 "Russo One", sans-serif; text-transform: none; color: var(--ink); }
+body.dk .hook p { color: var(--ink); font: 600 14px/1.38 "Golos Text", sans-serif; }
+body.dk .hook .cnt { display: inline-block; margin-top: 8px; padding: 3px 8px 2px; border: 2.5px solid var(--ink); border-radius: 8px; background: linear-gradient(180deg, #fff08a, var(--yellow)); color: var(--ink); font: 400 11px/1.2 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; box-shadow: 0 2px 0 var(--ink); }
+body.dk .hook .eff { color: var(--ink-soft); font: 650 12.5px/1.35 "Golos Text", sans-serif; }
+body.dk .hook.off { background: linear-gradient(180deg, #e6e9f5, #d6dbee); }
+body.dk .hook.off h3, body.dk .hook.off p { opacity: .62; }
+body.dk .stats { gap: 12px; margin-top: 16px; }
+body.dk .stats div { padding: 11px 12px 12px; }
+body.dk .stats b { font: 400 26px/1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
+body.dk .stats span { color: rgba(255, 255, 255, .92); font: 600 13px/1.32 "Golos Text", sans-serif; }
+body.dk .lgnote { margin-top: 12px; font: 600 12.5px/1.4 "Golos Text", sans-serif; }
+body.dk .instead { margin-top: 24px; padding: 14px 14px 12px; }
+body.dk .instead h2 { margin: 0 0 6px; color: var(--yellow); }
+body.dk .instead p { color: rgba(255, 255, 255, .94); font: 550 14.5px/1.4 "Golos Text", sans-serif; margin-top: 8px; }
+body.dk .instead p.t { color: var(--yellow); font-weight: 800; }
+body.dk .help { margin-top: 18px; padding: 13px 14px; font: 600 14px/1.4 "Golos Text", sans-serif; }
+body.dk .help b { display: block; margin-bottom: 5px; }
+body.dk .help span { color: rgba(255, 255, 255, .94); }
+body.dk .help strong { color: #fff; }
+body.dk .endline { margin-top: 30px; font: 400 21px/1.15 "Russo One", sans-serif; color: #fff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); text-wrap: balance; }
+/* замок Закулисья — слот */
+body.dk .locked { background: rgba(255, 255, 255, .06); border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; color: rgba(255, 255, 255, .86); box-shadow: none; padding: 22px 16px; }
+body.dk .locked p { color: rgba(255, 255, 255, .86); font: 600 15px/1.4 "Golos Text", sans-serif; }
+body.dk .locked .btn { width: 100%; }
+/* «Что это было» */
+body.dk .whatwas { max-width: 640px; }
+body.dk .whatwas .pr-b { margin-top: 16px; padding: 12px 14px 13px; font: 700 15px/1.38 "Golos Text", sans-serif; }
+body.dk .whatwas .d2btns { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+body.dk .whatwas .d2btns .btn { text-decoration: none; margin-bottom: 6px; }
+
+@media (min-width: 900px) {
+  body.dk .bs-band .bs-in { padding-top: 24px; }
+  body.dk .bs-rig { margin-top: 0; }
+  body.dk .bs-quote q { font-size: 19px; }
+  body.dk .stats { grid-template-columns: repeat(4, 1fr); }
+  body.dk .traps { grid-template-columns: 1fr 1fr; }
+  body.dk .srw b, body.dk .adults summary { font-size: 21px; }
+  body.dk .srw span, body.dk .adults p { font-size: 15.5px; }
+  body.dk .trap p, body.dk .score span, body.dk .hook p { font-size: 15.5px; }
+  body.dk .endline { font-size: 30px; }
+  body.dk .sect { font-size: 27px; }
+}
+
+/* ======================================================================
+   5. ДЕЛО 2 «ДОЛЖОК»
+   ====================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  body.dk .tile, body.dk .todaycard { animation: none; }
+  body.dk .week li.today .gd { animation: none; }
+}
+
+/* аватары чата Дела 2: портрет из art/, под ним запасной круг с буквой в цвет персонажа */
+.d2ava { display: grid; place-items: center; overflow: hidden; background: var(--yellow); }
+.d2ava::before { content: attr(data-l); font: 400 15px/1 "Russo One", sans-serif; color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+.d2ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.d2ava[data-n="lyova"] { background: linear-gradient(180deg, #ff9a86, #e2402e); }
+.d2ava[data-n="timur"] { background: linear-gradient(180deg, #8ab6ff, var(--blue-2)); }
+.d2ava[data-n="danya"] { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+.d2ava[data-n="alina"] { background: linear-gradient(180deg, #ff9fc3, #e0457f); }
+.d2ava[data-n="max"] { background: linear-gradient(180deg, #fff08a, var(--yellow-2)); }
+/* значок чата: круг-аватар группы в цвет игры, а не чёрный */
+.phone.warm .ava.g { background: linear-gradient(180deg, #8ab6ff, var(--blue-2)); color: #fff; border-radius: 14px; }
+
+/* крупицы Дела 2: четыре действия — игровые кнопки 2×2 (Забираю — зелёная, Не моё — красная, Подправлю — синяя, Пока не знаю — тёмная) */
+body.dk .cr2n { position: absolute; left: 14px; top: -13px; margin: 0; padding: 3px 9px 2px; border: 2.5px solid var(--ink); border-radius: 8px; rotate: -2deg; background: linear-gradient(180deg, var(--blue), var(--blue-2)); box-shadow: 0 2px 0 var(--ink); color: #fff; font: 400 11px/1.1 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; -webkit-text-stroke: 2.6px var(--ink); paint-order: stroke fill; }
+body.dk .cr2 .vstamp { display: inline-block; rotate: 0deg; transform: none; padding: 3px 9px 2px; border: 2.5px solid var(--ink); border-radius: 8px; box-shadow: 0 2px 0 var(--ink); font: 400 11px/1.1 "Russo One", sans-serif; color: var(--ink); text-transform: none; letter-spacing: 0; }
+body.dk .cr2-act:not(.two) { gap: 12px 10px; margin-top: 16px; }
+body.dk .cr2-act:not(.two) button { position: relative; min-height: 52px; padding: 0 6px; border: 3px solid var(--ink); border-radius: 14px; color: #fff; font: 400 14.5px/1.1 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; -webkit-text-stroke: 3.5px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); transition: transform .09s ease-out, box-shadow .09s ease-out; }
+body.dk .cr2-act:not(.two) button::before { content: ""; position: absolute; left: 4px; right: 4px; top: 2px; height: 40%; border-radius: 11px 11px 50% 50% / 11px 11px 8px 8px; background: linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0)); pointer-events: none; }
+body.dk .cr2-act:not(.two) button > span { position: relative; }
+body.dk .cr2-act:not(.two) button[data-a="keep"] { background: linear-gradient(180deg, #8bff8a 0%, var(--green) 30%, var(--green-2) 100%); box-shadow: 0 5px 0 0 var(--green-lip), 0 5px 0 3px var(--ink); }
+body.dk .cr2-act:not(.two) button[data-a="out"] { background: linear-gradient(180deg, #ffb0a0, #ff6a5c 40%, #d43a2c); box-shadow: 0 5px 0 0 #8f1f14, 0 5px 0 3px var(--ink); }
+body.dk .cr2-act:not(.two) button[data-a="fit"] { background: linear-gradient(180deg, #8ab6ff, var(--blue) 40%, var(--blue-2)); box-shadow: 0 5px 0 0 var(--blue-lip), 0 5px 0 3px var(--ink); }
+body.dk .cr2-act:not(.two) button[data-a="pocket"] { background: linear-gradient(180deg, #7a86c4, #55609e 40%, #38427f); box-shadow: 0 5px 0 0 #1a2050, 0 5px 0 3px var(--ink); }
+body.dk .cr2-act:not(.two) button:active { transform: translateY(4px); box-shadow: 0 1px 0 0 var(--ink), 0 1px 0 3px var(--ink); }
+body.dk .cr2 { margin-top: 26px; padding-top: 22px; border-radius: 16px; transform: none; }
+body.dk .cr2 .fit .v, body.dk .cr2 .fit .fitown { border: 3px solid var(--ink); border-radius: 12px; background: #fff; color: var(--ink); }
+body.dk .cr2-done .stp { border: 2.5px solid var(--ink); border-radius: 8px; padding: 3px 8px 2px; font: 400 11px/1.1 "Russo One", sans-serif; text-transform: none; letter-spacing: 0; color: #fff; -webkit-text-stroke: 2.4px var(--ink); paint-order: stroke fill; background: linear-gradient(180deg, #8bff8a, var(--green-2)); box-shadow: 0 2px 0 var(--ink); transform: none; }
+body.dk .cr2-done .stp.out { background: linear-gradient(180deg, #ffb0a0, #d43a2c); }
+body.dk .cr2-done .stp.pocket { background: linear-gradient(180deg, #7a86c4, #38427f); }
+body.dk .cr2-done .undo { color: var(--blue-2); font: 800 12px "Golos Text", sans-serif; text-transform: none; min-height: 36px; padding: 0 6px; }
+body.dk .srw .adults-meta b { -webkit-text-stroke: 0; text-shadow: none; color: #fff; }
+body.dk .todaycard .sub.mono { text-transform: none; letter-spacing: 0; }
+
+/* ======================================================================
+   6. ПРИЁМКА, ЧАСТЬ 2 (06.11): главный экран, настройки
+   ====================================================================== */
+/* ожидание: единственная плитка «Кодекс» — компактно, без пустой полосы */
+body.dk .tiles.one .tile { min-height: 0; padding: 10px 13px 12px; }
+body.dk .tiles.one { margin-top: 16px; }
+/* логотип не слипается с огоньком */
+body.dk .appbar .brand { margin-right: 8px; flex: none; }
+@media (max-width: 420px) {
+  body.dk .appbar .ab-r { gap: 4px; }
+  body.dk .appbar .helpb { padding: 0 8px 0 24px; background-position: 8px 50%; font-size: 11.5px; }
+  body.dk .appbar .flame { padding: 0 7px 0 6px; }
+}
+/* «Для взрослых»: шеврон раскрытия */
+body.dk .adults summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; }
+body.dk .adults summary::-webkit-details-marker { display: none; }
+body.dk .adults summary::after { content: ""; flex: none; width: 11px; height: 11px; margin: -4px 6px 0 0; border-right: 4px solid var(--yellow); border-bottom: 4px solid var(--yellow); rotate: 45deg; transition: rotate .18s var(--ease-out), margin .18s; filter: drop-shadow(0 2px 0 var(--ink)); }
+body.dk .adults[open] summary::after { rotate: 225deg; margin: 4px 6px 0 0; }
+@media (prefers-reduced-motion: reduce) { body.dk .adults summary::after { transition: none; } }
+/* Дело 2 на широком экране: обложка крупнее и сдвинута к правой части (стена, стремянка, колонка), лицо за заголовок не попадает */
+@media (min-width: 900px) {
+  body.dk.dk #scr-day2.screen:not(#scr-play):not(#scr-honest) {
+    background:
+      linear-gradient(180deg, rgba(10, 18, 52, .88), rgba(10, 18, 52, .94)),
+      url("art/d2-cover.webp") 100% 45% / 210% auto no-repeat fixed, /* приёмка ведущего: при 150% у левого края оставалось огромное лицо Лёвы; при 210% в кадре только правая половина обложки — стена, стремянка, колонка */
+      url("art/garage.webp") 92% 40% / 150% auto no-repeat fixed,
+      var(--night);
+  }
+}

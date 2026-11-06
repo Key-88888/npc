@@ -1,0 +1,302 @@
+/* «Не По Сценарию» · перенос в стиль «как Brawl Stars», часть 2 · поток B:
+   Кодекс, Бестиарий, Лупа дня.
+   Задание — look/BRIEF-PORT-2.md. Подключается после brawl2.css. Общий мир (фон, шапка, заголовки) — в brawl2.css.
+   Три материала (раздел 2 задания): ПАНЕЛЬ — тёмно-синяя, КАРТА — светлая, СЛОТ — пунктир на тёмном.
+   Все правила привязаны к #scr-codex / #scr-bestiary, чтобы не зависеть от порядка и не задевать чужие экраны. */
+
+#scr-codex, #scr-bestiary {
+  --pan: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96));
+  --pan-sh: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink), 0 12px 18px -8px rgba(0, 0, 0, .5);
+  --card: linear-gradient(180deg, #fff, var(--cream));
+  --card-sh: inset 0 -3px 0 rgba(11, 22, 51, .08), 0 5px 0 var(--ink), 0 14px 20px -8px rgba(0, 0, 0, .55);
+}
+#scr-codex .wrap, #scr-bestiary .wrap { color: #fff; padding-bottom: 36px; }
+
+/* ---------- заголовки разделов и подписи по фону ---------- */
+#scr-codex .sect, #scr-bestiary .sect { font: 400 21px/1.05 "Russo One", sans-serif; text-transform: none; color: #fff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); margin: 26px 0 0; rotate: 0deg; }
+#scr-codex .lgnote, #scr-codex .cx-btns .mono, #scr-codex .legend + .lgnote { color: rgba(255, 255, 255, .84); font-size: 13px; line-height: 1.38; text-shadow: 0 1px 0 var(--ink), 0 0 6px rgba(11, 22, 51, .8); }
+#scr-codex .cx-btns { gap: 12px; flex-wrap: wrap; }
+#scr-codex .cx-btns .btn { margin-bottom: 6px; }
+
+/* ---------- счётчики: шкала на 12 сегментов (как .gauge первой сессии) ---------- */
+#scr-codex .cx-count, #scr-bestiary .bs-count { display: flex; flex-direction: column; align-items: stretch; gap: 7px; margin-top: 12px; padding: 8px 10px 9px; max-width: 520px; border: 3px solid var(--ink); border-radius: 14px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; font: 800 13px/1.15 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
+#scr-codex .cx-count > span, #scr-bestiary .bs-count > span { font: 400 15px/1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
+#scr-codex .slots, #scr-bestiary .slots { display: flex; gap: 3px; flex: none; max-width: none; padding: 3px; border-radius: 10px; background: #0a1230; border: 2.5px solid var(--ink); box-shadow: inset 0 2px 4px rgba(0, 0, 0, .6); }
+#scr-codex .slots i, #scr-bestiary .slots i { flex: 1; height: 15px; border: 0; border-radius: 5px; background: linear-gradient(180deg, #3a4a96, #25336e); box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, .35); transform: none; }
+#scr-codex .slots i.on, #scr-bestiary .slots i.on { background: linear-gradient(180deg, #fff3a0 0, var(--yellow) 30%, var(--yellow-2) 100%); box-shadow: inset 0 0 0 1.5px var(--ink), inset 0 2px 0 rgba(255, 255, 255, .65), 0 0 9px rgba(255, 200, 40, .55); }
+#scr-codex .slots i.pk { background: linear-gradient(180deg, #bcd6ff 0, var(--blue) 35%, var(--blue-2) 100%); box-shadow: inset 0 0 0 1.5px var(--ink), inset 0 2px 0 rgba(255, 255, 255, .5); }
+
+/* ---------- кодекс: «экран» с тенью, жетоны взглядов ---------- */
+#scr-codex .shadowbox { margin-top: 16px; border: 3px solid var(--ink); border-radius: 16px; background: #15121d; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .14), 0 5px 0 var(--ink), 0 14px 20px -8px rgba(0, 0, 0, .55); overflow: hidden; }
+#scr-codex .legend { gap: 7px; margin-top: 14px; }
+#scr-codex .vchip { border: 2.5px solid var(--ink); border-radius: 8px; padding: 3px 8px 2px; font: 400 11px/1.1 "Russo One", sans-serif; letter-spacing: .01em; text-transform: none; color: var(--ink); box-shadow: 0 2px 0 var(--ink); background: var(--tc); }
+#scr-codex .vchip.sm { font-size: 10px; padding: 2px 6px 1px; margin-top: 5px; }
+
+/* ---------- сферы: слоты; со взглядами — панели с яркими кружками ---------- */
+#scr-codex .spheres { display: grid; grid-template-columns: minmax(0, 1fr); gap: 9px; margin-top: 12px; }
+#scr-codex .sph { grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 4px 10px; min-height: 46px; padding: 7px 12px; border: 3px solid var(--ink); border-radius: 14px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; }
+#scr-codex .sph .sl { font: 400 12px/1.1 "Russo One", sans-serif; letter-spacing: .02em; color: #fff; text-transform: uppercase; }
+#scr-codex .sph .sd i { width: 22px; height: 22px; margin-right: 4px; border: 2.5px solid var(--ink); box-shadow: 0 2px 0 var(--ink), inset 0 3px 0 rgba(255, 255, 255, .45), inset 0 -3px 0 rgba(0, 0, 0, .16); }
+#scr-codex .sph .sd em { font-size: 13px; color: rgba(255, 255, 255, .74); }
+#scr-codex .sph .sm { padding: 3px 8px 2px; border: 2.5px solid var(--ink); border-radius: 8px; background: linear-gradient(180deg, #fff08a, var(--yellow) 45%, var(--yellow-2)); box-shadow: 0 2px 0 var(--ink); color: var(--ink); font: 400 10.5px/1.1 "Russo One", sans-serif; letter-spacing: .01em; text-transform: none; }
+#scr-codex .sph.none { border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); box-shadow: none; color: rgba(255, 255, 255, .74); }
+#scr-codex .sph.none .sl { color: rgba(255, 255, 255, .86); }
+
+/* ---------- 12 мест: заполненное — светлая карта, пустое — слот, спор — красная нить ---------- */
+#scr-codex .sheet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 10px; margin-top: 12px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+#scr-codex .srow { position: relative; grid-column: 1 / -1; grid-template-columns: 32px 40px minmax(0, 1fr); align-items: center; gap: 0 10px; padding: 10px 12px 10px 10px; margin: 0; border: 3px solid var(--ink); border-radius: 16px; background: var(--card); box-shadow: var(--card-sh); color: var(--ink); }
+#scr-codex .srow .sn { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 3px solid var(--ink); border-radius: 50%; background: radial-gradient(circle at 50% 18%, rgba(255, 255, 255, .7) 0, rgba(255, 255, 255, 0) 45%), linear-gradient(180deg, var(--yellow), var(--yellow-2)); box-shadow: 0 3px 0 var(--ink); font: 400 15px/1 "Russo One", sans-serif; color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+#scr-codex .srow .sab b { display: grid; place-items: center; width: 40px; height: 40px; border: 3px solid var(--ink); border-radius: 12px; background: var(--tc); box-shadow: 0 3px 0 var(--ink), inset 0 3px 0 rgba(255, 255, 255, .4); font: 400 13px/1 "Russo One", sans-serif; color: var(--ink); }
+#scr-codex .srow .sb q { font: 700 15.5px/1.25 "Golos Text", sans-serif; color: var(--ink); }
+#scr-codex .srow .ss { margin-top: 4px; font: 650 11.5px/1.35 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; color: var(--ink-soft); }
+#scr-codex .srow .ss em { color: var(--ink); font-weight: 800; }
+#scr-codex .srow.own { margin: 0; padding: 10px 12px 10px 10px; border: 3px solid var(--ink); background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 32%, #fff), color-mix(in srgb, var(--tc2, var(--tc)) 32%, #fff)); }
+#scr-codex .srow.pocket { background: linear-gradient(180deg, #f4f8ff, #dbe7ff); }
+#scr-codex .srow.pocket .sab b { outline: 2px dashed var(--ink); outline-offset: 2px; opacity: 1; }
+#scr-codex .srow.pocket .pk { color: var(--blue-2); }
+/* пустое место: слот с номером, компактно — две колонки на телефоне, четыре на широком */
+#scr-codex .srow.empty { grid-column: auto; display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 8px 10px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); box-shadow: none; color: rgba(255, 255, 255, .74); }
+#scr-codex .srow.empty .sn { flex: none; width: 28px; height: 28px; border: 2px solid rgba(255, 255, 255, .4); background: rgba(255, 255, 255, .08); box-shadow: none; font-size: 14px; color: rgba(255, 255, 255, .86); -webkit-text-stroke: 0; }
+#scr-codex .srow.empty .sb { padding: 0; font: 650 12px/1.2 "Golos Text", sans-serif; color: rgba(255, 255, 255, .74); }
+#scr-codex .tens { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 10px; margin: -4px 0; padding: 0 4px; }
+#scr-codex .tens svg { height: 26px; filter: drop-shadow(0 2px 0 rgba(11, 22, 51, .75)); }
+#scr-codex .tens path { stroke: var(--red); stroke-width: 3.4; }
+#scr-codex .tens span { font: 650 11.5px/1.3 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; color: rgba(255, 255, 255, .86); text-shadow: 0 1px 0 var(--ink), 0 0 6px var(--ink); }
+#scr-codex .tens .fork, #scr-codex .vc, #scr-codex .seg button { position: relative; min-height: 44px; border: 3px solid var(--ink); border-radius: 12px; transition: transform .09s ease-out, box-shadow .09s ease-out; }
+#scr-codex .tens .fork { padding: 0 14px; background: linear-gradient(180deg, #8ab6ff, var(--blue) 40%, var(--blue-2)); box-shadow: 0 4px 0 var(--blue-lip), 0 4px 0 3px var(--ink); color: #fff; font: 400 12.5px/1 "Russo One", sans-serif; text-transform: none; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; letter-spacing: .01em; }
+#scr-codex .tens .fork:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--blue-lip), 0 1px 0 3px var(--ink); }
+#scr-codex .localnote { margin-top: 22px; padding: 10px 12px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .86); font-size: 13px; }
+#scr-codex .localnote svg * { stroke: #fff; }
+#scr-codex .sub.emptyline { margin-top: 12px; padding: 10px 12px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .86); }
+
+/* ---------- форма «Своя формулировка» ---------- */
+#scr-codex .compose { margin-top: 14px; padding: 14px; border: 3px solid var(--ink); border-radius: 16px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; animation: cx3rise .35s var(--ease-out) both; }
+#scr-codex .compose h3 { font: 400 21px/1.05 "Russo One", sans-serif; color: #fff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); }
+#scr-codex .compose .cap, #scr-codex .cside .cap { color: rgba(255, 255, 255, .9); font-size: 13.5px; line-height: 1.38; margin-top: 8px; }
+#scr-codex .compose .lb { margin-top: 14px; font: 800 11.5px/1.2 "Golos Text", sans-serif; letter-spacing: .02em; text-transform: none; color: rgba(255, 255, 255, .86); }
+#scr-codex .compose textarea { margin-top: 7px; padding: 10px 12px; border: 3px solid var(--ink); border-radius: 14px; background: #fff; box-shadow: inset 0 3px 0 rgba(11, 22, 51, .12); font: 700 16px/1.3 "Golos Text", sans-serif; color: var(--ink); }
+#scr-codex .compose textarea:focus { outline: 3px solid var(--yellow); outline-offset: 2px; }
+#scr-codex .vcs { gap: 8px; margin-top: 8px; }
+#scr-codex .vc { padding: 6px 11px; background: var(--card); box-shadow: 0 3px 0 var(--ink); color: var(--ink); font: 750 13px/1.15 "Golos Text", sans-serif; text-align: left; }
+#scr-codex .vc.on { background: linear-gradient(180deg, #fff08a, var(--tc, var(--yellow))); box-shadow: 0 3px 0 var(--ink), 0 0 0 3px var(--yellow); }
+#scr-codex .vc:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+#scr-codex .compose .btn { width: 100%; margin-top: 16px; }
+@keyframes cx3rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* ---------- боковая колонка: вкладки-жетоны и панели ---------- */
+#scr-codex .cside { margin-top: 26px; }
+#scr-codex .seg { gap: 7px; border: 0; background: none; box-shadow: none; }
+#scr-codex .seg button { flex: 1; padding: 6px 4px; border-right: 3px solid var(--ink); background: linear-gradient(180deg, #8ab6ff, var(--blue) 40%, var(--blue-2)); box-shadow: 0 4px 0 var(--blue-lip), 0 4px 0 3px var(--ink); color: #fff; font: 400 11.5px/1.1 "Russo One", sans-serif; letter-spacing: .01em; text-transform: none; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+#scr-codex .seg button:last-child { border-right: 3px solid var(--ink); }
+#scr-codex .seg button.on { background: linear-gradient(180deg, #fff08a, var(--yellow) 40%, var(--yellow-2)); box-shadow: 0 4px 0 var(--yellow-lip), 0 4px 0 3px var(--ink); color: #fff; }
+#scr-codex .seg button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+#scr-codex .cside .panel { margin-top: 16px; padding: 14px 14px 16px; border: 3px solid var(--ink); border-radius: 16px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; }
+#scr-codex .linkbox { gap: 4px; margin-top: 11px; font: 800 11px/1.2 "Golos Text", sans-serif; letter-spacing: .02em; text-transform: none; color: rgba(255, 255, 255, .86); }
+#scr-codex .linkbox code { padding: 8px 10px; border: 2.5px solid var(--ink); border-radius: 10px; background: #fff; box-shadow: inset 0 3px 0 rgba(11, 22, 51, .1); color: var(--ink); font: 700 13px/1.3 "Golos Text", sans-serif; }
+#scr-codex .cmpsum { color: #fff; font-size: 14.5px; }
+#scr-codex .cmpsum b { color: var(--yellow); }
+#scr-codex .cmp { margin-top: 12px; padding: 0; border: 0; background: none; box-shadow: none; display: grid; gap: 10px; }
+#scr-codex .cmp .grp { padding: 9px 10px 10px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); }
+#scr-codex .cmp .grp.g-same { border: 3px solid var(--ink); background: rgba(255, 255, 255, .1); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .12); }
+#scr-codex .cmp h4 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 0 7px; font: 400 12px/1.1 "Russo One", sans-serif; letter-spacing: .02em; text-transform: uppercase; color: #fff; }
+#scr-codex .cmp h4 span:last-child { min-width: 24px; padding: 2px 7px 1px; border: 2.5px solid var(--ink); border-radius: 8px; background: linear-gradient(180deg, #fff08a, var(--yellow)); box-shadow: 0 2px 0 var(--ink); color: var(--ink); text-align: center; }
+#scr-codex .cmp .g-same h4 span:last-child { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+#scr-codex .cmp ul { list-style: none; display: grid; gap: 7px; margin: 0; padding: 0; }
+#scr-codex .cmp li { padding: 8px 10px; border: 3px solid var(--ink); border-radius: 12px; background: var(--card); box-shadow: 0 3px 0 var(--ink); color: var(--ink); font: 700 14px/1.28 "Golos Text", sans-serif; }
+#scr-codex .cmp .ask { margin-top: 9px; padding: 8px 10px; border: 3px solid var(--ink); border-radius: 12px; background: linear-gradient(#fff6b8, #ffe872); box-shadow: 0 3px 0 var(--ink); color: var(--ink); font: 700 13.5px/1.3 "Golos Text", sans-serif; }
+#scr-codex .cmp .ask i { display: block; margin-bottom: 3px; font: 400 11px/1 "Russo One", sans-serif; font-style: normal; color: var(--blue-2); letter-spacing: .02em; text-transform: uppercase; }
+#scr-codex .backup .bk-row b { font: 400 18px/1.1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
+#scr-codex .backup .bk-row span { margin-top: 5px; color: rgba(255, 255, 255, .9); font-size: 13.5px; }
+#scr-codex .backup .btn, #scr-codex .sharebtns .btn { width: 100%; margin-top: 10px; }
+#scr-codex .sharebtns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+#scr-codex .sharebtns .btn { margin-top: 0; padding: 0 8px; font-size: 14px; }
+#scr-codex .forkbox { margin-top: 14px; padding: 12px 14px; border: 3px solid var(--ink); border-radius: 16px; background: var(--card); box-shadow: var(--card-sh); color: var(--ink); animation: cx3rise .35s var(--ease-out) both; }
+#scr-codex .forkbox[hidden] { display: none; }
+#scr-codex .forkbox b { font: 400 12px/1 "Russo One", sans-serif; color: var(--blue-2); text-transform: uppercase; letter-spacing: .03em; }
+#scr-codex .forkbox p { color: var(--ink); font-size: 15px; }
+#scr-codex .forkbox .fo .btn { min-height: 46px; width: 100%; font-size: 14px; }
+
+/* карточка для отправки — плакат в стиле заставки */
+#scr-codex .sharecard.v2 { position: relative; width: min(100%, 290px); margin: 14px auto 0; padding: 14px 12px 11px; border: 3px solid var(--ink); border-radius: 18px; color: #fff; overflow: hidden; transform: none;
+  background: linear-gradient(180deg, rgba(10, 18, 52, .28) 0%, rgba(10, 18, 52, .62) 40%, rgba(10, 18, 52, .94) 100%), url("art/title.webp") center 24% / cover no-repeat, var(--night);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 6px 0 var(--ink), 0 16px 22px -8px rgba(0, 0, 0, .55); }
+#scr-codex .sharecard .sc-top, #scr-codex .sharecard .sc-foot { font: 800 10.5px/1.2 "Golos Text", sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 var(--ink), 0 0 6px var(--ink); }
+#scr-codex .sharecard h3 { margin: 4px 0 0; font: 400 25px/1 "Russo One", sans-serif; text-transform: uppercase; color: #fff; -webkit-text-stroke: 6px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); rotate: -1.5deg; transform-origin: 0 100%; }
+#scr-codex .sc-note { padding: 8px 10px 8px 16px; border: 3px solid var(--ink); border-radius: 12px; background: var(--card); box-shadow: inset 7px 0 0 var(--tc, var(--yellow)), 0 3px 0 var(--ink); color: var(--ink); font: 700 12.5px/1.24 "Golos Text", sans-serif; transform: rotate(var(--r, 0deg)); }
+#scr-codex .sc-note.blank { background: rgba(255, 255, 255, .1); border-style: dashed; color: rgba(255, 255, 255, .86); box-shadow: none; }
+#scr-codex .thr2 b { font: 400 19px/1 "Russo One", sans-serif; color: #fff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
+#scr-codex .thr2 path { filter: drop-shadow(0 2px 0 rgba(11, 22, 51, .7)); }
+
+/* ======================================================================
+   БЕСТИАРИЙ
+   ====================================================================== */
+#scr-bestiary .bs-head .sub { color: rgba(255, 255, 255, .86); }
+#scr-bestiary .bs-count { max-width: 440px; }
+#scr-bestiary .lupa-host { margin-top: 6px; }
+
+/* Лупа дня — та же карта, что «Витрина» первой сессии (.lupa-card из brawl.css); здесь только то, что в Витрине не нужно */
+#scr-bestiary .lupa-card { margin-top: 14px; padding: 14px; color: var(--ink); }
+#scr-bestiary .lc-top { color: var(--blue-2); }
+#scr-bestiary .lupa-card .qline { color: #fff; margin: 12px 0 6px; }
+#scr-bestiary .lupa-card .prompt { color: var(--ink-soft); font: 650 13.5px/1.35 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; padding-top: 12px; }
+#scr-bestiary .lp-res { margin-top: 12px; padding: 10px 12px; border: 3px solid var(--ink); border-radius: 12px; background: linear-gradient(#fff6b8, #ffe872); box-shadow: 0 3px 0 var(--ink); }
+#scr-bestiary .lp-res b { margin: 0; color: var(--ink); }
+#scr-bestiary .lp-tomorrow { margin: 6px 0 0; color: var(--ink-soft); font: 650 11.5px/1.3 "Golos Text", sans-serif; letter-spacing: 0; }
+#scr-bestiary .lp-foot { margin-top: 14px; flex-wrap: nowrap; }
+#scr-bestiary .lp-score { gap: 4px 10px; margin-top: 12px; color: var(--ink-soft); font: 700 11.5px/1.3 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
+#scr-bestiary .lp-score .idx { color: var(--ink); font-weight: 800; }
+#scr-bestiary .lp-why { margin-top: 10px; }
+#scr-bestiary .lp-why summary { width: 44px; height: 44px; border: 3px solid var(--ink); border-radius: 50%; background: linear-gradient(180deg, #fff08a, var(--yellow) 45%, var(--yellow-2)); box-shadow: 0 4px 0 var(--ink); color: var(--ink); font: 400 18px/1 "Russo One", sans-serif; cursor: pointer; }
+#scr-bestiary .lp-why summary:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+#scr-bestiary .lp-why[open] summary { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+#scr-bestiary .lp-note { color: var(--ink-soft); font-size: 13px; line-height: 1.4; }
+#scr-bestiary .lupa-card .lz.done .vizhu { right: -6px; }
+
+/* «Экзамен на зрение» — панель-анонс со слотом */
+#scr-bestiary .exam { margin-top: 18px; padding: 10px 12px 12px; gap: 7px; border: 3px solid var(--ink); border-radius: 16px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; font-size: 13px; }
+#scr-bestiary .exam b { font: 400 16px/1.05 "Russo One", sans-serif; text-transform: uppercase; letter-spacing: .01em; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
+#scr-bestiary .exam span { display: block; padding: 8px 10px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 12px; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .86); font: 650 13px/1.35 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
+
+/* ---------- коллекционные карты существ ---------- */
+#scr-bestiary .beasts { display: grid; grid-template-columns: minmax(0, 1fr); gap: 46px 18px; margin-top: 52px; }
+#scr-bestiary .beast:not(.locked) { --bc: #ff7a3a; --bc2: #d3321a;
+  display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 0; position: relative; overflow: visible; border: 3px solid var(--ink); border-radius: 16px; background: var(--card); box-shadow: var(--card-sh); color: var(--ink); }
+#scr-bestiary .beast[data-c="sro"] { --bc: #ff8a3d; --bc2: #d3321a; }      /* Таймер: красно-оранжевый */
+#scr-bestiary .beast[data-c="fact"] { --bc: #ffc23a; --bc2: #d98200; }     /* Решала: янтарный */
+#scr-bestiary .beast[data-c="vse"] { --bc: #7a9bd6; --bc2: #36579a; }      /* Толпа: стальной синий */
+#scr-bestiary .beast[data-c="lest"] { --bc: #ff5a9a; --bc2: #b3124f; }     /* Подлиза: малиновый */
+#scr-bestiary .beast[data-c="recip"] { --bc: #a47bff; --bc2: #5a2fc4; }    /* Должок: фиолетовый */
+#scr-bestiary .beast[data-c="fakec"] { --bc: #36dcc8; --bc2: #0f8a94; }    /* Развилка: бирюзовый */
+#scr-bestiary .beast[data-c="loss"] { --bc: #ffe85a; --bc2: #f09a0c; }     /* Огонёк: жёлтый */
+#scr-bestiary .beast.trophy-new { box-shadow: var(--card-sh), 0 0 0 5px var(--yellow); }
+#scr-bestiary .b-top { position: relative; display: flex; flex-direction: column; align-items: center; padding: 0 12px 14px; text-align: center; border-radius: 13px 13px 0 0; border-bottom: 3px solid var(--ink);
+  background: linear-gradient(180deg, var(--bc) 0%, var(--bc2) 100%); }
+#scr-bestiary .b-top::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg at 50% 38%, rgba(255, 255, 255, .26) 0 7deg, rgba(255, 255, 255, 0) 7deg 15deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 38%, #000 0, rgba(0, 0, 0, .65) 40%, transparent 85%); mask-image: radial-gradient(circle at 50% 38%, #000 0, rgba(0, 0, 0, .65) 40%, transparent 85%); }
+#scr-bestiary .b-top::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 36%; border-radius: 13px 13px 0 0; pointer-events: none; background: linear-gradient(180deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0)); }
+#scr-bestiary .beast .b-art { position: relative; z-index: 1; flex: none; width: min(62%, 190px); margin: -38px 0 0; align-self: center; }
+#scr-bestiary .beast .b-art .creimg, #scr-bestiary .beast .b-art .creat { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 0 rgba(11, 22, 51, .3)); }
+#scr-bestiary .beast .b-top h3 { position: relative; z-index: 1; order: 2; margin: 4px 0 0; font: 400 30px/1 "Russo One", sans-serif; text-transform: uppercase; letter-spacing: .01em; color: #fff; -webkit-text-stroke: 8px var(--ink); paint-order: stroke fill; text-shadow: 0 4px 0 var(--ink); }
+#scr-bestiary .beast .b-top .b-k { position: relative; z-index: 1; order: 3; margin-top: 7px; padding: 3px 11px 4px; border-radius: 999px; background: rgba(11, 22, 51, .62); color: #fff; font: 700 12.5px/1.25 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
+#scr-bestiary .beast .b-body { padding: 8px 14px 14px; }
+#scr-bestiary .beast dl { margin: 0; }
+#scr-bestiary .beast dt { display: block; width: fit-content; margin: 10px 0 5px; padding: 3px 8px 2px; border: 2.5px solid var(--ink); border-radius: 8px; box-shadow: 0 2px 0 var(--ink); color: #fff; font: 400 11px/1.1 "Russo One", sans-serif; letter-spacing: .02em; text-transform: none; -webkit-text-stroke: 2.4px var(--ink); paint-order: stroke fill; background: linear-gradient(180deg, #8ab6ff, var(--blue-2)); }
+#scr-bestiary .beast dt.weak { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+#scr-bestiary .beast dd { margin: 0; color: var(--ink); font: 600 14px/1.34 "Golos Text", sans-serif; }
+#scr-bestiary .ladder { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+#scr-bestiary .ladder li { padding: 4px 9px 3px; border: 2px dashed rgba(11, 22, 51, .45); border-radius: 8px; background: rgba(11, 22, 51, .05); color: var(--ink-soft); font: 800 11px/1.2 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
+#scr-bestiary .ladder li.on { border: 2.5px solid var(--ink); background: linear-gradient(180deg, #8bff8a, var(--green) 40%, var(--green-2)); box-shadow: 0 2px 0 var(--ink); color: var(--ink); }
+
+/* ---------- «Ещё на свободе»: тёмные карты-силуэты ---------- */
+#scr-bestiary .lockedrow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+#scr-bestiary .beast.locked { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 96px; padding: 8px 4px; border: 3px solid var(--ink); border-radius: 14px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; }
+#scr-bestiary .beast.locked .q { font: 400 34px/1 "Russo One", sans-serif; color: #9fb0ff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); }
+#scr-bestiary .beast.locked span { color: rgba(255, 255, 255, .82); font: 700 10.5px/1.15 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; text-align: center; }
+
+@media (min-width: 900px) {
+  #scr-codex .spheres { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #scr-codex .sheet { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  #scr-codex .sect, #scr-bestiary .sect { font-size: 26px; }
+  #scr-codex .seg button { font-size: 12.5px; }
+  #scr-bestiary .beasts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 52px 20px; margin-top: 60px; }
+  #scr-bestiary .beast .b-art { width: min(64%, 200px); }
+  #scr-bestiary .lockedrow { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  #scr-bestiary .beast.locked { min-height: 110px; }
+  #scr-bestiary .lupa-card .lp-foot { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #scr-codex .compose, #scr-codex .forkbox { animation: none; }
+}
+
+/* ---------- правки по первому кругу кадров ---------- */
+#scr-codex .cmp li::before { display: none; }
+#scr-codex .cmp h4 { border-bottom: 0; padding-bottom: 0; }
+#scr-codex .cmp .grp { margin-top: 0; }
+body.dk #scr-bestiary .lupa-card .prompt { color: var(--ink-soft); text-shadow: none; }
+body.dk #scr-bestiary .lupa-card .lp-score, body.dk #scr-bestiary .lupa-card .lp-score span { color: var(--ink-soft); }
+body.dk #scr-bestiary .lupa-card .lp-score .idx { color: var(--ink); }
+body.dk #scr-bestiary .lupa-card .lp-tomorrow { color: var(--ink-soft); }
+#scr-bestiary .sub.emptyline { margin-top: 12px; padding: 10px 12px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .86); }
+
+/* ======================================================================
+   ПРИЁМКА, ЧАСТЬ 2 (06.11.2026): общие для обеих частей правила и Кодекс / Бестиарий
+   ====================================================================== */
+
+/* 1. вводные абзацы — плашка рассказчика (как body.dk .narr) */
+body.dk #scr-codex .cx-head > .sub:not(.emptyline),
+body.dk #scr-bestiary .bs-head > .sub:not(.emptyline) {
+  max-width: 46em; margin: 8px 0 0; padding: 8px 12px 9px; border: 3px solid var(--ink); border-radius: 14px; color: #fff; text-shadow: none;
+  font: 550 14.5px/1.38 "Golos Text", sans-serif; text-wrap: pretty;
+  background: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96));
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink), 0 12px 18px -8px rgba(0, 0, 0, .5);
+}
+body.dk #scr-bestiary .bs-head > .sub.ladnote { margin-top: 10px; padding: 6px 12px 7px; font-size: 13px; line-height: 1.35; font-weight: 600; color: rgba(255, 255, 255, .9); }
+
+/* 2. зазор между надстрочником и заголовком */
+body.dk .kick:not(.todaycard .kick) { margin-bottom: 12px; }
+body.dk .kick:not(.todaycard .kick) + h1 { margin-top: 6px; }
+
+/* 3. лист «Ого. Это было спрятано»: затемнение, досье-карта с чипами, подпись */
+.praise.on::before { content: ""; position: fixed; inset: 0; z-index: -1; background: rgba(8, 12, 36, .74); pointer-events: none; }
+.pr-in .trophy { align-items: flex-start; gap: 10px; margin-top: 12px; padding: 10px 12px 12px; border: 3px solid var(--ink); border-radius: 14px; background: linear-gradient(180deg, #fff, var(--cream)); box-shadow: inset 0 -3px 0 rgba(11, 22, 51, .08), 0 4px 0 var(--ink); }
+.pr-in .trophy .tr-ico { padding-top: 2px; }
+.pr-in .trophy b { font: 700 14.5px/1.3 "Golos Text", sans-serif; color: var(--ink); }
+.pr-in .pr-dos dt { display: block; width: fit-content; margin: 10px 0 4px; padding: 3px 8px 2px; border: 2.5px solid var(--ink); border-radius: 8px; box-shadow: 0 2px 0 var(--ink); color: #fff; font: 400 11px/1.1 "Russo One", sans-serif; letter-spacing: .02em; text-transform: none; -webkit-text-stroke: 2.4px var(--ink); paint-order: stroke fill; background: linear-gradient(180deg, #8ab6ff, var(--blue-2)); }
+.pr-in .pr-dos dt:nth-of-type(3) { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
+.pr-in .pr-dos dd { margin: 0; color: var(--ink); font: 600 14px/1.32 "Golos Text", sans-serif; }
+.pr-in .pr-b { margin-top: 12px; color: var(--ink); font: 700 13.5px/1.35 "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; }
+
+/* 6. карта Лупы на широком экране — не растягивать на весь экран */
+@media (min-width: 900px) {
+  #scr-bestiary .lupa-card, #scr-bestiary .exam { max-width: 760px; }
+  #scr-bestiary .lupa-card { grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 0 24px; }
+}
+
+/* 7. карты существ — поле фиксированной высоты, арт по низу поля */
+#scr-bestiary .beast:not(.locked) .b-top { height: 340px; justify-content: flex-end; padding-bottom: 12px; }
+#scr-bestiary .beast .b-art { flex: 1 1 0; min-height: 0; margin: -38px 0 0; }
+#scr-bestiary .beast .b-art .creimg, #scr-bestiary .beast .b-art .creat { height: 100%; object-fit: contain; object-position: center bottom; }
+#scr-bestiary .beast .b-top .b-k { min-height: 42px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+
+/* 8. неактивные кнопки — один вид (тёмный фон) */
+body.dk.dk :is(.btn, .opt, .stampbtn, .fork)[disabled],
+body.dk.dk :is(.btn, .opt, .stampbtn, .fork)[aria-disabled="true"],
+body.dk.dk .d2next .btn[disabled] {
+  background: rgba(255, 255, 255, .10); background-image: none; border: 2px solid rgba(255, 255, 255, .28); box-shadow: none; filter: none; opacity: 1; cursor: default;
+  color: rgba(255, 255, 255, .82) !important; text-shadow: none; -webkit-text-stroke: 0; transform: none;
+}
+body.dk.dk :is(.btn, .opt, .stampbtn, .fork)[disabled]::before, body.dk.dk :is(.btn, .opt, .stampbtn, .fork)[disabled]::after,
+body.dk.dk :is(.btn, .opt, .stampbtn, .fork)[aria-disabled="true"]::before, body.dk.dk :is(.btn, .opt, .stampbtn, .fork)[aria-disabled="true"]::after { display: none; }
+body.dk.dk :is(.opt, .btn)[disabled] small { color: inherit; opacity: 1; }
+/* на светлой карте */
+body.dk.dk :is(.lupa-card, .reveal, .react, .viewcard, .costw, .hotya, .cr2, .hres, .fbk, .forkbox, .pr-in, .ts-in, .waitbub, .pocketcard .pc) :is(.btn, .opt, .stampbtn, .fork)[disabled],
+body.dk.dk :is(.lupa-card, .reveal, .react, .viewcard, .costw, .hotya, .cr2, .hres, .fbk, .forkbox, .pr-in, .ts-in, .waitbub, .pocketcard .pc) :is(.btn, .opt, .stampbtn, .fork)[aria-disabled="true"] {
+  background: #e9e3d2; border: 2px solid rgba(11, 22, 51, .35); color: rgba(11, 22, 51, .72) !important;
+}
+
+/* 9. вкладки внизу Кодекса — не ниже 44 px, в одну или ровно в две строки */
+#scr-codex .seg button { box-sizing: border-box; min-height: 48px; padding: 4px 6px; font-size: 12px; line-height: 1.1; display: grid; place-items: center; text-align: center; text-wrap: balance; }
+
+/* 10. «?» в карте Лупы — ровно 44 × 44 */
+#scr-bestiary .lp-why summary { box-sizing: border-box; display: grid; place-items: center; width: 44px; height: 44px; list-style: none; }
+#scr-bestiary .lp-why summary::-webkit-details-marker { display: none; }
+
+/* 11. строки счёта в Лупе */
+body.dk #scr-bestiary .lupa-card .lp-score, body.dk #scr-bestiary .lupa-card .lp-score span { color: rgba(11, 22, 51, .82); font-size: 12.5px; }
+body.dk #scr-bestiary .lupa-card .lp-score .idx { color: var(--ink); }
+
+/* 12. подписи Кодекса */
+body.dk #scr-codex .lgnote:not(.localnote) { margin-top: 12px; padding: 9px 12px 10px; border: 3px solid var(--ink); border-radius: 14px; background: var(--pan); box-shadow: var(--pan-sh); color: rgba(255, 255, 255, .84); font: 600 13.5px/1.38 "Golos Text", sans-serif; text-shadow: none; }
+body.dk #scr-codex .tens span { font-size: 12.5px; line-height: 1.3; color: rgba(255, 255, 255, .84); }
+body.dk #scr-codex .cx-btns .mono { font-size: 13px; color: rgba(255, 255, 255, .84); }
+
+/* 13. жетон «+1» — углом поверх вкладки */
+body.dk .tabs a { position: relative; }
+body.dk .tabs a .plus1 { position: absolute; right: -2px; top: -7px; margin: 0; padding: 1px 6px 0; border-radius: 8px; line-height: 1.35; z-index: 2; box-shadow: 0 2px 0 var(--ink); }
+
+/* 16. Кодекс и Бестиарий — один контейнер */
+@media (min-width: 900px) {
+  #scr-codex .wrap, #scr-bestiary .wrap { max-width: 1100px; margin-inline: auto; }
+  #scr-codex .cx-wrap { grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; }
+}

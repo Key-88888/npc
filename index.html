@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex">
+<title>Не По Сценарию</title>
+<meta name="apple-mobile-web-app-title" content="НПС">
+<meta name="description" content="Не По Сценарию. А если самим выбирать, как жить?">
+<!-- Экран загрузки и сторож: встроен в саму страницу, чтобы приехать с первыми килобайтами. Игра лежит на российском сервере;
+     у игрока с включённым VPN до устройства доходят только первые ~15 КБ на соединение, стили и код не догружаются (журнал сервера и
+     проверка на iPhone 05.11.2026). Сторож ненавязчив (владелец 06.11: «должен быть ненавязчив, распространять её будут через тг» — там VPN
+     включён у многих): экран загрузки остаётся как был, через 8 с под ним проявляется тихая строка и маленькая кнопка «Обновить».
+     Утверждений «у тебя VPN», заголовка-тревоги и большой кнопки нет. Игра снимает экран сама: __npcBooted() в app.js.
+     Таблицы стилей ниже подключены в body после этого экрана: иначе Chrome не рисует ничего, пока стили не пришли. -->
+<style>
+#npc-wd{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px 22px;overflow:auto;background:#1a2760;color:#fff;font:400 17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;text-align:center}
+#npc-wd .w{width:100%;max-width:330px}
+#npc-wd b{display:block;font-size:27px;line-height:1.15;font-weight:800;color:#ffd62e;text-shadow:0 3px 0 #0b1633}
+#npc-wd .l{margin:12px 0 0;color:rgba(255,255,255,.78)}
+#npc-wd .l i{font-style:normal;animation:npcwd 1.2s infinite both}
+#npc-wd .l i+i{animation-delay:.2s}
+#npc-wd .l i+i+i{animation-delay:.4s}
+@keyframes npcwd{0%,60%,100%{opacity:.25}30%{opacity:1}}
+#npc-wd .h{margin:28px 0 0;font-size:14px;line-height:1.45;color:rgba(255,255,255,.72);opacity:0;visibility:hidden;transition:opacity .8s}
+#npc-wd.late .h{opacity:1;visibility:visible}
+#npc-wd .h p{margin:0}
+#npc-wd button{min-height:44px;margin:4px 0 0;padding:0 18px;border:0;background:none;color:#fff;font:600 14px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#npc-wd .l i{animation:none}#npc-wd .h{transition:none}}
+</style>
+<script>
+(function () {
+  /* Запасная копия игры за рубежом (адрес с косой чертой на конце). Пусто — запасной загрузки нет, сторож только подсказывает.
+     С копией: если за 5 с игра не запустилась, сторож берёт страницу с копии; как только копия ответила — останавливает застрявшие
+     загрузки и собирает игру из её файлов. Адрес страницы не меняется, поэтому прогресс игрока остаётся один. */
+  var MIRROR = '';
+  function wd() { return document.getElementById('npc-wd'); }
+  function hint() { var e = wd(); if (e) e.className = 'late'; }
+  var late = setTimeout(hint, MIRROR ? 20000 : 8000), fo = MIRROR ? setTimeout(failover, 5000) : 0;
+  window.__npcBooted = function () { window.__npcUp = 1; clearTimeout(late); clearTimeout(fo); var e = wd(); if (e && e.parentNode) e.parentNode.removeChild(e); };
+  function failover() {
+    if (window.__npcUp) return;
+    var x = new XMLHttpRequest();
+    x.open('GET', MIRROR + 'index.html?t=' + Math.floor(new Date() / 6e5)); x.timeout = 10000;
+    x.onload = function () { if (window.__npcUp) return; try { if (x.status !== 200) throw 0; take(x.responseText); } catch (e) { hint(); } };
+    x.onerror = x.ontimeout = hint;
+    try { x.send(); } catch (e) { hint(); }
+  }
+  function take(html) {
+    /* тело страницы копии — от последнего открывающего тега до закрывающего. Имена тегов здесь собраны из частей нарочно:
+       этот скрипт сам приезжает внутри той же страницы, и целое имя тега в его тексте нашлось бы раньше настоящего */
+    var a = html.lastIndexOf('<bo' + 'dy'), z = html.lastIndexOf('</bo' + 'dy>'); if (a < 0 || z < a) throw 0;
+    var inner = html.slice(html.indexOf('>', a) + 1, z);
+    /* адреса картинок и стилей — на копию, прямо в тексте: тогда застрявший адрес не запрашивается ни разу */
+    try { window.stop(); } catch (e) {} /* до разбора разметки копии: иначе остановка оборвёт и её картинки */
+    var box = document.createElement('div');
+    box.innerHTML = inner.replace(/(<(?:img|link)\b[^>]*?\s(?:src|href)=")(?!https?:|data:|#)/g, '$1' + MIRROR);
+    var own = box.querySelector('#npc-wd'); if (own) own.parentNode.removeChild(own);
+    var src = [], ss = box.querySelectorAll('script'), i;
+    for (i = 0; i < ss.length; i++) { if (ss[i].getAttribute('src')) src.push(ss[i].getAttribute('src')); ss[i].parentNode.removeChild(ss[i]); }
+    window.NPC_BASE = MIRROR;
+    var keep = wd(), b = document.body, n = b.firstChild, nx;
+    while (n) { nx = n.nextSibling; if (n !== keep) b.removeChild(n); n = nx; }
+    while (box.firstChild) b.appendChild(box.firstChild);
+    /* сначала стили (иначе игра посчитает раскладку по голой разметке), потом код — по одному, в прежнем порядке */
+    var ls = b.querySelectorAll('link[rel="stylesheet"]'), left = ls.length, go = 0;
+    function run() { if (go) return; go = 1; next(0); }
+    function next(k) {
+      if (k >= src.length) return;
+      var s = document.createElement('script'); s.src = MIRROR + src[k];
+      s.onload = function () { next(k + 1); }; s.onerror = hint;
+      b.appendChild(s);
+    }
+    function one() { if (--left <= 0) run(); }
+    for (i = 0; i < ls.length; i++) { ls[i].onload = one; ls[i].onerror = one; }
+    if (!left) run(); else setTimeout(run, 12000);
+  }
+})();
+</script>
+</head>
+<body class="scr-play">
+<div id="npc-wd" role="status" aria-live="polite"><div class="w">
+  <b>Не По Сценарию</b>
+  <p class="l">Загружаемся<i>.</i><i>.</i><i>.</i></p>
+  <div class="h">
+    <p>Что-то долго. С VPN игра иногда застревает по дороге — если он включён, попробуй без него.</p>
+    <button type="button" onclick="location.reload()">Обновить</button>
+  </div>
+</div></div>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="more.css">
+<link rel="stylesheet" href="brawl.css">
+<link rel="stylesheet" href="brawl2.css">
+<link rel="stylesheet" href="brawl3.css">
+<div class="app" id="app">
+  <button class="helpchip mono" id="helpchip" type="button" data-help aria-label="Если тяжело">Если тяжело</button>
+
+  <!-- ===== квест «Суббота» (заход C): нить-тропа сверху и вкладки, которые появляются по ходу ===== -->
+  <div class="qtop" id="qtop" hidden>
+    <ol class="qtrail" id="qtrail" aria-label="Путь до гаража: Тимур, чат, витрина">
+      <li class="qn" data-n="1"><b>1</b><span>Тимур</span></li><li class="qseg" data-s="1" aria-hidden="true"><i></i></li>
+      <li class="qn" data-n="2"><b>2</b><span>Чат</span></li><li class="qseg" data-s="2" aria-hidden="true"><i></i></li>
+      <li class="qn" data-n="3"><b>3</b><span>Витрина</span></li><li class="qseg" data-s="3" aria-hidden="true"><i></i></li>
+      <li class="qn goal" data-n="4"><b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 14V6l6-4 6 4v8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 14V9h6v5M5 11h6" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></b><span>Гараж</span></li>
+    </ol>
+    <div class="qrow2">
+      <span class="qstep mono" id="qstep">Шаг 1 из 3</span>
+      <span class="qtabs">
+        <button class="qtab mono" id="qtab-c" type="button" data-qtab="c" aria-label="Кодекс">Кодекс<em class="qbadge" id="qbadge-c" hidden>0</em></button>
+        <button class="qtab mono" id="qtab-b" type="button" data-qtab="b" aria-label="Бестиарий">Бестиарий<em class="qbadge" id="qbadge-b" hidden>0</em></button>
+      </span>
+    </div>
+    <div class="qcap mono" id="qcap" role="status" aria-live="polite"></div>
+  </div>
+
+  <!-- ===== ПЕРВАЯ СЕССИЯ, шаг 1: уговорить Тимура (без таймера). Над сценой — рассказчик «что происходит» ===== -->
+  <section class="screen on" id="scr-play" data-screen="play" aria-label="Сцена">
+    <header class="head">
+      <div class="kick mono"><span class="dot" style="display:none"></span><span id="kick"></span></div>
+      <h1 id="h1">Уговори Тимура</h1>
+      <p class="sub narr" id="sub" style="display:none"></p>
+    </header>
+    <main class="stage" id="stage">
+      <div class="feel" id="feel" role="status" aria-live="polite" hidden>
+        <div class="feel-top">
+          <div class="mono feel-k">Настроение Тимура</div>
+          <div class="feel-row"><div class="notches" id="feelN"></div><b class="feel-n mono"><span id="feelNum">8</span>/10</b></div>
+        </div>
+        <p class="feel-say" id="feelsay"></p>
+        <button class="btn seen feel-next" id="feelnext" type="button">Дальше</button>
+      </div>
+    </main>
+    <aside class="side" id="side">
+    <div class="say" id="say" role="status">
+      <div class="who mono" id="who">Тимур</div>
+      <q id="said">«В субботу? Не, у меня дел куча.»</q>
+    </div>
+      <div class="info" id="info">
+        <p class="narr lampcap" id="lampcap" role="status" aria-live="polite"></p>
+        <div class="gauge mono"><div class="ghead"><span>Готов пойти</span> <b id="gnum">0 из 10</b> <span class="gneed">· нужно 7</span></div><div class="notches" id="notches"></div></div>
+      </div>
+    </aside>
+    <section class="hand" id="hand" aria-label="Твои фразы">
+      <div class="cards n3" id="cards"></div>
+      <div class="verdict-zone" id="vzone">
+        <p class="narr stampcap" id="stampcap"></p>
+        <button class="stampbtn" id="stamp" type="button">ТИМУР ИДЁТ</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- ===== шаг 1, перевёрнутая сцена: Тимур уговаривает игрока, чат ===== -->
+  <section class="screen" id="scr-chat" data-screen="chat" aria-label="Теперь уговаривают тебя">
+    <header class="head">
+      <div class="kick mono"><span class="dot" style="background:var(--seen)"></span><span>Час спустя</span></div>
+      <h1>Теперь уговаривают тебя</h1>
+      <p class="narr invintro" id="invintro"></p>
+    </header>
+    <div class="lightbar"></div>
+    <div class="chatzone">
+      <div class="phonewrap" id="phonewrap">
+        <div class="vaga" aria-hidden="true"><div class="rod"></div><div class="bar" id="vagabar"></div></div>
+        <div class="phone">
+          <div class="sbar"><span>18:42</span><span class="ic">▮▮▮</span></div>
+          <div class="chead"><span class="back" aria-hidden="true">‹</span><span class="ava"><img src="art/ava-timur.webp" alt="" onerror="this.remove()">Т</span><div><b>Тимур</b><small>в сети</small></div></div>
+          <div class="msgs" id="msgs"></div>
+          <div class="caught" id="caught" aria-label="Названные"></div>
+          <div class="cinput" aria-hidden="true"><i>＋</i><span>Сообщение</span><i>➤</i></div>
+        </div>
+        <svg class="threads" id="threads" aria-hidden="true"></svg>
+        <div id="tags"></div>
+      </div>
+    </div>
+    <section class="tray" id="tray" aria-live="polite"></section>
+  </section>
+
+  <!-- ===== шаг 1: «Что ответишь Тимуру?» — сверху настоящая реплика Тимура, ниже заголовок и три ответа как речь ===== -->
+  <section class="screen scroll" id="scr-pillar" data-screen="pillar" aria-label="Что ответишь Тимуру?">
+        <div class="center-col">
+      <div id="ctxhost"></div>
+      <header class="head" style="padding-left:0;padding-right:0">
+        <div class="kick mono"><span class="dot"></span><span>Твой ход</span></div>
+        <h1 id="vh">Что ответишь Тимуру?</h1>
+        <p class="narr" id="vsub"></p>
+      </header>
+      <div class="slips" id="slips"></div>
+      <div id="viewhost"></div>
+      <div style="margin-top:18px;text-align:right" id="pillnext" hidden><button class="btn seen" id="tonote" type="button">Дальше</button></div>
+    </div>
+  </section>
+
+  <!-- ===== вывод из этой истории: Кодекс объясняется словами до первого выбора ===== -->
+  <section class="screen scroll" id="scr-verdict" data-screen="verdict" aria-label="Вывод из этой истории">
+        <div class="center-col">
+      <header class="head" style="padding-left:0;padding-right:0">
+        <div class="kick mono"><span class="dot"></span><span id="vkick">Вывод</span></div>
+        <h1 id="vh1">Вывод из этой истории</h1>
+      </header>
+      <div id="crintro"></div>
+      <div id="crhost"></div>
+      <p class="narr qcapline" id="qcapline" hidden role="status"></p>
+      <div class="cr-go" id="qcapgo" hidden><button class="btn seen" id="qcapnext" type="button">Дальше</button></div>
+      <div class="pocket mono"><span id="pocketlab">В Кодексе</span><div class="slots" id="pslots"></div></div>
+      <div style="margin-top:18px;text-align:right"><button class="btn seen" id="toend" type="button">Дальше</button></div>
+    </div>
+  </section>
+
+  <!-- ===== шаг 2 квеста: чат класса (сцена из чата, «Кто давил?») ===== -->
+  <section class="screen scroll" id="scr-q2" data-screen="q2" aria-label="Чат класса"></section>
+
+  <!-- ===== шаг 3 квеста: витрина (уведомление, две минуты на всё) ===== -->
+  <section class="screen scroll" id="scr-q3" data-screen="q3" aria-label="Витрина"></section>
+
+  <!-- ===== финал: «А теперь — по-честному»: Тимур в наушниках, три приглашения ===== -->
+  <section class="screen" id="scr-honest" data-screen="honest" aria-label="А теперь — по-честному">
+    <header class="head">
+      <div class="kick mono"><span class="dot"></span><span>Финал · Гараж</span></div>
+      <h1>А теперь — по-честному</h1>
+      <p class="narr hn-intro" id="hnintro"></p>
+    </header>
+    <main class="stage" id="stage2">
+      <div class="stray" id="stray" hidden><svg viewBox="0 0 40 150" aria-hidden="true"><path d="M20 0 C14 40 26 80 20 138" stroke="#E8432B" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg><span class="mono">тоже давит</span></div>
+    </main>
+    <aside class="honestside" id="honestside">
+      <div class="say" id="say2" role="status"><div class="who mono" id="who2">Тимур, 15 · в наушниках</div><q id="said2" style="display:none"></q><div class="act" id="act2"></div></div>
+      <div class="feelbox"><div class="gauge mono"><span>Настроение Тимура</span><div class="notches" id="feelN2"></div><b><span id="feelNum2">3</span>/10</b></div></div>
+      <div id="honestres" aria-live="polite"></div>
+    </aside>
+    <section class="hand honesthand" aria-label="Три приглашения"><div class="invites" id="honestinv"></div></section>
+  </section>
+
+  <!-- ===== конец: итог словами ===== -->
+  <section class="screen" id="scr-end" data-screen="end" aria-label="На сегодня всё">
+    <div class="gbg" aria-hidden="true"></div>
+    <div class="endwrap">
+      <div class="poster">
+        <h2 id="endh">На сегодня всё</h2>
+        <p class="s end-cap" id="endcap"></p>
+        <div class="qsum" id="qsum"></div>
+        <div class="tomorrow"><em>Завтра в 7 утра — продолжение.</em><div class="cliff" id="cliff"></div></div>
+      </div>
+      <div class="endbtns">
+        <button class="btn" type="button" id="copygrid"><span id="copylab">Скинуть другу</span><span class="mono">⧉</span></button>
+        <p class="copynote" id="copynote"></p>
+        <p class="copydone" id="copydone" role="status" aria-live="polite"></p>
+        <div class="row">
+          <a class="btn seen" href="#s=codex" style="text-decoration:none;color:inherit">Мой кодекс <span class="badge" id="newbadge">2</span></a>
+          <a class="btn" href="#s=bestiary" style="text-decoration:none;color:inherit">Бестиарий</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== разделы приложения: наполняет more.js ===== -->
+  <section class="screen scroll" id="scr-home" data-screen="home" aria-label="Дело"></section>
+  <section class="screen scroll" id="scr-settings" data-screen="settings" aria-label="Настройки"></section>
+  <section class="screen scroll" id="scr-day2" data-screen="day2" aria-label="Дело второго дня"></section>
+  <section class="screen scroll" id="scr-codex" data-screen="codex" aria-label="Кодекс"></section>
+  <section class="screen scroll" id="scr-bestiary" data-screen="bestiary" aria-label="Бестиарий"></section>
+  <section class="screen scroll" id="scr-backstage" data-screen="backstage" aria-label="Закулисье"></section>
+
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<!-- заставка квеста, занавес между шагами и карточка поимки (слои поверх приложения) -->
+<div class="qtitle" id="qtitle" hidden aria-label="Суббота. Гараж. Три шага до него. Тап — пропустить">
+  <svg class="qt-thread" viewBox="0 0 360 120" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <path class="qt-line" d="M14 78 C70 78 80 40 130 52 S200 96 244 66 S300 56 318 70" fill="none" stroke="#E8432B" stroke-width="3.2" stroke-linecap="round"/>
+    <g class="qt-k k1"><circle cx="80" cy="56" r="9" fill="#F6F0DF" stroke="#1C1411" stroke-width="2.4"/><text x="80" y="60.5" text-anchor="middle" font-family="IBM Plex Mono" font-weight="700" font-size="12" fill="#1C1411">1</text></g>
+    <g class="qt-k k2"><circle cx="158" cy="62" r="9" fill="#F6F0DF" stroke="#1C1411" stroke-width="2.4"/><text x="158" y="66.5" text-anchor="middle" font-family="IBM Plex Mono" font-weight="700" font-size="12" fill="#1C1411">2</text></g>
+    <g class="qt-k k3"><circle cx="236" cy="72" r="9" fill="#F6F0DF" stroke="#1C1411" stroke-width="2.4"/><text x="236" y="76.5" text-anchor="middle" font-family="IBM Plex Mono" font-weight="700" font-size="12" fill="#1C1411">3</text></g>
+    <g class="qt-gar"><rect x="300" y="38" width="46" height="40" fill="#F6F0DF" stroke="#1C1411" stroke-width="2.6"/><path d="M296 38 L323 22 L350 38" fill="#6B1B26" stroke="#1C1411" stroke-width="2.6" stroke-linejoin="round"/><rect class="qt-glow" x="306" y="46" width="34" height="32" fill="#FFC247"/><g class="qt-door"><rect x="306" y="46" width="34" height="32" fill="#1C1411"/><path d="M306 54h34M306 62h34M306 70h34" stroke="#F6F0DF" stroke-width="1.6"/></g></g>
+  </svg>
+  <div class="qt-words"><span class="qw w1 rus">Суббота.</span><span class="qw w2 rus">Гараж.</span><span class="qw w3 rus">Три шага до него.</span></div>
+  <div class="qt-intro narr" id="qtintro">
+    <p>Суббота. У Дани в гараже собирается народ: колонка, пицца, чья-то приставка. Идут все. Кроме Тимура.</p>
+    <p>Тимур — твой друг. Хороший, но тяжёлый на подъём: «не, у меня дел куча». Дел у него, конечно, нет.</p>
+    <p>Задача простая: уговорить. Способов три, и все, если честно, так себе. Выбирай фразу и смотри, что с ним будет.</p>
+  </div>
+  <div class="qt-skip mono">тап — пропустить</div>
+</div>
+<div class="qcurtain" id="qcurtain" aria-hidden="true"><i class="l"></i><i class="r"></i></div>
+<div class="qcatch" id="qcatch" hidden></div>
+<!-- ник: «Как тебя подписать в чате?» (после заставки). Хранится только на устройстве, никуда не отправляется -->
+<div class="qnick" id="qnick" hidden aria-labelledby="qnh">
+  <div class="qn-in">
+    <h2 id="qnh" class="rus">Как тебя подписать в чате?</h2>
+    <p class="narr">В игре будут чаты, и там к тебе обращаются по имени. Придумай ник: любой, хоть выдуманный.</p>
+    <label class="mono qn-lab" for="nickin">твой ник · до 16 символов</label>
+    <input id="nickin" type="text" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Например, Шторм">
+    <p class="qn-note mono">Хранится только на этом телефоне и никуда не отправляется.</p>
+    <div class="qn-act"><button class="btn seen" id="nickok" type="button">Дальше</button><button class="btn" id="nicksk" type="button">Пропустить</button></div>
+    <p class="qn-note mono">Пропустишь — в чатах будет просто «ты».</p>
+  </div>
+</div>
+<script src="more.js"></script>
+<script src="scene.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
