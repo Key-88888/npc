@@ -1,7 +1,7 @@
 /* «Не По Сценарию» (НПС; рабочее имя было «Подвох») — кликабельный прототип единого продукта. Файлы: app.js (первая сессия, ход, чат, находка, крупицы, финал),
    more.js (Дело второго дня, кодекс, бестиарий, скрытый уровень, закулисье) и puppet.js (Тимур v4: рисование тела, позы, точки крепления нитей; грузится до app.js). Данные — в объектах DATA и EXT. Без сети, без ПДн;
    состояние на устройстве (localStorage, в try/catch), на сервер не уходит ничего.
-   Состояния по хэшу: #s=intro|choice|stamp|reveal|pillar|found|crumbs|end|day2|day3|codex|bestiary|hidden|home|settings|backstage|quest (step=title|step2|step3|catch|final).
+   Состояния по хэшу: #s=intro|choice|stamp|reveal|pillar|found|crumbs|end|day2|day3|day4|codex|bestiary|hidden|home|settings|backstage|quest (step=title|step2|step3|catch|final).
    Первая сессия — квест «Суббота» (заход C, 04.11): заставка → шаг 1 «Тимур» → шаг 2 «Чат класса» → шаг 3 «Витрина» → «Без нитей» → итог; нить-тропа сверху, вкладки «Бестиарий» и «Кодекс» появляются действием.
    ФЛАГИ — ТОЛЬКО В ХЭШЕ (после «#», через «&»; адресная строка вида index.html#reset&w0):
      #reset   один раз стирает сохранённое состояние и сразу убирает себя из адреса (history.replaceState): перезагрузка и открытие
@@ -14,7 +14,7 @@
   'use strict';
   var EXT = window.EXT;
   /* штамп сборки: наблюдатель записывает его в лист (виден в настройках → «Для взрослых»); при заморозке версии менять код вручную */
-  var BUILD = '2026-11-06 · w0-12';
+  var BUILD = '2026-11-07 · w0-13';
 
   /* ================= ДАННЫЕ ================= */
   /* Тексты — из материалы/тексты-первой-сессии.md (заход D, 04.11): голос А — рассказчик («что происходит»), голос Б — реплики персонажей строчными.
@@ -333,8 +333,8 @@
 
   /* ================= ЭКРАНЫ ================= */
   var screens = { play: 'scr-play', chat: 'scr-chat', q2: 'scr-q2', q3: 'scr-q3', pillar: 'scr-pillar', verdict: 'scr-verdict', honest: 'scr-honest', end: 'scr-end',
-                  home: 'scr-home', settings: 'scr-settings', day2: 'scr-day2', day3: 'scr-day3', codex: 'scr-codex', bestiary: 'scr-bestiary', backstage: 'scr-backstage' };
-  var DARK = { play: 1, chat: 1, pillar: 1, verdict: 1, q2: 1, q3: 1, honest: 1, end: 1, home: 1, settings: 1, day2: 1, day3: 1, codex: 1, bestiary: 1, backstage: 1 }; /* служебные экраны тоже в тёмном мире (перенос, часть 2: look/BRIEF-PORT-2.md) */
+                  home: 'scr-home', settings: 'scr-settings', day2: 'scr-day2', day3: 'scr-day3', day4: 'scr-day4', codex: 'scr-codex', bestiary: 'scr-bestiary', backstage: 'scr-backstage' };
+  var DARK = { play: 1, chat: 1, pillar: 1, verdict: 1, q2: 1, q3: 1, honest: 1, end: 1, home: 1, settings: 1, day2: 1, day3: 1, day4: 1, codex: 1, bestiary: 1, backstage: 1 }; /* служебные экраны тоже в тёмном мире (перенос, часть 2: look/BRIEF-PORT-2.md) */
   function showScreen(name) {
     Object.keys(screens).forEach(function (k) { $('#' + screens[k]).classList.toggle('on', k === name); });
     document.body.className = document.body.className.replace(/\bscr-\w+/g, '').trim();
@@ -754,7 +754,7 @@
   var NUMW = { 1: 'один', 2: 'двое', 3: 'трое' };
   function beastNames(ids) { return ids.map(function (id) { return EXT.BEASTS[id].name; }); }
   function keptRules() {
-    var all = cands().concat(S.ext.d2 && S.ext.d2.cr ? S.ext.d2.cr : []).concat(S.ext.d3 && S.ext.d3.cr ? S.ext.d3.cr : []).concat((S.ext && S.ext.drafts) || []);
+    var all = cands().concat(S.ext.d2 && S.ext.d2.cr ? S.ext.d2.cr : []).concat(S.ext.d3 && S.ext.d3.cr ? S.ext.d3.cr : []).concat(S.ext.d4 && S.ext.d4.cr ? S.ext.d4.cr : []).concat((S.ext && S.ext.drafts) || []);
     return all.filter(function (c) { return c.status === 'keep' || c.status === 'fit'; });
   }
   function enterEnd() {
@@ -762,13 +762,20 @@
     var d2 = S.ext && S.ext.d2 && S.ext.d2.fin ? S.ext.d2 : null, kept = 0, sum, cl, nl = EXT.nextLabel(Date.now());
     var rules = keptRules().map(function (c) { return c.text; }); kept = rules.length;
     var allBeasts = S.ext.beasts || [];
-    var d3 = S.ext && S.ext.d3 && S.ext.d3.fin ? S.ext.d3 : null;
-    if (d3) {
-      var t3 = ['guilt'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
+    var d3 = S.ext && S.ext.d3 && S.ext.d3.fin ? S.ext.d3 : null, d4 = S.ext && S.ext.d4 && S.ext.d4.fin ? S.ext.d4 : null;
+    if (d4) {
+      var t4 = ['auth'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
       $('#endh').textContent = 'На сегодня всё'; $('#endh').className = ''; $('#endcap').textContent = '';
       kept = EXT.counts(U).sheet; /* тот же счётчик, что на плитке главного экрана */
+      sum = '<p class="narr">Поймано сегодня: ' + esc(listAnd(beastNames(t4))) + '. В Кодексе теперь: ' + kept + '.</p>';
+      var em4 = $('.tomorrow em'); em4.textContent = 'Дело 5 ещё пишется. Как будет готово — появится прямо здесь.'; em4.className = '';
+      cl = EXT.cliff5(U);
+    } else if (d3) {
+      var t3 = ['guilt'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
+      $('#endh').textContent = 'На сегодня всё'; $('#endh').className = ''; $('#endcap').textContent = '';
+      kept = EXT.counts(U).sheet;
       sum = '<p class="narr">Поймано сегодня: ' + esc(listAnd(beastNames(t3))) + '. В Кодексе теперь: ' + kept + '.</p>';
-      var em3 = $('.tomorrow em'); em3.textContent = 'Дело 4 ещё пишется. Как будет готово — появится прямо здесь.'; em3.className = '';
+      var em3 = $('.tomorrow em'); em3.textContent = cap1(nl) + ' — что будет дальше.'; em3.className = '';
       cl = EXT.cliff4(U);
     } else if (d2) {
       var t2 = ['recip', 'fakec'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
@@ -1061,7 +1068,7 @@
   /* игровой день = номер завершённого Дела + 1 (Р8). Явный флаг day=N и демо важнее; без завершённых Дел в состоянии — день из OPT */
   function gameDay() {
     var e = S && S.ext;
-    if (!OPT.dayFlag && e && e.day1Done) return 2 + (e.d2 && e.d2.fin ? 1 : 0) + (e.d3 && e.d3.fin ? 1 : 0);
+    if (!OPT.dayFlag && e && e.day1Done) return 2 + (e.d2 && e.d2.fin ? 1 : 0) + (e.d3 && e.d3.fin ? 1 : 0) + (e.d4 && e.d4.fin ? 1 : 0);
     return OPT.day;
   }
   var U = {
@@ -1070,7 +1077,7 @@
     nick: function () { return (S && S.ext && S.ext.nick) || ''; }, catchBeast: catchBeast, questNext: questNext, forget: function () { lsDel(); try { history.replaceState(null, '', location.pathname + location.search + '#s=intro'); } catch (e) { /* file:// */ } route(); toast('Всё стёрто с этого устройства'); }
   };
   EXT.U = U;
-  var EXTS = { whatwas: 1, home: 1, hidden: 1, day2: 1, day3: 1, codex: 1, bestiary: 1, backstage: 1, settings: 1, lupa: 1 };
+  var EXTS = { whatwas: 1, home: 1, hidden: 1, day2: 1, day3: 1, day4: 1, codex: 1, bestiary: 1, backstage: 1, settings: 1, lupa: 1 };
 
   function enter(name, step) {
     clearTimers();

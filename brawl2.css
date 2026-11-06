@@ -402,10 +402,10 @@ body.dk .todaycard.d3::before {
 @media (min-width: 900px) { .d2side .reveal.fbk p { font-size: 18px; } }
 /* В1: пустая плашка под «На сегодня всё» */
 #endcap:empty { display: none; }
-/* В3: карточка «Дело 4 — скоро» — обложка Дела 3 и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
+/* В3: карточка «Дело 5 — скоро» — обложка Дела 4 и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
 body.dk .todaycard.wait.end::before {
   background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
-    url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+    url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
   filter: none;
 }
 body.dk .todaycard.wait.end .narr { background: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96)); border: 3px solid var(--ink); border-radius: 14px; color: #fff; font-weight: 550; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink); }
@@ -430,3 +430,35 @@ body.dk .pocketcard .pc small { margin-left: 6px; }
 @media (max-width: 899px) {
   .d2grid:not(:has(.d2m.thread)) > .d2side { min-height: calc(100vh - 150px); }
 }
+
+/* ===== Дело 4 «Стена» (экран #scr-day4): те же правила, что у Дел 2 и 3; обложка art/d4-cover.webp (левая треть — пустая бетонная стена, герои справа), запасной слой — гараж ===== */
+body.dk.dk #scr-day4.screen:not(#scr-play):not(#scr-honest) {
+  background:
+    linear-gradient(180deg, rgba(10, 18, 52, .88), rgba(10, 18, 52, .94)),
+    url("art/d4-cover.webp") 86% center / cover no-repeat fixed,
+    url("art/garage.webp") 86% center / cover no-repeat fixed,
+    var(--night);
+}
+body.dk #scr-day4 .wrap { color: #fff; }
+body.scr-day4 .helpchip { display: none; }
+@media (min-width: 900px) {
+  body.dk.dk #scr-day4.screen:not(#scr-play):not(#scr-honest) {
+    background:
+      linear-gradient(180deg, rgba(10, 18, 52, .90), rgba(10, 18, 52, .95)),
+      url("art/d4-cover.webp") 100% 40% / cover no-repeat fixed,
+      url("art/garage.webp") 92% 40% / 150% auto no-repeat fixed,
+      var(--night);
+  }
+}
+/* афиша Дела 4: герои на обложке справа, слева пустая стена — заголовок ложится на стену, а не на лица */
+body.dk .todaycard.d4::before {
+  background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
+    url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+}
+/* Бестиарий: Шишка — тёплый янтарный под золотую медаль */
+#scr-bestiary .beast:not(.locked)[data-c="auth"] { --bc: #c98a4b; --bc2: #7a4a1c; }   /* Шишка: каштановый (вес селектора выше общего правила brawl3.css) */
+#scr-bestiary .beast:not(.locked)[data-c="guilt"] { --bc: #8fe36b; --bc2: #2f9e44; }   /* Обидка: салатовый (то же) */
+/* подсказка «Есть ещё сообщение, где давят»: читаемая плашка, а не мелкий белый текст на тёмном */
+.d2side .prompt.d2more { display: block; margin: 16px 0 0; padding: 10px 12px 11px; border: 3px solid var(--ink); border-left-width: 8px; border-radius: 12px; background: linear-gradient(180deg, #fff, var(--cream)); color: var(--ink); font: 700 15.5px/1.3 "Golos Text", sans-serif; text-shadow: none; text-transform: none; letter-spacing: 0; box-shadow: 0 3px 0 var(--ink); text-align: left; }
+/* «Ещё одно на сегодня»: тег на первой строке не налезает на заголовок артефакта */
+.lupa-card .af-t { margin-bottom: 18px; }
