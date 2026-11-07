@@ -402,10 +402,10 @@ body.dk .todaycard.d3::before {
 @media (min-width: 900px) { .d2side .reveal.fbk p { font-size: 18px; } }
 /* В1: пустая плашка под «На сегодня всё» */
 #endcap:empty { display: none; }
-/* В3: карточка «Дело 5 — скоро» — обложка Дела 4 и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
+/* В3: карточка «Засада — скоро» — обложка Дела 5 (под ней Дело 4) и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
 body.dk .todaycard.wait.end::before {
   background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
-    url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+    url("art/d5-cover.webp") 70% 20% / cover no-repeat, url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
   filter: none;
 }
 body.dk .todaycard.wait.end .narr { background: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96)); border: 3px solid var(--ink); border-radius: 14px; color: #fff; font-weight: 550; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink); }
@@ -462,3 +462,42 @@ body.dk .todaycard.d4::before {
 .d2side .prompt.d2more { display: block; margin: 16px 0 0; padding: 10px 12px 11px; border: 3px solid var(--ink); border-left-width: 8px; border-radius: 12px; background: linear-gradient(180deg, #fff, var(--cream)); color: var(--ink); font: 700 15.5px/1.3 "Golos Text", sans-serif; text-shadow: none; text-transform: none; letter-spacing: 0; box-shadow: 0 3px 0 var(--ink); text-align: left; }
 /* «Ещё одно на сегодня»: тег на первой строке не налезает на заголовок артефакта */
 .lupa-card .af-t { margin-bottom: 18px; }
+
+/* ===== Дело 5 «Сосед» (экран #scr-day5): те же правила, что у Дел 2–4; обложка art/d5-cover.webp (1080×720, ребята у ворот в правой половине), запасной слой — гараж ===== */
+body.dk.dk #scr-day5.screen:not(#scr-play):not(#scr-honest) {
+  background:
+    linear-gradient(180deg, rgba(10, 18, 52, .88), rgba(10, 18, 52, .94)),
+    url("art/d5-cover.webp") 70% center / cover no-repeat fixed,
+    url("art/garage.webp") 86% center / cover no-repeat fixed,
+    var(--night);
+}
+body.dk #scr-day5 .wrap { color: #fff; }
+body.scr-day5 .helpchip { display: none; }
+@media (min-width: 900px) {
+  body.dk.dk #scr-day5.screen:not(#scr-play):not(#scr-honest) {
+    background:
+      linear-gradient(180deg, rgba(10, 18, 52, .95), rgba(10, 18, 52, .95)),
+      url("art/d5-cover.webp") 100% 40% / cover no-repeat fixed,
+      url("art/garage.webp") 92% 40% / 150% auto no-repeat fixed,
+      var(--night);
+  }
+}
+/* афиша Дела 5: ребята на обложке справа, слева ворота — заголовок ложится на ворота, а не на лица */
+body.dk .todaycard.d5::before {
+  background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
+    url("art/d5-cover.webp") 70% 20% / cover no-repeat, url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+}
+/* Бестиарий: Подначка — фуксия, под колпак существа (малиновый #ff4fa3 почти совпадал с Подлизой #ff5a9a; вес селектора выше общего правила brawl3.css) */
+#scr-bestiary .beast:not(.locked)[data-c="dare"] { --bc: #e040fb; --bc2: #7b1fa2; }
+
+/* ===== круг правок по Делу 5 (после ревью) ===== */
+/* карточка «Засада — скоро»: срока нет, замок не нужен (он ложился на лицо Алины); заголовок во всю ширину */
+body.dk .todaycard.wait.end::after { display: none; }
+body.dk .todaycard.wait.end h1 { max-width: none; }
+/* заголовок ожидания: «в 7 утра» и «в понедельник» не рвутся, нет висячего «В» */
+body.dk .todaycard.wait h1 .nw { white-space: nowrap; }
+/* подсказка «Есть ещё сообщение, где давят. Тапни его.»: жёлтая плашка с жирным шрифтом и стрелкой вверх, к сообщениям (перебивает more.css и brawl.css; общая для Дел 2–5) */
+body.dk .d2side .prompt.d2more { font: 800 15px/1.35 "Golos Text", sans-serif; color: var(--ink); text-shadow: none; background: linear-gradient(180deg, #fff08a, var(--yellow)); border: 3px solid var(--ink); border-left-width: 8px; box-shadow: 0 3px 0 var(--ink); }
+body.dk .d2side .prompt.d2more::before { content: "↑ "; }
+/* карточка поимки: колпак Подначки не упирается в верхний край — картинка ниже (88% -> 74% высоты), нижний отступ прежний, ноги остаются на пьедестале; transform нельзя: его занимает анимация bob */
+.qc-art .creimg[data-cr="dare"] { height: 74%; }
