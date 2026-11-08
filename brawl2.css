@@ -400,12 +400,14 @@ body.dk .todaycard.d3::before {
 .d2side .reveal.fbk.rvk + .reveal.fbk.rvk { margin-top: 30px; }
 .reveal.fbk .rvh { position: absolute; left: 12px; top: -15px; margin: 0; padding: 4px 11px 3px; border-radius: 9px; rotate: -2deg; font: 400 13px/1.1 "Russo One", sans-serif; letter-spacing: .02em; text-transform: none; color: #fff; -webkit-text-stroke: 3.2px var(--ink); paint-order: stroke fill; border: 2.5px solid var(--ink); box-shadow: 0 3px 0 var(--ink); max-width: calc(100% - 24px); background: linear-gradient(180deg, var(--blue), var(--blue-2)); }
 @media (min-width: 900px) { .d2side .reveal.fbk p { font-size: 18px; } }
+/* Лупа внутри Дела (Дела 2–8): боковая колонка узкая, сетка карточки из more.css сжимала итог до одного слова — как на телефоне: артефакт, под ним лоток и итог. Бестиарий (#scr-bestiary) не трогаем */
+@media (min-width: 900px) { .d2side .lupa-host .lupa-card { display: block; } }
 /* В1: пустая плашка под «На сегодня всё» */
 #endcap:empty { display: none; }
-/* В3: карточка после конца дня (с w0-16 — «Вторая неделя — скоро», раньше «Седьмой день — скоро» и «Засада — скоро») — обложка Засады (под ней Дела 5 и 4) и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
+/* В3: карточка после конца дня (с w0-17 — «Дело 9 — скоро» (WAIT9), раньше «Вторая неделя — скоро», «Седьмой день — скоро» и «Засада — скоро») — обложка Дела 8 (под ней Засада, Дела 5 и 4) и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
 body.dk .todaycard.wait.end::before {
   background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
-    url("art/d7-cover.webp") 70% 20% / cover no-repeat, url("art/d6-cover.webp") 70% 20% / cover no-repeat, url("art/d5-cover.webp") 70% 20% / cover no-repeat, url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+    url("art/d8-cover.webp") 70% 20% / cover no-repeat, url("art/d7-cover.webp") 70% 20% / cover no-repeat, url("art/d6-cover.webp") 70% 20% / cover no-repeat, url("art/d5-cover.webp") 70% 20% / cover no-repeat, url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
   filter: none;
 }
 body.dk .todaycard.wait.end .narr { background: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96)); border: 3px solid var(--ink); border-radius: 14px; color: #fff; font-weight: 550; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink); }
@@ -561,6 +563,7 @@ body.dk button.tile.z-plot { display: block; width: 100%; text-align: left; font
 .z-cre .z-face { flex: none; width: 48px; }
 .z-cre .z-cn { min-width: 0; overflow-wrap: anywhere; }
 .z-cre.on { outline: 4px solid var(--yellow); outline-offset: 1px; background: linear-gradient(180deg, #fff6b8, #ffe872); }
+@media (max-width: 639px) { .z-cres .z-cre:last-child:nth-child(odd) { grid-column: 1 / -1; } } /* одиннадцатое существо (Зацепка): одинокая кнопка последнего ряда — во всю ширину */
 .z-cre.taken, .z-cre:disabled { opacity: .45; filter: grayscale(.6); box-shadow: none; }
 @media (min-width: 640px) { .z-cres { grid-template-columns: repeat(5, minmax(0, 1fr)); } .z-side:has(.z-cres) { max-width: 760px; } .z-cre { flex-direction: column; text-align: center; justify-content: center; } }
 /* две строки обличья */
@@ -669,6 +672,33 @@ body.dk .todaycard.d7::before {
   }
 }
 .todaycard .week7 { margin-top: 10px; }
+
+/* ===== Дело 8 «Ярмарка» (экран #scr-day8, w0-17): те же правила, что у Дел 2–5; фон — затемнённая обложка art/d8-cover.webp (слева пусто под заголовок, фигуры справа), запасной слой — обложка Дела 7 и гараж ===== */
+body.dk.dk #scr-day8.screen:not(#scr-play):not(#scr-honest) {
+  background:
+    linear-gradient(180deg, rgba(10, 18, 52, .88), rgba(10, 18, 52, .94)),
+    url("art/d8-cover.webp") 70% center / cover no-repeat fixed,
+    url("art/garage.webp") 86% center / cover no-repeat fixed,
+    var(--night);
+}
+body.dk #scr-day8 .wrap { color: #fff; }
+body.scr-day8 .helpchip { display: none; }
+@media (min-width: 900px) {
+  body.dk.dk #scr-day8.screen:not(#scr-play):not(#scr-honest) {
+    background:
+      linear-gradient(180deg, rgba(10, 18, 52, .95), rgba(10, 18, 52, .95)),
+      url("art/d8-cover.webp") 100% 40% / cover no-repeat fixed,
+      url("art/garage.webp") 92% 40% / 150% auto no-repeat fixed,
+      var(--night);
+  }
+}
+/* афиша Дела 8: левая треть обложки пустая под заголовок, фигуры справа; пока файла нет — обложка Дела 7 */
+body.dk .todaycard.d8::before {
+  background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
+    url("art/d8-cover.webp") 70% 20% / cover no-repeat, url("art/d7-cover.webp") 70% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+}
+/* Бестиарий: Зацепка — оливковый (темнее и желтее лаймового Обидки, зеленее жёлтого Решалы; вес селектора выше общего правила brawl3.css) */
+#scr-bestiary .beast:not(.locked)[data-c="hook"] { --bc: #a3b035; --bc2: #5f6b12; }
 /* пара выводов и нить между ними (разметка Кодекса, но вне #scr-codex) */
 #scr-day7 .d7sheet { display: grid; gap: 11px 10px; margin: 14px 0 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; list-style: none; }
 #scr-day7 .d7sheet .srow { position: relative; display: grid; grid-template-columns: 32px 40px minmax(0, 1fr); align-items: center; gap: 0 10px; padding: 10px 12px 10px 10px; margin: 0; border: 3px solid var(--ink); border-radius: 16px; background: var(--card); box-shadow: var(--card-sh); color: var(--ink); }
