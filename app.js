@@ -1,20 +1,21 @@
 /* «Не По Сценарию» (НПС; рабочее имя было «Подвох») — кликабельный прототип единого продукта. Файлы: app.js (первая сессия, ход, чат, находка, крупицы, финал),
    more.js (Дело второго дня, кодекс, бестиарий, скрытый уровень, закулисье) и puppet.js (Тимур v4: рисование тела, позы, точки крепления нитей; грузится до app.js). Данные — в объектах DATA и EXT. Без сети, без ПДн;
    состояние на устройстве (localStorage, в try/catch), на сервер не уходит ничего.
-   Состояния по хэшу: #s=intro|choice|stamp|reveal|pillar|found|crumbs|end|day2|day3|day4|day5|codex|bestiary|hidden|home|settings|backstage|quest (step=title|step2|step3|catch|final).
+   Состояния по хэшу: #s=intro|choice|stamp|reveal|pillar|found|crumbs|end|day2|day3|day4|day5|day6|zf|codex|bestiary|hidden|home|settings|backstage|quest (step=title|step2|step3|catch|final).
    Первая сессия — квест «Суббота» (заход C, 04.11): заставка → шаг 1 «Тимур» → шаг 2 «Чат класса» → шаг 3 «Витрина» → «Без нитей» → итог; нить-тропа сверху, вкладки «Бестиарий» и «Кодекс» появляются действием.
    ФЛАГИ — ТОЛЬКО В ХЭШЕ (после «#», через «&»; адресная строка вида index.html#reset&w0):
      #reset   один раз стирает сохранённое состояние и сразу убирает себя из адреса (history.replaceState): перезагрузка и открытие
               из истории прогресс повторно не стирают. Остальные флаги в хэше остаются.
      #now     (и now=1) второе Дело без ожидания 07:00 — для проверки; участникам ссылку без него.
      #w0      режим недели 0: скрытые приёмы выключены с самого начала; это сохраняется в состоянии и видно в настройках.
+     z=<код>  ссылка друга на Засаду (шестой день): экран «Тебе прислали Засаду», сохранение не трогается и не создаётся; код — EXT.zEncode/zDecode, живёт семь дней.
      demo=1   насыщенное демо · day=N игровой день · t=H час на устройстве · s=… и step=… состояние для рендера.
    Чистое открытие (без хэша и без сохранённого состояния) ведёт в первую сессию. Штамп сборки — константа BUILD ниже. */
 (function () {
   'use strict';
   var EXT = window.EXT;
   /* штамп сборки: наблюдатель записывает его в лист (виден в настройках → «Для взрослых»); при заморозке версии менять код вручную */
-  var BUILD = '2026-11-07 · w0-14';
+  var BUILD = '2026-11-08 · w0-15';
 
   /* ================= ДАННЫЕ ================= */
   /* Тексты — из материалы/тексты-первой-сессии.md (заход D, 04.11): голос А — рассказчик («что происходит»), голос Б — реплики персонажей строчными.
@@ -333,8 +334,8 @@
 
   /* ================= ЭКРАНЫ ================= */
   var screens = { play: 'scr-play', chat: 'scr-chat', q2: 'scr-q2', q3: 'scr-q3', pillar: 'scr-pillar', verdict: 'scr-verdict', honest: 'scr-honest', end: 'scr-end',
-                  home: 'scr-home', settings: 'scr-settings', day2: 'scr-day2', day3: 'scr-day3', day4: 'scr-day4', day5: 'scr-day5', codex: 'scr-codex', bestiary: 'scr-bestiary', backstage: 'scr-backstage' };
-  var DARK = { play: 1, chat: 1, pillar: 1, verdict: 1, q2: 1, q3: 1, honest: 1, end: 1, home: 1, settings: 1, day2: 1, day3: 1, day4: 1, day5: 1, codex: 1, bestiary: 1, backstage: 1 }; /* служебные экраны тоже в тёмном мире (перенос, часть 2: look/BRIEF-PORT-2.md) */
+                  home: 'scr-home', settings: 'scr-settings', day2: 'scr-day2', day3: 'scr-day3', day4: 'scr-day4', day5: 'scr-day5', day6: 'scr-day6', zf: 'scr-zf', codex: 'scr-codex', bestiary: 'scr-bestiary', backstage: 'scr-backstage' };
+  var DARK = { play: 1, chat: 1, pillar: 1, verdict: 1, q2: 1, q3: 1, honest: 1, end: 1, home: 1, settings: 1, day2: 1, day3: 1, day4: 1, day5: 1, day6: 1, zf: 1, codex: 1, bestiary: 1, backstage: 1 }; /* служебные экраны тоже в тёмном мире (перенос, часть 2: look/BRIEF-PORT-2.md) */
   function showScreen(name) {
     Object.keys(screens).forEach(function (k) { $('#' + screens[k]).classList.toggle('on', k === name); });
     document.body.className = document.body.className.replace(/\bscr-\w+/g, '').trim();
@@ -754,7 +755,7 @@
   var NUMW = { 1: 'один', 2: 'двое', 3: 'трое' };
   function beastNames(ids) { return ids.map(function (id) { return EXT.BEASTS[id].name; }); }
   function keptRules() {
-    var all = cands().concat(S.ext.d2 && S.ext.d2.cr ? S.ext.d2.cr : []).concat(S.ext.d3 && S.ext.d3.cr ? S.ext.d3.cr : []).concat(S.ext.d4 && S.ext.d4.cr ? S.ext.d4.cr : []).concat(S.ext.d5 && S.ext.d5.cr ? S.ext.d5.cr : []).concat((S.ext && S.ext.drafts) || []);
+    var all = cands().concat(S.ext.d2 && S.ext.d2.cr ? S.ext.d2.cr : []).concat(S.ext.d3 && S.ext.d3.cr ? S.ext.d3.cr : []).concat(S.ext.d4 && S.ext.d4.cr ? S.ext.d4.cr : []).concat(S.ext.d5 && S.ext.d5.cr ? S.ext.d5.cr : []).concat(S.ext.d6 && S.ext.d6.cr ? S.ext.d6.cr : []).concat((S.ext && S.ext.drafts) || []);
     return all.filter(function (c) { return c.status === 'keep' || c.status === 'fit'; });
   }
   function enterEnd() {
@@ -762,13 +763,19 @@
     var d2 = S.ext && S.ext.d2 && S.ext.d2.fin ? S.ext.d2 : null, kept = 0, sum, cl, nl = EXT.nextLabel(Date.now());
     var rules = keptRules().map(function (c) { return c.text; }); kept = rules.length;
     var allBeasts = S.ext.beasts || [];
-    var d3 = S.ext && S.ext.d3 && S.ext.d3.fin ? S.ext.d3 : null, d4 = S.ext && S.ext.d4 && S.ext.d4.fin ? S.ext.d4 : null, d5 = S.ext && S.ext.d5 && S.ext.d5.fin ? S.ext.d5 : null;
-    if (d5) {
+    var d3 = S.ext && S.ext.d3 && S.ext.d3.fin ? S.ext.d3 : null, d4 = S.ext && S.ext.d4 && S.ext.d4.fin ? S.ext.d4 : null, d5 = S.ext && S.ext.d5 && S.ext.d5.fin ? S.ext.d5 : null, d6 = S.ext && S.ext.d6 && S.ext.d6.fin ? S.ext.d6 : null;
+    if (d6) {
+      $('#endh').textContent = 'На сегодня всё'; $('#endh').className = ''; $('#endcap').textContent = '';
+      kept = EXT.counts(U).sheet; /* тот же счётчик, что на плитке главного экрана */
+      sum = '<p class="narr">Поймано у Тимура: ' + EXT.d6Caught(U) + ' из 3. В Кодексе теперь: ' + kept + '.</p>';
+      var em6 = $('.tomorrow em'); em6.textContent = EXT.nb(EXT.END6.tomorrow); em6.className = '';
+      cl = EXT.cliff7(U);
+    } else if (d5) {
       var t5 = ['dare'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
       $('#endh').textContent = 'На сегодня всё'; $('#endh').className = ''; $('#endcap').textContent = '';
       kept = EXT.counts(U).sheet; /* тот же счётчик, что на плитке главного экрана */
       sum = '<p class="narr">Поймано сегодня: ' + esc(listAnd(beastNames(t5))) + '. В Кодексе теперь: ' + kept + '.</p>';
-      var em5 = $('.tomorrow em'); em5.textContent = 'Дальше по расписанию — Засада, но она ещё пишется. Как будет готова — появится прямо здесь.'; em5.className = '';
+      var em5 = $('.tomorrow em'); em5.textContent = cap1(nl) + ' — что будет дальше.'; em5.className = '';
       cl = EXT.cliff6(U);
     } else if (d4) {
       var t4 = ['auth'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
@@ -807,7 +814,11 @@
     $('#cliff').innerHTML = '<div class="bub"><b>' + esc(cl[0]) + '</b>' + esc(cl[1]) + '</div>';
     var pocket = ((S.ext && S.ext.drafts) || []).length; /* отложенное считается отдельно */
     var b = $('#newbadge'); b.textContent = kept; b.hidden = kept === 0;
-    $('#copylab').textContent = 'Скинуть другу'; $('#copynote').textContent = shareNote(); $('#copydone').textContent = '';
+    /* у шестого дня вместо «Скинуть другу» — ссылка на свою Засаду (если переключатель «Засада» включён); у остальных дней кнопка прежняя */
+    var cg = $('#copygrid'), cn = $('#copynote');
+    if (d6) { var zon = EXT.swOn(U, 3); cg.style.display = zon ? '' : 'none'; cn.style.display = zon ? '' : 'none'; $('#copylab').textContent = EXT.ZSHARE.lab; cn.textContent = zon ? EXT.ZSHARE.note : ''; }
+    else { cg.style.display = ''; cn.style.display = ''; $('#copylab').textContent = 'Скинуть другу'; cn.textContent = shareNote(); }
+    $('#copydone').textContent = '';
     setHashQuiet('end');
   }
   /* что реально уходит другу: ссылка на игру и счёт — сколько приёмов поймано и сколько выводов в Кодексе; ни ответов, ни текстов выводов в ссылке нет */
@@ -1075,16 +1086,16 @@
   /* игровой день = номер завершённого Дела + 1 (Р8). Явный флаг day=N и демо важнее; без завершённых Дел в состоянии — день из OPT */
   function gameDay() {
     var e = S && S.ext;
-    if (!OPT.dayFlag && e && e.day1Done) return 2 + (e.d2 && e.d2.fin ? 1 : 0) + (e.d3 && e.d3.fin ? 1 : 0) + (e.d4 && e.d4.fin ? 1 : 0) + (e.d5 && e.d5.fin ? 1 : 0);
+    if (!OPT.dayFlag && e && e.day1Done) return 2 + (e.d2 && e.d2.fin ? 1 : 0) + (e.d3 && e.d3.fin ? 1 : 0) + (e.d4 && e.d4.fin ? 1 : 0) + (e.d5 && e.d5.fin ? 1 : 0) + (e.d6 && e.d6.fin ? 1 : 0);
     return OPT.day;
   }
   var U = {
     S: function () { return S; }, $: $, $$: $$, esc: esc, buzz: buzz, later: later, showScreen: showScreen, toast: toast,
     go: function (n) { location.hash = '#s=' + n; }, quiet: setHashQuiet, seed: seedDemo, cands: cands, DATA: DATA, cap1: cap1, opt: function () { return OPT; }, day: gameDay, build: BUILD,
-    nick: function () { return (S && S.ext && S.ext.nick) || ''; }, catchBeast: catchBeast, questNext: questNext, forget: function () { lsDel(); try { history.replaceState(null, '', location.pathname + location.search + '#s=intro'); } catch (e) { /* file:// */ } route(); toast('Всё стёрто с этого устройства'); }
+    enterEnd: function () { enterEnd(); }, nick: function () { return (S && S.ext && S.ext.nick) || ''; }, catchBeast: catchBeast, questNext: questNext, forget: function () { lsDel(); try { history.replaceState(null, '', location.pathname + location.search + '#s=intro'); } catch (e) { /* file:// */ } route(); toast('Всё стёрто с этого устройства'); }
   };
   EXT.U = U;
-  var EXTS = { whatwas: 1, home: 1, hidden: 1, day2: 1, day3: 1, day4: 1, day5: 1, codex: 1, bestiary: 1, backstage: 1, settings: 1, lupa: 1 };
+  var EXTS = { whatwas: 1, home: 1, hidden: 1, day2: 1, day3: 1, day4: 1, day5: 1, day6: 1, zf: 1, codex: 1, bestiary: 1, backstage: 1, settings: 1, lupa: 1 };
 
   function enter(name, step) {
     clearTimers();
@@ -1142,7 +1153,16 @@
   function lsDel() { try { window.localStorage.removeItem(KEY); } catch (e) { /* нечего стирать */ } }
   function persist() {
     if (!S || !S.real) return;
-    try { lsSet(JSON.stringify({ v: 1, S: S })); } catch (e) { /* не сериализуется: пропускаем */ }
+    try {
+      /* экран друга (#z=…) и гостевая сборка не сохраняются: иначе следующий заход без адреса «прилип» бы к чужой Засаде */
+      var out = S;
+      if (S.scr === 'zf' || (S.ext && (S.ext.zf || S.ext.zg))) {
+        out = JSON.parse(JSON.stringify(S));
+        if (out.ext) { delete out.ext.zf; delete out.ext.zg; }
+        if (out.scr === 'zf') out.scr = out.ext && out.ext.day1Done ? 'home' : 'play';
+      }
+      lsSet(JSON.stringify({ v: 1, S: out }));
+    } catch (e) { /* не сериализуется: пропускаем */ }
   }
   function loadSaved() {
     var raw = lsGet(); if (!raw) return null;
@@ -1174,9 +1194,12 @@
     try { history.replaceState(null, '', location.pathname + location.search + (rest.length ? '#' + rest.join('&') : '')); } catch (e) { /* file:// */ }
     return true;
   }
+  /* ссылка друга: #z=<код> — экран «Тебе прислали Засаду»; разбираем до resume/setHashQuiet (они переписывают хэш целиком) и не трогаем сохранение */
+  function zToken() { var t = hashTokens().filter(function (x) { return /^z=/.test(x); })[0]; return t ? t.slice(2) : null; }
   function route() {
-    var h = flagsStr(), m = /[&#]s=([a-z0-9]+)/.exec(h), st = /step=([a-z0-9]+)/.exec(h);
+    var h = flagsStr(), m = /[&#]s=([a-z0-9]+)/.exec(h), st = /step=([a-z0-9]+)/.exec(h), zt = zToken();
     parseFlags();
+    if (zt !== null && !m) { clearTimers(); applyW0(); EXT.zStart(U, zt); return; }
     if (!m && S && S.real && S.scr && !hasFlag('reset')) { resume(S.scr); return; } /* «назад» на запись без s=: прогресс не сбрасываем */
     enter(m ? m[1] : 'intro', st ? st[1] : '');
   }
@@ -1200,6 +1223,11 @@
   }
   function boot() {
     consumeReset();
+    var zt0 = zToken();
+    if (zt0 !== null) {
+      var sv0 = loadSaved(); if (sv0) { S = sv0; S.real = true; if (!S.ext) S.ext = {}; }
+      parseFlags(); applyW0(); EXT.zStart(U, zt0); return;
+    }
     var f = flagsStr(), hasS = /[&#]s=[a-z0-9]+/.test(f), reload = navType() === 'reload';
     var saved = loadSaved();
     /* без адреса-состояния или после перезагрузки страницы — продолжаем с сохранённого; адрес-состояние при новом открытии важнее */
@@ -1207,6 +1235,7 @@
       S = saved; S.real = true; if (!S.ext) S.ext = {};
       parseFlags(); applyW0();
       var scr = S.scr || 'play';
+      if (scr === 'zf') scr = S.ext && S.ext.day1Done ? 'home' : 'play'; /* экран друга не возвращаем */
       if (!reload && scr === 'end') scr = 'home';  /* новый визит после конца дня — на главную: там виден срок следующего Дела */
       resume(scr); return;
     }
@@ -1248,8 +1277,9 @@
       if (e.target.closest('#honestnext')) enterEnd();
     });
     $('#copygrid').addEventListener('click', function () {
-      var good = function () { $('#copydone').textContent = 'Ссылка скопирована. Вставь в любой чат.'; }, bad = function () { $('#copydone').textContent = 'Скопировать не получилось: перешли ссылку на игру вручную.'; };
-      try { var pr = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(shareText()) : null; if (pr && pr.then) pr.then(good, bad); else if (pr === null) bad(); else good(); } catch (e) { bad(); }
+      var z6 = S.ext && S.ext.d6 && S.ext.d6.fin, zt = z6 ? EXT.zShareText(U) : null; /* день Засады: уходит ссылка на свою Засаду (#z=…), счётчик ссылок растёт */
+      var good = function () { if (z6) S.ext.d6.shared = (S.ext.d6.shared || 0) + 1; $('#copydone').textContent = z6 ? EXT.ZSHARE.good : 'Ссылка скопирована. Вставь в любой чат.'; }, bad = function () { $('#copydone').textContent = z6 ? EXT.ZSHARE.bad : 'Скопировать не получилось: перешли ссылку на игру вручную.'; };
+      try { var pr = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(z6 ? zt : shareText()) : null; if (pr && pr.then) pr.then(good, bad); else if (pr === null) bad(); else good(); } catch (e) { bad(); }
       buzz(10);
     });
     var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { layoutThreads(); layoutScenes(); if (TIP.cur) tipPlace(); }, 80); });

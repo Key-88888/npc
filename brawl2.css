@@ -402,10 +402,10 @@ body.dk .todaycard.d3::before {
 @media (min-width: 900px) { .d2side .reveal.fbk p { font-size: 18px; } }
 /* В1: пустая плашка под «На сегодня всё» */
 #endcap:empty { display: none; }
-/* В3: карточка «Засада — скоро» — обложка Дела 5 (под ней Дело 4) и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
+/* В3: карточка после конца дня («Седьмой день — скоро», раньше «Засада — скоро») — обложка Засады (под ней Дела 5 и 4) и обычная тёмная плашка рассказчика (пунктир читался как пустое место) */
 body.dk .todaycard.wait.end::before {
   background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
-    url("art/d5-cover.webp") 70% 20% / cover no-repeat, url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+    url("art/d6-cover.webp") 70% 20% / cover no-repeat, url("art/d5-cover.webp") 70% 20% / cover no-repeat, url("art/d4-cover.webp") 100% 20% / cover no-repeat, url("art/d3-cover.webp") 30% 20% / cover no-repeat, url("art/d2-cover.webp") 30% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
   filter: none;
 }
 body.dk .todaycard.wait.end .narr { background: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96)); border: 3px solid var(--ink); border-radius: 14px; color: #fff; font-weight: 550; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink); }
@@ -501,3 +501,135 @@ body.dk .d2side .prompt.d2more { font: 800 15px/1.35 "Golos Text", sans-serif; c
 body.dk .d2side .prompt.d2more::before { content: "↑ "; }
 /* карточка поимки: колпак Подначки не упирается в верхний край — картинка ниже (88% -> 74% высоты), нижний отступ прежний, ноги остаются на пьедестале; transform нельзя: его занимает анимация bob */
 .qc-art .creimg[data-cr="dare"] { height: 74%; }
+
+/* ===== День 6 «Засада» (экраны #scr-day6 и #scr-zf): фон — затемнённая обложка art/d6-cover.webp, как у Дела 5; афиша; сборка, проверка на Тимуре, «⟲ свет», экран друга ===== */
+body.dk.dk :is(#scr-day6, #scr-zf).screen:not(#scr-play):not(#scr-honest) {
+  background:
+    linear-gradient(180deg, rgba(10, 18, 52, .88), rgba(10, 18, 52, .94)),
+    url("art/d6-cover.webp") 70% center / cover no-repeat fixed,
+    url("art/garage.webp") 86% center / cover no-repeat fixed,
+    var(--night);
+}
+body.dk :is(#scr-day6, #scr-zf) .wrap { color: #fff; }
+body.scr-day6 .helpchip, body.scr-zf .helpchip { display: none; }
+@media (min-width: 900px) {
+  body.dk.dk :is(#scr-day6, #scr-zf).screen:not(#scr-play):not(#scr-honest) {
+    background:
+      linear-gradient(180deg, rgba(10, 18, 52, .95), rgba(10, 18, 52, .95)),
+      url("art/d6-cover.webp") 100% 40% / cover no-repeat fixed,
+      url("art/garage.webp") 92% 40% / 150% auto no-repeat fixed,
+      var(--night);
+  }
+}
+body.dk .todaycard.d6::before {
+  background: linear-gradient(180deg, rgba(14, 20, 60, 0) 0%, rgba(14, 20, 60, .55) 45%, rgba(14, 20, 60, .88) 100%),
+    url("art/d6-cover.webp") 70% 20% / cover no-repeat, url("art/d5-cover.webp") 70% 20% / cover no-repeat, url("art/garage.webp") center 62% / cover no-repeat, #1a2760;
+}
+.z-side { max-width: 620px; margin-inline: auto; }
+.d6 .d2head .z-sub { margin-top: 8px; }
+.z-guest { padding: 8px 12px; border-left: 6px solid var(--yellow); background: rgba(255, 255, 255, .08); border-radius: 8px; }
+/* сюжеты: три плитки в столбик */
+.z-plots { display: grid; gap: 14px; margin-top: 14px; }
+body.dk button.tile.z-plot { display: block; width: 100%; text-align: left; font: inherit; color: inherit; min-height: 88px; cursor: pointer; }
+.z-plot .z-goal { display: block; margin-top: 4px; font-weight: 800; }
+/* карточка артефакта: слоты и честная строка */
+.z-card { padding: 0; margin-top: 12px; }
+.z-card .artifact { display: grid; gap: 12px; padding-bottom: 14px; }
+.z-pl { min-height: 48px; padding-right: 14px; }
+.z-pl .z-t { display: block; }
+.z-pl .z-hl { display: block; margin-top: 4px; font: 700 11.5px "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; color: var(--ink-soft); }
+.z-pl .z-n { font: 800 14px "Golos Text", sans-serif; color: var(--ink-soft); text-transform: none; letter-spacing: 0; }
+.z-slot.empty { border-style: dashed; background: rgba(255, 255, 255, .6); box-shadow: none; display: flex; align-items: center; }
+.z-slot.filled { padding-right: 62px; }
+.z-slot.on { outline: 4px solid var(--yellow); outline-offset: 2px; }
+.z-slot .z-face { position: absolute; right: 9px; top: 50%; translate: 0 -50%; width: 42px; }
+.z-face .creimg, .z-face .creat { display: block; width: 100%; height: auto; max-height: 52px; object-fit: contain; filter: none; }
+.z-honest { background: linear-gradient(180deg, #f3fff0, #d3f7d6); }
+.z-pl.sel { outline: 4px solid var(--yellow); outline-offset: 2px; }
+.z-mk.caught { background: linear-gradient(180deg, var(--bc), color-mix(in srgb, var(--bc) 62%, #000)); }
+.z-mk.pass { background: linear-gradient(180deg, #d9deef, #939bbd); color: var(--ink); -webkit-text-stroke: 0; }
+.z-mk.named { background: linear-gradient(180deg, var(--bc), color-mix(in srgb, var(--bc) 62%, #000)); }
+.z-mk.h-doubt { background: linear-gradient(180deg, #ffe08a, #f2a541); color: var(--ink); -webkit-text-stroke: 0; }
+.z-mk.h-wrong { background: linear-gradient(180deg, #ff8a7a, var(--red)); }
+.z-mk.good::before { content: "✓ "; }
+.z-mk.bad::before { content: "✕ "; }
+/* лоток существ: 2×5 на узком экране, 5×2 шире */
+.z-pick { margin-top: 18px; }
+.z-pick .q2-ask { margin-bottom: 8px; }
+.z-cres { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.z-cre { display: flex; align-items: center; gap: 8px; min-height: 60px; padding: 5px 8px; border: 3px solid var(--ink); border-radius: 15px; background: linear-gradient(180deg, #fff, #eef3ff); color: var(--ink); text-align: left; font: 800 13px/1.15 "Golos Text", sans-serif; box-shadow: 0 3px 0 var(--ink); }
+.z-cre .z-face { flex: none; width: 48px; }
+.z-cre .z-cn { min-width: 0; overflow-wrap: anywhere; }
+.z-cre.on { outline: 4px solid var(--yellow); outline-offset: 1px; background: linear-gradient(180deg, #fff6b8, #ffe872); }
+.z-cre.taken, .z-cre:disabled { opacity: .45; filter: grayscale(.6); box-shadow: none; }
+@media (min-width: 640px) { .z-cres { grid-template-columns: repeat(5, minmax(0, 1fr)); } .z-side:has(.z-cres) { max-width: 760px; } .z-cre { flex-direction: column; text-align: center; justify-content: center; } }
+/* две строки обличья */
+.z-lines { display: grid; gap: 12px; margin-top: 14px; }
+.z-ln { display: block; width: 100%; text-align: left; padding: 10px 12px 12px; border: 3px solid var(--ink); border-radius: 16px; background: linear-gradient(180deg, #fff, #fff0c2); color: var(--ink); box-shadow: 0 4px 0 var(--ink); font: inherit; min-height: 44px; }
+.z-ln .z-lab { display: block; font: 400 16px "Russo One", sans-serif; }
+.z-ln .z-say { display: block; margin: 3px 0 7px; font: 600 12px/1.3 "Golos Text", sans-serif; color: var(--ink-soft); }
+.z-ln .z-txt { display: block; padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, .8); border: 2px solid var(--ink); font: 700 14.5px/1.3 "Golos Text", sans-serif; }
+.z-ln:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.z-next { margin-top: 18px; text-align: left; }
+.z-next .prompt { margin-top: 8px; }
+/* Тимур читает */
+.z-bub { display: flex; align-items: flex-end; gap: 10px; margin-top: 18px; }
+.z-bub .d2ava { position: relative; left: auto; bottom: auto; flex: none; width: 44px; height: 44px; }
+.z-bub .z-bt { flex: 1; padding: 9px 12px 10px; border: 3px solid var(--ink); border-radius: 16px 16px 16px 4px; background: #fff; color: var(--ink); font: 700 15px/1.3 "Golos Text", sans-serif; box-shadow: 0 3px 0 var(--ink); }
+.z-bub .z-bt small { display: block; font: 800 11px "Golos Text", sans-serif; color: var(--ink-soft); margin-bottom: 2px; }
+.z-grid { display: flex; align-items: baseline; justify-content: center; gap: 6px; margin-top: 18px; text-align: center; }
+.z-grid .z-gl { font: 800 22px "Golos Text", sans-serif; color: #fff; text-shadow: 0 2px 0 var(--ink); }
+.z-grid .z-num { font: 400 64px/1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 9px var(--ink); paint-order: stroke fill; text-shadow: 0 4px 0 var(--ink); padding: 0 6px; }
+.z-hline { margin: 6px 0 0; text-align: center; font: 800 17px/1.3 "Golos Text", sans-serif; color: #fff; text-shadow: 0 1px 0 var(--ink); }
+.z-note { margin-top: 10px; }
+/* «⟲ свет»: шкала и поза Тимура */
+.z-lrow { display: flex; align-items: flex-end; gap: 10px; margin-top: 8px; }
+.z-feel { flex: 1; min-width: 0; margin-top: 0; }
+.z-feel .gauge { flex-wrap: wrap; row-gap: 6px; }
+.z-feel .gauge .z-glab { flex: 1 0 100%; font-size: 14px; }
+.z-pose { flex: none; width: 112px; height: auto; filter: drop-shadow(0 4px 0 rgba(11, 22, 51, .35)); }
+.z-why { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 9px; }
+.z-why li { padding: 9px 12px; border: 2px dashed rgba(255, 255, 255, .4); border-radius: 12px; background: rgba(255, 255, 255, .07); font: 600 14.5px/1.35 "Golos Text", sans-serif; color: #fff; }
+.z-why li b { color: var(--yellow); text-shadow: 0 1px 0 var(--ink); margin-right: 4px; }
+.z-sum { margin-top: 14px; }
+.z-nodrop { margin-top: 14px; }
+/* экран друга: разбор строк */
+.z-rs { display: grid; gap: 12px; margin-top: 18px; }
+.z-r { padding: 10px 12px 12px; border-radius: 14px; border: 3px solid var(--ink); border-left-width: 9px; background: linear-gradient(180deg, #fff, #eef3ff); color: var(--ink); box-shadow: 0 3px 0 var(--ink); }
+.z-r.good { border-left-color: var(--green-2); }
+.z-r.bad { border-left-color: var(--red); }
+.z-r q { display: block; font: 700 14px/1.3 "Golos Text", sans-serif; quotes: none; color: var(--ink-soft); }
+.z-r p { margin: 6px 0 0; font: 600 14.5px/1.35 "Golos Text", sans-serif; }
+.z-fbtns { margin-top: 18px; flex-direction: column; }
+.z-cnote { margin: 12px 0 0; text-align: left; }
+.z-cdone { min-height: 1.3em; }
+.z-side .btn { min-height: 48px; }
+/* широкий экран: карточка артефакта Засады — одна колонка (у Лупы она двухколонная) на всю ширину центральной колонки */
+@media (min-width: 900px) {
+  .z-card { display: block; }
+  .z-card .artifact { max-width: none; margin-inline: 0; }
+  .z-body > .d2head:not(:has(.d6-intro)) { max-width: 620px; margin-inline: auto; }
+}
+/* ===== круг правок после ревью дня 6 ===== */
+/* подпись обличья на заполненном слоте */
+.z-gl2 { display: block; margin-top: 3px; font: 700 11px "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; color: var(--ink-soft); }
+/* карточка Засады без подложки Лупы: артефакт стоит сам */
+.lupa-card.z-card { background: none; border: 0; box-shadow: none; padding: 0; }
+.lupa-card.z-card .artifact { margin-inline: auto; }
+/* метки проверки крупнее */
+.z-mk { font-size: 13px; }
+/* результат друга: цвет плашки по исходу */
+.z-pl.res-ok { background: linear-gradient(180deg, #f3fff0, #bff0c4); }
+.z-pl.res-bad { background: linear-gradient(180deg, #fff1e6, #ffc9a3); }
+.z-r q.mono { font: 600 12px/1.3 "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; }
+.z-sub { width: 100%; box-sizing: border-box; }
+/* экран света: одна колонка с остальными */
+.z-light .z-lrow { max-width: 620px; margin-inline: auto; }
+@media (min-width: 900px) {
+  .z-side { max-width: 760px; }
+  .z-body > .d2head:not(:has(.d6-intro)) { max-width: 760px; }
+  .z-card .artifact { max-width: none; }
+}
+/* лицо существа на плашке карточки (сборка и финал гостевой Засады) */
+.z-pl:has(> .z-face) { padding-right: 62px; }
+.z-pl > .z-face { position: absolute; right: 9px; top: 50%; translate: 0 -50%; width: 42px; }
