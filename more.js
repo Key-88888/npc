@@ -5,7 +5,7 @@
    Дело пятого дня «Сосед» (SCENES.d5, экран day5, секция #scr-day5 создаётся здесь же) — тот же движок сцены, данные SOSED; новый приём «Берёт на слабо» (Подначка).
    Дело четвёртого дня «Стена» (SCENES.d4, экран day4, секция #scr-day4 создаётся здесь же) — тот же движок, данные WALL.
    Дело третьего дня «Краски» (SCENES.d3, экран day3, секция #scr-day3 создаётся здесь же) — тот же движок сцены с данными PAINT.
-   Подключается до app.js. Данные — в объекте EXT. Без сети и хранилищ: состояние живёт в памяти страницы (S.ext).
+   Подключается до app.js. Данные — в объекте EXT. Сети нет; S.ext сохраняется вместе с S в localStorage (app.js, persist).
    Режимы: по умолчанию «чистый игрок» (второй игровой день, кодекс из итогов первой сессии). Флаги в хэше: demo=1 (насыщенное демо:
    кодекс из девяти записей, седьмой день), day=N (игровой день), t=H (час на устройстве для следа огонька). */
 (function () {
@@ -53,7 +53,6 @@
     { id: 'c8', view: 'confucius', text: 'Своим становятся, приходя, даже когда лень.',   sph: ['friends', 'family'], bit: 44, contra: 'own1' }
   ];
   /* в ссылке друга только номера показанных крупиц: отрицательного решения («выбросил») в нынешнем формате ссылки нет (Р11) */
-  var FRIEND = { shown: ['c1', 'c4', 'cB', 'c7'] };
   function plural(n, f) { var a = Math.abs(n) % 100, b = a % 10; return a > 10 && a < 20 ? f[2] : (b > 1 && b < 5 ? f[1] : (b === 1 ? f[0] : f[2])); }
 
   /* бестиарий: карточка-существо — чем берёт, где водится, как отшить (заход D: имена из жизни — Подлиза, Толпа, Таймер, Решала, Должок, Развилка, Огонёк) */
@@ -128,7 +127,7 @@
 
   /* скрытые приёмы игры: ослабленные настоящие тёмные паттерны; живёт не дольше 7 дней, по одному за раз */
   var TRAPS = [
-    { id: 'flame', name: 'Огонёк серии', says: 'Серия сгорит, если не зайти до полуночи.', truth: 'Ничего не сгорает. Серия — просто число: огонёк пугает потерей, а играть даже не зовёт.', trace: 'красная ниточка в пламени; пометка «сгорит в 00:00» с 16:00 до 21:00' },
+    { id: 'flame', rel: true, name: 'Огонёк серии', says: 'Серия сгорит, если не зайти до полуночи.', truth: 'Ничего не сгорает. Серия — просто число: огонёк пугает потерей, а играть даже не зовёт.', trace: 'красная ниточка в пламени; пометка «сгорит в 00:00» с 16:00 до 21:00' },
     { id: 'two', name: '«Осталось 2 часа»', says: 'Бонус пропадёт через 2 часа.', truth: 'Таймер не привязан ни к чему. Бонус есть всегда.', trace: 'часы в углу карточки Дела' },
     { id: 'five', name: '«5 друзей уже играют»', says: 'Пять друзей уже в игре, не отставай.', truth: 'Цифру никто не считал: это слова «все уже» в упаковке интерфейса.', trace: 'мелкая строка под кнопкой «Открыть»' },
     { id: 'gift', name: 'Подарок за вход', says: 'Заходи сегодня и забери подарок.', truth: 'Подарок возвращает тебя в игру, а не награждает. Здесь он будет в сезоне 2.', trace: 'ещё не показывался', s2: true },
@@ -153,7 +152,7 @@
     var s = ex(U), h = hour(U), force = cur && cur.opts && cur.opts.trap;
     if (s.traps === false || s.flameCaught) return false;
     if (force) return true;
-    return U.day() >= 2 && U.day() <= 8 && h >= 7 && h < 22;
+    return U.day() >= 2 && U.day() <= LAST_DAY && h >= 7 && h < 22 && !homeState(U).end;
   }
   /* первый след: подпись под огоньком только с 16:00 до 21:00 */
   function traceOn(U) { var h = hour(U); return h >= 16 && h < 21; }
@@ -166,7 +165,7 @@
     if (flame) { s.shown = s.shown || []; if (s.shown.indexOf('flame') < 0) s.shown.push('flame'); } /* история показов: Закулисье раскроет только показанное */
     var tab = function (k, href, label, extra) { return '<a data-insp="вкладка «' + label + '»" class="' + ((curk === k || (k === 'home' && (curk === 'day2' || curk === 'day3' || curk === 'day4' || curk === 'day5' || curk === 'day6' || curk === 'day7' || curk === 'day8'))) ? 'cur' : '') + '" href="#s=' + href + '">' + label + (extra || '') + '</a>'; };
     return '<header class="appbar"><div class="ab-row"><a class="brand rus" data-insp="название игры" aria-label="Не По Сценарию" href="#s=home"><i class="ini">Н</i>е <i class="ini">П</i>о<br><i class="ini">С</i>ценарию</a><div class="ab-r">' +
-      (flame ? '<button class="flame" type="button" data-trap="flame" data-insp="огонёк в шапке" aria-label="Серия: 2 дня"><span class="fi">' + FLAME + '</span><b>2</b>' + (traceOn(U) ? '<small class="trace" aria-hidden="true">сгорит в 00:00</small>' : '') + '</button>' : '') +
+      (flame ? '<button class="flame" type="button" data-trap="flame" data-insp="огонёк в шапке" aria-label="Серия: ' + U.day() + ' ' + plural(U.day(), ['день', 'дня', 'дней']) + '"><span class="fi">' + FLAME + '</span><b>' + U.day() + '</b>' + (traceOn(U) ? '<small class="trace" aria-hidden="true">сгорит в 00:00</small>' : '') + '</button>' : '') +
       '<button class="helpb mono" type="button" data-help aria-label="Если тяжело">Если тяжело</button>' +
       '<button class="lupa" type="button" aria-pressed="' + (!!s.lupa) + '" aria-label="Лупа: найти приём в самом приложении">' + LUPASVG + '</button>' +
       '<a class="gear' + ((curk === 'settings' || curk === 'backstage') ? ' cur' : '') + '" href="#s=settings" aria-label="Профиль и настройки">' + GEAR + '</a></div></div>' +
@@ -220,7 +219,7 @@
     updateChk(U);
   }
   /* охота (ТЗ §8): сколько ловушек MVP ещё не поймано; ловушки сезона 2 не считаются, сравнения с другими нет */
-  function hiddenLeft(U) { var s = ex(U); return TRAPS.filter(function (t) { return !t.s2 && !(t.id === 'flame' && s.flameCaught); }).length; }
+  function hiddenLeft(U) { var s = ex(U); return TRAPS.filter(function (t) { return t.rel && !(t.id === 'flame' && s.flameCaught); }).length; }
   function burn(U) {
     var s = ex(U); s.flameCaught = true; s.lupa = false; s.insp = null;
     s.beasts = s.beasts || []; if (s.beasts.indexOf('loss') < 0) s.beasts.push('loss');
@@ -232,7 +231,7 @@
       var bl = BEASTS.loss;
       pr.innerHTML = '<div class="pr-in"><div class="pr-k mono">Ого. Это было спрятано</div><h3>Пойман кто-то по имени ' + bl.name + '</h3>' +
         '<p>Его никто не показывал — а у тебя получилось разглядеть. Огонёк пугал, что серия сгорит, если не зайти до полуночи. Ничего бы не сгорело.</p>' +
-        '<p class="hunt"><b>Больше он не появится. Но спрятано ещё ' + hiddenLeft(U) + '.</b></p>' +
+        '<p class="hunt"><b>' + (hiddenLeft(U) > 0 ? 'Больше он не появится. Но спрятано ещё ' + hiddenLeft(U) + '.' : 'Больше он не появится. Других спрятанных приёмов в игре пока нет.') + '</b></p>' +
         '<div class="trophy"><span class="tr-ico">' + FLAME + '</span><div><b>' + bl.epi + '</b><dl class="pr-dos"><dt class="mono">Чем берёт</dt><dd>' + bl.s[0] + '</dd><dt class="mono">Где водится</dt><dd>' + bl.s[1] + '</dd><dt class="mono">Как отшить</dt><dd>' + bl.s[2] + '</dd></dl></div></div>' +
         '<p class="pr-b mono">Спрятанных поймано: 1. Ложных тревог: ' + (s.fa || 0) + ' — это не страшно.</p>' +
         '<div class="pr-act"><a class="btn seen" href="#s=bestiary">В Бестиарий</a><button class="btn" type="button" data-praise-close>Дальше</button></div></div>';
@@ -278,7 +277,7 @@
       s.insp = { label: ip.getAttribute('data-insp'), flame: ip.hasAttribute('data-trap'), wrong: [], hint: '' };
       trapSheet(U, true); return;
     }
-    if (ip && ip.hasAttribute('data-trap')) { U.S().real = true; U.toast('Серия: 2 дня подряд'); }
+    if (ip && ip.hasAttribute('data-trap')) { U.S().real = true; U.toast('Серия: ' + U.day() + ' ' + plural(U.day(), ['день', 'дня', 'дней'])); }
   });
 
   /* ---------- правила кодекса: общая карточка (первая сессия и Дело дня) ---------- */
@@ -300,7 +299,7 @@
       }
     } else {
       var msg = c.doneMsg || (st === 'out' ? 'Не моё. Вернуть можно в любой день.'
-        : (st === 'pocket' ? 'Положено в карман. Вернёмся к нему через пару дней.' : 'Забрано: вывод в Кодексе.' + (c.fit ? ' Подправлено под тебя.' : '')));
+        : (st === 'pocket' ? 'Положено в карман. Лежит в Кодексе, пока не решишь.' : 'Забрано: вывод в Кодексе.' + (c.fit ? ' Подправлено под тебя.' : '')));
       h += '<div class="cr2-done"><span class="stp ' + st + ' mono">' + (st === 'out' ? 'не моё' : (st === 'pocket' ? 'в кармане' : (c.fit ? 'подправлено' : 'забрано'))) + '</span><span>' + esc(msg) + '</span>' +
         '<button type="button" class="undo mono" data-a="undo">вернуть</button></div>';
       /* Р7: после правки текста — вопрос по каждой связи contradicts; область действия необязательна. Каталожное противоречие — предложение игры, действующее — подтверждённое игроком */
@@ -332,13 +331,51 @@
   }
   /* «Так рассуждают …» (заход D): короткий монолог взгляда вместо карточки «Находка» с силой и ценой; «Откуда это» свёрнуто */
   function words(t) { return String(t || '').trim().split(/\s+/).filter(Boolean).length; }
+  /* монолог сворачивается: видна часть до конца первого предложения (если оно короче 60 знаков — двух); конец предложения не берётся внутри «…». Короткий монолог (меньше 160 знаков) и короткий хвост (меньше 40 знаков) показываются целиком. Правило одно для всех дней */
+  function monoSplit(text) {
+    text = String(text);
+    var ends = [], depth = 0, i, ch, j;
+    for (i = 0; i < text.length; i++) {
+      ch = text.charAt(i);
+      if (ch === '«') depth++; else if (ch === '»') { if (depth > 0) depth--; }
+      else if (ch === '.' || ch === '!' || ch === '?' || ch === '…') {
+        j = i + 1;
+        while (j < text.length && /[.!?…]/.test(text.charAt(j))) j++;
+        while (j < text.length && /[»"”]/.test(text.charAt(j))) { if (text.charAt(j) === '»' && depth > 0) depth--; j++; }
+        var k = j; while (k < text.length && /\s/.test(text.charAt(k))) k++;
+        if (depth === 0 && (j >= text.length || (/\s/.test(text.charAt(j)) && !/[a-zа-яё—–\-]/.test(text.charAt(k))))) { ends.push(j); i = j - 1; }
+        else i = j - 1;
+      }
+    }
+    if (text.length < 160 || !ends.length) return { vis: text, tail: '' };
+    var cut = ends[0]; if (cut < 60 && ends.length > 1) cut = ends[1];
+    var vis = text.slice(0, cut), tail = text.slice(cut).replace(/^\s+/, '');
+    if (tail.length < 40) return { vis: text, tail: '' };
+    return { vis: vis, tail: tail };
+  }
+  /* абзац со сворачиванием (взгляд и возражение): видимая часть, скрытый хвост и кнопка «А дальше?» рядом с абзацем */
+  function foldHTML(cls, text) {
+    var sp = monoSplit(text);
+    return '<p class="' + cls + '">' + esc(sp.vis) + (sp.tail ? '<span class="mono-more" hidden> ' + esc(sp.tail) + '</span>' : '') + '</p>' +
+      (sp.tail ? '<button class="mono-ex" type="button" aria-expanded="false">А дальше?</button>' : '');
+  }
   function monoHTML(k, text) {
     var v = VIEWS[k];
-    return '<div class="viewcard monoc"><h3>' + esc(v.lead) + '</h3><p class="mono-t">' + esc(text) + '</p>' +
+    return '<div class="viewcard monoc"><h3>' + esc(v.lead) + '</h3>' + foldHTML('mono-t', text) +
       (v.src ? '<details class="srcd"><summary class="mono">Откуда это</summary><div class="src">' + v.src + '</div></details>' : '') + '</div>';
   }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.mono-ex') : null; if (!b) return;
+    var box = b.parentNode, m = box && box.querySelector('.mono-more');
+    if (m) { m.hidden = false; m.setAttribute('tabindex', '-1'); try { m.focus({ preventScroll: true }); } catch (err) { /* без фокуса — не страшно */ } }
+    b.setAttribute('aria-expanded', 'true'); if (b.parentNode) b.parentNode.removeChild(b);
+  });
   /* «А с другой стороны —»: довод против выбранного пути; метки «Хотя» над ним нет */
-  function hotyaHTML(text) { return '<div class="hotya"><div class="hv">А с другой стороны —</div><p>' + esc(text) + '</p></div>'; }
+  function hotyaHTML(text) {
+    var sp = monoSplit(text);
+    return '<div class="hotya"><div class="hv">А с другой стороны —</div><p>' + esc(sp.vis) + (sp.tail ? '<span class="mono-more" hidden> ' + esc(sp.tail) + '</span>' : '') + '</p>' +
+      (sp.tail ? '<button class="mono-ex" type="button" aria-expanded="false">А дальше?</button>' : '') + '</div>';
+  }
 
   /* ================= ЭКРАН: «Дело» (домашний) ================= */
   /* ТЗ §5: игровой день = число завершённых выпусков + 1. Воскресенье выпуска не даёт: игровой день перешагивает его (счётчик не растёт, «Отдых»).
@@ -394,7 +431,7 @@
   function weekHTML(U, soon) {
     var today = Math.max(1, U.day());
     return weekCells(startDow(U), today, planCtx(U)).map(function (c) {
-      return '<li class="' + (c.gd === today ? 'today' : '') + (c.gd === null ? ' rest' : '') + '"' + (c.gd === null ? '' : ' data-gd="' + c.gd + '"') + '><span class="mono">' + WD[c.dow] + '</span><b>' + (soon && c.gd === today ? 'скоро' : c.kind) + '</b><small class="gd mono">' + (c.gd === null ? '' : c.gd) + '</small></li>';
+      return '<li class="' + (c.gd === today ? 'today' : '') + (c.gd === null ? ' rest' : '') + '"' + (c.gd === null ? '' : ' data-gd="' + c.gd + '"') + '><span class="mono">' + WD[c.dow] + '</span><b>' + (soon && c.gd === today ? 'скоро' : (c.gd !== null && c.gd > LAST_DAY ? '' : c.kind)) + '</b><small class="gd mono">' + (c.gd === null ? '' : c.gd) + '</small></li>';
     }).join('');
   }
   /* Р8: Дело открывается со следующего календарного дня в 07:00 после завершения предыдущего, воскресенье пропускается (выпуска нет); #now — не ждать */
@@ -406,6 +443,8 @@
     var diff = Math.round((a0.getTime() - t0.getTime()) / 86400000);
     return (diff <= 0 ? 'сегодня' : (diff === 1 ? 'завтра' : WDACC[at.getDay()])) + ' в 7 утра';
   }
+  /* рубильник «Ритуал дня» (id 1): выключен — ожидание следующего дня не применяется, как с флагом #now */
+  function noWait(U) { return !!U.opt().now || swInit(ex(U))[1] === false; }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function fmtTs(ts) { if (!ts) return 'ещё не начато'; var d = new Date(ts); return pad2(d.getDate()) + '.' + pad2(d.getMonth() + 1) + '.' + d.getFullYear() + ', ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
   /* экран ожидания — единственный между днём 1 и днём 2: клиффхэнгер Тимура и Лупа дня вместо текста правила */
@@ -455,30 +494,30 @@
     var last = d8 && d8.fin ? { n: 9, ts: d8.finTs || Date.now() } : d7 && d7.fin ? { n: 8, ts: d7.finTs || Date.now() } : d6 && d6.fin ? { n: 7, ts: d6.finTs || Date.now() } : (d5 && d5.fin ? { n: 6, ts: d5.finTs || Date.now() } : (d4 && d4.fin ? { n: 5, ts: d4.finTs || Date.now() } : (d3 && d3.fin ? { n: 4, ts: d3.finTs || Date.now() } : (d2 && d2.fin ? { n: 3, ts: d2.finTs || Date.now() } : (s.day1Done ? { n: 2, ts: s.day1Done } : null)))));
     if (last && last.n === 9) return { wait: true, n: 9, end: true, last: last };
     if (last && last.n === 8) {
-      if (!o.now && !(d8 && d8.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 8, last: last, extra: '' };
+      if (!noWait(U) && !(d8 && d8.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 8, last: last, extra: '' };
       return { wait: false, d8: true };
     }
     if (last && last.n === 7) {
-      if (!o.now && !(d7 && d7.stage && d7.stage !== 'intro') && Date.now() < unlockAt(last.ts)) return { wait: true, n: 7, last: last, extra: '' };
+      if (!noWait(U) && !(d7 && d7.stage && d7.stage !== 'intro') && Date.now() < unlockAt(last.ts)) return { wait: true, n: 7, last: last, extra: '' };
       return { wait: false, d7: true };
     }
     if (last && last.n === 6) {
-      if (!o.now && !(d6 && d6.stage && d6.stage !== 'intro') && Date.now() < unlockAt(last.ts)) return { wait: true, n: 6, last: last, extra: '' };
+      if (!noWait(U) && !(d6 && d6.stage && d6.stage !== 'intro') && Date.now() < unlockAt(last.ts)) return { wait: true, n: 6, last: last, extra: '' };
       return { wait: false, d6: true };
     }
     if (last && last.n === 5) {
-      if (!o.now && !(d5 && d5.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 5, last: last, extra: '' };
+      if (!noWait(U) && !(d5 && d5.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 5, last: last, extra: '' };
       return { wait: false, d5: true };
     }
     if (last && last.n === 4) {
-      if (!o.now && !(d4 && d4.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 4, last: last, extra: '' };
+      if (!noWait(U) && !(d4 && d4.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 4, last: last, extra: '' };
       return { wait: false, d4: true };
     }
     if (last && last.n === 3) {
-      if (!o.now && !(d3 && d3.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 3, last: last, extra: '' };
+      if (!noWait(U) && !(d3 && d3.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 3, last: last, extra: '' };
       return { wait: false, d3: true };
     }
-    if (last && last.n === 2 && !o.now && !(d2 && d2.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 2, last: last, extra: '' };
+    if (last && last.n === 2 && !noWait(U) && !(d2 && d2.move) && Date.now() < unlockAt(last.ts)) return { wait: true, n: 2, last: last, extra: '' };
     return { wait: false };
   }
   /* карточки режимов, которых в прототипе нет в виде игры: показывают, что стоит в расписании сегодня */
@@ -493,7 +532,7 @@
       var c9 = cliff9(U);
       return '<article class="todaycard wait end" data-insp="карточка Дела"><div class="kick mono"><span class="dot"></span><span>' + WAIT9.kick + '</span></div>' +
         '<h1>' + WAIT9.h + '</h1><p class="narr">' + esc(nb(WAIT9.narr)) + '</p>' +
-        '<div class="waitbub"><b class="mono">' + c9[0] + '</b>' + esc(c9[1]) + '</div>' +
+        (swInit(s)[4] ? '<div class="waitbub"><b class="mono">' + c9[0] + '</b>' + esc(c9[1]) + '</div>' : '') +
         '<div class="tc-act"><a class="btn seen" href="#s=codex">Мой кодекс</a><a class="btn" href="#s=bestiary">Бестиарий</a></div></article>';
     }
     if (st.d8) {
@@ -544,13 +583,13 @@
       return '<article class="todaycard wait" data-insp="карточка Дела"><div class="kick mono"><span class="dot"></span><span>' + (st.n === 8 ? WAIT8.kick : 'Пока ждёшь') + '</span></div>' +
         '<h1>' + (st.n === 7 ? d7name(d7mode(U)) : (st.n === 6 ? 'Засада' : 'Дело ' + st.n)) + ' — ' + nlH + '</h1>' + (st.extra ? '<p class="sub mono">' + st.extra + '</p>' : '') +
         '<p class="narr">На сегодня всё. ' + (st.n === 7 ? d7name(d7mode(U)) + ' откроется ' : (st.n === 6 ? 'Засада откроется ' : 'Новое Дело откроется ')) + nl + ' — ' + (st.n >= 6 ? 'один день за раз' : 'одно в день') + ', чтобы не превращаться в бесконечную ленту.</p>' + (st.n === 8 ? '<p class="narr week7">' + esc(nb(d7EndInfo(U).week.replace(/^Первая неделя пройдена: п/, 'П'))) + '</p>' : '') +
-        '<div class="waitbub"><b class="mono">' + cl[0] + '</b>' + esc(cl[1]) + '</div>' +
+        (swInit(s)[4] ? '<div class="waitbub"><b class="mono">' + cl[0] + '</b>' + esc(cl[1]) + '</div>' : '') +
         '<div class="tc-act"><a class="btn seen" href="#s=codex">Мой кодекс</a><a class="btn" href="#s=bestiary">Бестиарий</a></div></article>';
     }
     var today = Math.max(1, U.day()), md = modeOf(startDow(U), today, planCtx(U));
     if (MODECARD[md]) {
       return '<article class="todaycard" data-insp="карточка Дела"><div class="kick mono"><span class="dot"></span><span>' + md + ' · ' + dayName(U, today) + '</span></div>' +
-        '<h1>' + MODECARD[md][0] + '</h1><p class="sub">' + MODECARD[md][1] + '</p><p class="sub mono">В прототипе этого режима нет.</p></article>';
+        '<h1>' + MODECARD[md][0] + '</h1><p class="sub">' + MODECARD[md][1] + '</p><p class="sub mono">Этого режима пока нет.</p></article>';
     }
     var going = d2 && d2.move && !d2.fin, intro = '';
     if (!s.homeIntro) { intro = '<p class="narr home-intro">Доброе утро. С сегодняшнего дня у тебя Дела: одно в день, минуты на три. В каждом — живая история, твой ход и разбор, кто и как давил.</p><p class="narr home-intro">Суббота ещё не наступила, а у Лёвы к тебе вопрос.</p>'; if (U.S().real) s.homeIntro = 1; }
@@ -574,7 +613,7 @@
       '<ul class="week" data-insp="расписание недели" aria-label="Игровые дни недели">' + weekHTML(U, hs.end) + '</ul>' +
       (!hs.wait && U.day() < 6 ? '<p class="weeknote mono">Засада выходит на 6-й игровой день, Развилка — на 7-й. Воскресенье — отдых.</p>' : '') +
       homeCard(U, hs) +
-      '<div class="tiles' + (hs.wait ? ' one' : '') + '">' + (hs.wait ? '' : '<a class="tile" data-insp="плитка «Лупа дня»" href="#s=bestiary"><b class="rus">Ещё одно на сегодня</b><span>Одно уведомление в день, минута: найди, где давят, или скажи «Без подвоха».</span></a>') +
+      '<div class="tiles' + (hs.wait ? ' one' : '') + '">' + (hs.wait ? '' : '<a class="tile" data-insp="плитка «Лупа дня»" href="#s=bestiary"><b class="rus">Ещё одно на сегодня</b><span>Одно уведомление на разбор в день, минута: найди, где давят, или скажи «Здесь чисто».</span></a>') +
       '<a class="tile" data-insp="плитка «Кодекс»" href="#s=codex"><b class="rus">Кодекс</b><span>В Кодексе ' + sheet + ' из 12' + (pocket.length ? ', отложено ' + pocket.length : '') + '.</span></a></div>' +
       (pocket.length ? '<section class="pocketcard" data-insp="карточка Кармана"><h3>Всё ещё твоё?</h3><div class="pcs">' + pocket.map(function (c) {
         return '<div class="pc" style="--tc:' + TONE[VIEWS[c.view].tone] + '"><i></i><span>' + esc(c.text) + '<small>' + VIEWS[c.view].name + '</small>' +
@@ -606,14 +645,14 @@
       return '<li class="srw"><div><b>' + name + '</b><span>' + say + '</span></div><button class="sw" type="button" role="switch" data-set="' + key + '" aria-checked="' + on + '" aria-label="' + name + '"></button></li>';
     };
     var inner = '<div class="wrap set"><h1>Настройки</h1><ul class="setlist">' +
-      row('traps', 'Спрятанные приёмы', 'Игра иногда прячет приёмы прямо в себе — чтобы было кого ловить. Выключишь — прятать не будет.', !!sw[0]) +
+      row('traps', 'Спрятанный приём', 'Игра прячет в себе один настоящий приём давления — чтобы было кого ловить. Выключишь — прятать не будет.', !!sw[0]) +
       row('sound', 'Звук и вибрация', 'Щелчки и дрожь на каждый ход. Выключишь — будет тихо.', !!s.sound) +
-      row('push', 'Уведомления', 'Сейчас выключены. Включишь — одно спокойное напоминание в день, без «серия сгорит».', !!sw[6]) +
       '<li class="srw block"><div><b>Если тяжело</b><span>Детский телефон доверия: <strong>8-800-2000-122</strong>, бесплатно и анонимно. Если опасно сейчас — <strong>112</strong>.</span></div>' +
       '<a class="btn" href="tel:88002000122">Позвонить</a></li>' +
       '<li class="srw block"><details class="adults"' + (o.step === 'adults' ? ' open' : '') + '><summary>Для взрослых</summary>' +
       '<p>Это игра для подростков 14–18 о том, как распознавать давление: лесть, «все уже», срочность, решения за другого. Игрок сначала уговаривает персонажа, а потом видит те же приёмы направленными на себя.</p>' +
       '<p>Игра ничего не собирает: нет аккаунта, имени, номера телефона. Всё, что игрок решает, хранится только на устройстве. Возраст 12+.</p>' +
+      '<p>Если страница долго не грузится, игра берётся с запасной копии на GitHub. Ответы и прогресс туда не уходят.</p>' +
       '<p class="adults-nick">Ник хранится только на этом устройстве.</p>' +
       '<p>В интерфейсе встречаются ослабленные приёмы давления — чтобы их было на чём ловить. Их можно выключить выше, а через несколько дней игра сама рассказывает, что и где было.</p>' +
       (s.w0 ? '<p class="mono">Режим проверки (неделя 0): скрытые приёмы выключены с самого начала.</p>' : '') +
@@ -631,9 +670,8 @@
         var k = b.getAttribute('data-set'), s2 = ex(U), sw2 = swInit(s2); U.S().real = true;
         if (k === 'forget') { U.forget(); return; }
         var on = b.getAttribute('aria-checked') !== 'true';
-        if (k === 'traps') { sw2[0] = on; s2.traps = on; if (!on) { $$('.flame').forEach(function (f) { f.style.display = 'none'; }); U.toast('Скрытых приёмов больше не будет'); } }
+        if (k === 'traps') { sw2[0] = on; s2.traps = on; if (!on) { $$('.flame').forEach(function (f) { f.style.display = 'none'; }); U.toast('Спрятанного приёма больше не будет'); } }
         else if (k === 'sound') { s2.sound = on; }
-        else if (k === 'push') { sw2[6] = on; }
         b.setAttribute('aria-checked', on); U.buzz(10);
       });
     }
@@ -666,7 +704,7 @@
     info: 'Срок настоящий, и Алина просто сообщает. Это информация, а не рычаг. Давит не срок, а тот, кто им пугает.' };
   var CLAIM_UNKNOWN = { truth: 'unknown', by: 'Тимур', unk: 'В закрепе про это ничего. Проверить нечем — значит, точно некуда спешить.' };
   /* первая реплика Тимура зависит от поступка первого дня (Р5): локальный флаг — выбранный путь первой сессии (S.basis) */
-  var TIMUR_D2 = { socrates: 'ладно, не все. но даня с лёвой точно. и я сказал, что ты в деле', stoic: 'пятница поздно. я уже всем сказал, что ты в деле', pragm: 'супер. я всем сказал, что ты в деле. не подведи' };
+  var TIMUR_D2 = { socrates: 'ладно, не все. но даня с лёвой точно. и я сказал, что ты в деле', stoic: 'пятница поздно. я уже всем сказал, что ты в деле', pragm: 'супер. я всем сказал, что ты в деле с самого утра, помогать. не подведи' };
   var CLAIM_PAINT = { truth: true, by: 'Даня', proof: 'Красим в субботу, 14:00–18:00',
     yes: 'Время настоящее, в закрепе то же самое. Это расписание, а не давление.',
     looks: 'Похоже на срок. Настоящий ли? Глянь закреп.',
@@ -693,13 +731,39 @@
     var b = U.S().basis || 'socrates', p = U.DATA.pillars.filter(function (x) { return x.id === b; })[0] || U.DATA.pillars[0], n = String(ex(U).nick || '').trim();
     return '<div class="d2msg me" style="animation-delay:0s"><small>' + esc(n || 'ты') + '</small>' + esc(p.move) + '</div>';
   }
+  /* ветка pragm: игрок уже ответил «еду» (к двум), поэтому в чате класса Тимур объявил «с самого утра» за него, а текст хода и цена говорят об этом; ветки socrates и stoic — прежние */
+  /* значения по умолчанию (ветки socrates и stoic, w0-17) */
+  var Q2_DEF = {
+    a: { text: MOVES[0].text, c: MOVES[0].cost[2][1], mono: MOVES[0].mono, hotya: MOVES[0].hotya.text },
+    b: { c: MOVES[1].cost[2][1], hotya: MOVES[1].hotya.text },
+    c: { c: MOVES[2].cost[2][1] }
+  };
+  /* ветка pragm: реплика Тимура лежит в TIMUR_D2; остальное — здесь */
+  var Q2_PRAGM = {
+    a: { text: 'Пишу в чат: «К двум приду. Про утро отвечу до пятницы».', c: 'на тебе — прийти к двум и ответ про утро до пятницы.',
+      mono: Q2_DEF.a.mono.replace('«Ещё думаю» — честный способ', '«Про утро отвечу до пятницы» — честный способ').replace('Подвох в том, что «думаю» можно растянуть', 'Подвох в том, что «отвечу потом» можно растянуть'),
+      hotya: 'Откладывание тоже решение, и оно ложится на других. Пока ты думаешь про утро, остальные не знают, на кого рассчитывать.' },
+    b: { c: 'на тебе — прийти к двум: это твоё слово. Про утро — ничего.', hotya: '«К двум приду, про утро отвечу до пятницы» в общем чате мягче и никого не задевает. Можно было не ссориться, а просто вернуть себе решение.' },
+    c: { c: 'на тебе — прийти с самого утра: это пообещал Тимур, твоё слово было — к двум.' },
+    rev: 'Да. Решили за тебя. Прийти к двум — твоё слово. А «с самого утра» Тимур пообещал за тебя и объявил всем раньше, чем спросил. Теперь отказ выглядит как ссора, хотя про утро от тебя не было ни слова. Ответ простой: «К двум — приду. Про утро — не обещано».'
+  };
+  /* одна функция выставляет все ветвящиеся строки чата класса; вызывается в начале d2rows */
+  function q2Branch(b) {
+    var p = b === 'pragm', P = Q2_PRAGM, D = Q2_DEF;
+    MOVES[0].text = p ? P.a.text : D.a.text; MOVES[0].cost[2][1] = p ? P.a.c : D.a.c; MOVES[0].mono = p ? P.a.mono : D.a.mono; MOVES[0].hotya.text = p ? P.a.hotya : D.a.hotya;
+    MOVES[1].cost[2][1] = p ? P.b.c : D.b.c; MOVES[1].hotya.text = p ? P.b.hotya : D.b.hotya;
+    MOVES[2].cost[2][1] = p ? P.c.c : D.c.c;
+  }
   function d2rows(U) {
     var b = U.S().basis; if (!TIMUR_D2[b]) b = 'socrates';
     var at = nickAt(U);
-    return [['Даня', at + 'ты идёшь в субботу в гараж? надо понять, сколько пиццы брать', 'ЧИСТО', null, { none: 'Тут нечего проверять: Даня просто спрашивает, идёшь ли ты.', ok: 'Да. Обычный вопрос. И забота о пицце.', miss: 'Мимо. Даня просто считает людей. Давления тут нет.' }],
+    q2Branch(b);
+    var rows = [['Даня', at + 'ты идёшь в субботу в гараж? надо понять, сколько пиццы брать', 'ЧИСТО', null, { none: 'Тут нечего проверять: Даня просто спрашивает, идёшь ли ты.', ok: 'Да. Обычный вопрос. И забота о пицце.', miss: 'Мимо. Даня просто считает людей. Давления тут нет.' }],
       ['Алина', 'запись до пятницы, потом мест нет. я иду', 'ЧИСТО', CLAIM_DEADLINE, { ok: 'Да. Алина говорит, как есть: срок, места, сама идёт. Никто никого не тянет.', miss: 'Мимо. Алина говорит только про себя и про срок. За тебя тут никто ничего не решает.' }],
       ['Тимур', at + TIMUR_D2[b], 'ПЕРЕД ФАКТОМ', CLAIM_UNKNOWN, { lever: 'Присмотрись. Тимур не спрашивает, а сообщает всем твоё решение. Твоё — но принятое им.', name: 'Не то. Что Тимур сделал раньше, чем тебя спросили?' }],
       ['Макс', 'если не хочешь — скажи. никто не обидится', 'ЧИСТО', null, { none: 'Тут нечего проверять: Макс ничего не утверждает.', ok: 'Да. Макс даже наоборот — даёт тебе выход. Таких людей в чате стоит ценить.', miss: 'Мимо. Макс как раз не давит, а снимает давление. Вот так выглядит честно.' }]];
+    if (b === 'pragm') rows[2][4].rev = Q2_PRAGM.rev;
+    return rows;
   }
   /* Дело 2 «Должок» (ЕДИНОЕ-ТЗ §12, s-debt-03): взаимность, ложный выбор и честный срок Лёвы (claim.truth: true, проверка — закреплённое сообщение Дани) */
   function debtRows(U) {
@@ -924,7 +988,7 @@
           day: function () { return 'Сегодня'; },
           pre: 'Лёва правда объяснял тебе физику. Вопрос в том, чем за это платить.', press: 'Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
           allclean: 'Перечитай Лёву. Два его сообщения из трёх — не просто сообщения.',
-          crNarr: 'Сегодня кнопок больше. «Подправлю» — перепиши вывод своими словами. «Пока не знаю» — вывод полежит в кармане пару дней, потом спросим ещё раз.',
+          crNarr: 'Сегодня кнопок больше. «Подправлю» — перепиши вывод своими словами. «Пока не знаю» — вывод полежит в кармане, пока не решишь.',
           lupaH: 'Ещё одно на сегодня: уведомление от онлайн-школы', lupaP: 'Минута, если хочется. Найди, где давят — тот же расклад, что с толстовкой.' },
     d3: { key: 'd3', quest: false, mine: true, lday: 3, moves: PAINT, rows: paintRows, names: ['ВИНА', 'ВЗАИМНОСТЬ', 'ЛОЖНЫЙ ВЫБОР'], beasts: { 'ВИНА': 'guilt' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '15:20',
           day: function () { return 'Сегодня'; },
@@ -932,7 +996,7 @@
           press: 'Сегодня давят тише, чем вчера: никто ничего не требует. Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
           allclean: 'Перечитай Алину и второе сообщение Лёвы. О цвете там уже не спорят — там заранее раздают вину.',
           crIds: ['e1', 'e2'],
-          crNarr: 'Кнопки те же, что вчера: забрать вывод, отказаться, подправить под себя или отложить на пару дней.',
+          crNarr: 'Кнопки те же, что вчера: забрать вывод, отказаться, подправить под себя или отложить.',
           lupaH: 'Ещё одно на сегодня: пересылка из районного чата', lupaP: 'Минута, если хочется. Тут новенькое: давят не всегда. Иногда в сообщении просто не хватает фактов — на такой случай внизу есть кнопка «Мало данных».' },
     d4: { key: 'd4', quest: false, mine: true, lday: 4, moves: WALL, rows: wallRows, names: ['АВТОРИТЕТ', 'ВСЕ УЖЕ', 'ВИНА'], beasts: { 'АВТОРИТЕТ': 'auth' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '11:40',
           day: function () { return 'Сегодня'; },
@@ -940,7 +1004,7 @@
           press: 'Сегодня никто не обижается и не выставляет счёт — спорят по делу, про грунт и краску. Но и по делу можно давить. Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
           allclean: 'Перечитай Тимура и Макса. Оба точно знают, как надо. А объяснил ли хоть один из них — почему?',
           crIds: ['f1', 'f2'],
-          crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить на пару дней.',
+          crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить.',
           lupaH: 'Ещё одно на сегодня: карточка товара', lupaP: 'Минута, если хочется. Сегодняшний приём тут тоже есть — только в рекламном костюме. Найди, где давят.' },
     d5: { key: 'd5', quest: false, mine: true, lday: 5, moves: SOSED, rows: sosedRows, names: ['СЛАБО', 'ЛЕСТЬ', 'ВИНА'], beasts: { 'СЛАБО': 'dare' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '09:15',
           day: function () { return 'Сегодня'; },
@@ -948,7 +1012,7 @@
           press: 'Сегодня никто не ссылается на блогеров и не выставляет счёт. Сегодня проверяют тебя — на смелость. Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
           allclean: 'Перечитай Тимура и Макса. Оба зовут к соседу, а про соседа почти ни слова — всё про тебя: боишься или нет, из каких ты. Странный способ договориться про музыку, правда?',
           crIds: ['g1', 'g2'],
-          crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить на пару дней.',
+          crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить.',
           lupaH: 'Ещё одно на сегодня: уведомление из игры', lupaP: 'Минута, если хочется. Игры и челленджи берут на слабо в открытую — даже не прячутся. Найди, где давят.' }
   };
   SCENES.d8 = { key: 'd8', quest: false, mine: true, lday: 8, moves: YARMARKA, rows: yarmarkaRows, names: ['НА СЛОВЕ', 'ПЕРЕД ФАКТОМ', 'ВИНА'], beasts: { 'НА СЛОВЕ': 'hook' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '08:40',
@@ -957,7 +1021,7 @@
           press: 'Сегодня никто не торопит и не зовёт знатоков. Сегодня цепляются за твоё же прошлое: что было — то теперь и обязывает. Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
           allclean: 'Перечитай Тимура и Макса. Оба не спрашивают, можешь ли ты в субботу, — оба отвечают за тебя твоей же прошлой неделей. Звали тогда — значит, и сейчас твоё. Удобная логика, правда?',
           crIds: ['j1', 'j2'],
-          crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить на пару дней.',
+          crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить.',
           lupaH: 'Ещё одно на сегодня: уведомление из приложения', lupaP: 'Минута, если хочется. Приложения ловят на слове каждый день: «это же твоя цель», «не бросай на полпути». Найди, где давят.' };
   function sceneTags(sc) { return sc.names.concat(['ЧИСТО']); }
   function pressureIdx(U, sc) { return sc.rows(U).map(function (r, i) { return r[2] !== 'ЧИСТО' ? i : -1; }).filter(function (i) { return i >= 0; }); }
@@ -1086,7 +1150,7 @@
       var ca = e.target.closest('.cr2 [data-a]');
       if (ca) {
         var art = ca.closest('.cr2'), c = dd.cr.filter(function (x) { return x.id === art.getAttribute('data-c'); })[0];
-        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Вернёмся к нему через пару дней.'; redraw(); return;
+        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Лежит в Кодексе, пока не решишь.'; redraw(); return;
       }
       var b = e.target.closest('[data-d2]'); if (!b) return;
       var k = b.getAttribute('data-d2'); U.S().real = true; U.buzz(10);
@@ -1203,7 +1267,7 @@
       return screenHome(U, { step: '' });
     }
     if (U.S().real && !(s.d3 && s.d3.fin)) return screenHome(U, { step: '' }); /* Дело 4 открывается только после Дела 3 */
-    if (U.S().real) { homeState(U); if (!U.opt().now && !(s.d4 && s.d4.move) && Date.now() < unlockAt(s.d3.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
+    if (U.S().real) { homeState(U); if (!noWait(U) && !(s.d4 && s.d4.move) && Date.now() < unlockAt(s.d3.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
     if (!o.step && U.S().real && !s.d4Ts) s.d4Ts = Date.now(); /* время первого открытия Дела 4 — в «Для взрослых» */
     d4prep(U);
     cur = { name: 'day4', opts: o };
@@ -1251,7 +1315,7 @@
       return screenHome(U, { step: '' });
     }
     if (U.S().real && !(s.d4 && s.d4.fin)) return screenHome(U, { step: '' }); /* Дело 5 открывается только после Дела 4 */
-    if (U.S().real) { homeState(U); if (!U.opt().now && !(s.d5 && s.d5.move) && Date.now() < unlockAt(s.d4.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
+    if (U.S().real) { homeState(U); if (!noWait(U) && !(s.d5 && s.d5.move) && Date.now() < unlockAt(s.d4.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
     if (!o.step && U.S().real && !s.d5Ts) s.d5Ts = Date.now(); /* время первого открытия Дела 5 — в «Для взрослых» */
     d5prep(U);
     cur = { name: 'day5', opts: o };
@@ -1343,7 +1407,7 @@
     hotya: 'Кант ответил бы: человек — цель, а не только средство, даже для самого хорошего дела. Приём решает за другого, пока тот думает, что решает сам: согласие у него взяли, а не спросили. И это всплывает потом — кого раз поймали на выдуманном «только сегодня», тот не поверит и честному «давили сами». Хорошему делу хватает правды. А если не хватает — стоит спросить, такое ли оно хорошее.',
     c1: { text: 'Считаю, кому от этого станет лучше.', alts: ['Хорошо то, после чего лучше многим.', 'Чужое счастье весит не меньше моего.'] },
     c2: { text: 'Даже ради хорошего дела не давлю.', alts: ['Хорошему делу хватает правды.', 'Человек — не средство для моего дела.'] },
-    crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить на пару дней.',
+    crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить.',
     foundBtn: 'К выводам',
     lupaH: 'Ещё одно на сегодня: школьный чат', lupaP: 'Минута, если хочется. После своей Засады чужие приёмы видны издалека — а иногда мерещатся там, где их нет. Посмотри, давят ли тут вообще.'
   };
@@ -1369,7 +1433,7 @@
     sum: ['Ничего не прошло: Тимур всё видел сразу. Неприятно, но без сюрпризов — узнавать потом нечего.', 'Одна строка прошла. Сейчас он доволен, а когда узнает — запомнит именно её.', 'Две строки прошли. Через час обидно будет не за приёмы, а за то, что поверил.', 'Прошло всё. Сейчас Тимуру отлично. Когда узнает — в следующий раз не поверит и честной строке.'],
     noDrop: 'Узнавать нечего: Тимур всё увидел сразу. Через час настроение то же.'
   };
-  var END6 = { tomorrow: 'Дальше по расписанию — седьмой день: Развилка, если два твоих вывода спорят, иначе Ревизия. Откроется завтра в 7 утра.' };
+  var END6 = { tomorrow: 'Дальше по расписанию — седьмой день: Развилка, если два твоих вывода спорят, иначе Ревизия.' };
   var ZSHARE = { lab: 'Отправить Засаду другу', note: 'Уйдут сюжет и четыре строки. Имени, Кодекса и прогресса в ссылке нет. Живёт она семь дней, а что ответит друг, сюда не вернётся.',
     text: 'Засада: четыре строки, в трёх давят, одна честная. Найдёшь где? Минуты на две, без регистрации:', good: 'Ссылка скопирована. Вставь в любой чат.', bad: 'Скопировать не получилось: перешли ссылку вручную.' };
   var ZFRIEND = {
@@ -1377,7 +1441,7 @@
     taskH: 'Где давят?', taskHint: 'Тапни строку и выбери, что в ней. Каждое название — один раз, переиграть нельзя.',
     honestOk: 'Честная строка — узнана', honestNo: 'Честная строка — принята за приём',
     noteBad: 'Подозревать всё подряд — тоже слепота: честное перестаёт быть видно.', noteFull: 'Чисто: три приёма названы, честная узнана. Видеть и подвох, и его отсутствие — это и есть умение.',
-    here: 'Здесь — ', build: 'Собрать свою Засаду', about: 'Что это за игра?',
+    here: 'Здесь — ', build: 'Собрать свою Засаду', about: 'Играть с первого дня', back: 'Вернуться в свою игру',
     coldH: 'Эта Засада остыла', coldP: 'Засада по ссылке живёт семь дней, и эти дни прошли. Попроси новую ссылку — или собери свою Засаду: это минуты на три.',
     brokenH: 'Ссылка не открылась', brokenP: 'Ссылка не прочиталась целиком. Попроси новую — или собери свою Засаду.',
     guest: 'Выбери сюжет и три приёма — тут ничего не сохраняется, кроме ссылки.',
@@ -1484,7 +1548,7 @@
     h += '<div class="d2side z-side">' + (guest ? '<p class="narr z-guest">' + esc(ZFRIEND.guest) + '</p>' : '') + '<p class="narr z-hint">' + esc(ZUI.pick) + '</p>' + zCardHTML(d, 'build');
     if (d.edit) {
       var taken = d.picks.map(function (p, i) { return p && i !== d.edit.i ? p.t : null; }).filter(Boolean);
-      h += '<div class="z-pick"><h2 class="q2-ask">' + ZUI.trayH + '</h2><div class="z-cres">' + ZTECH.map(function (t) {
+      h += '<div class="z-pick"><h2 class="q2-ask">' + ZUI.trayH + '</h2><div class="z-cres">' + ZTECH.filter(function (t) { return t !== 'hook' || (!guest && !!(ex(U).d8 && ex(U).d8.move)) || d.edit.t === 'hook' || d.picks.some(function (p) { return p && p.t === 'hook'; }); }).map(function (t) {
         var tk = taken.indexOf(t) >= 0;
         return '<button type="button" class="z-cre' + (d.edit.t === t ? ' on' : '') + (tk ? ' taken' : '') + '" data-z="tech" data-t="' + t + '" style="--bc:' + ZBC[t] + '"' + (tk ? ' disabled' : '') + '>' + zFace(t) + '<span class="z-cn">' + esc(zLabel(t)) + '</span></button>'; }).join('') + '</div>';
       if (d.edit.t) {
@@ -1533,7 +1597,7 @@
     return h + '</div>';
   }
   function zFinalHTML(U, d) {
-    return zHead(ZASADA.kick, ZFRIEND.finalH) + '<div class="d2side z-side">' + zCardHTML(d, 'final') + '<div class="d2btns z-fbtns"><button class="btn seen" type="button" data-zf="share">' + ZSHARE.lab + '</button><button class="btn" type="button" data-zf="about">' + ZFRIEND.about + '</button></div>' +
+    return zHead(ZASADA.kick, ZFRIEND.finalH) + '<div class="d2side z-side">' + zCardHTML(d, 'final') + '<div class="d2btns z-fbtns"><button class="btn seen" type="button" data-zf="share">' + ZSHARE.lab + '</button><button class="btn" type="button" data-zf="about">' + zAboutLab(U) + '</button></div>' +
       '<p class="copynote z-cnote">' + esc(ZFRIEND.finalNote) + '</p><p class="copydone z-cdone" role="status" aria-live="polite"></p></div>';
   }
   /* общие стадии (основная игра и гостевая сборка) */
@@ -1547,7 +1611,7 @@
   function zMainHTML(U, d) {
     var c = zCommon(U, d, false); if (c !== null) return c;
     if (d.stage === 'found') {
-      return zHead(ZASADA.kick, '') + '<div class="d2side z-side">' + monoHTML('util', nb(ZASADA.mono)) + '<div class="hotya"><div class="hv">А с другой стороны —</div><p>' + esc(nb(ZASADA.hotya)) + '</p></div>' +
+      return zHead(ZASADA.kick, '') + '<div class="d2side z-side">' + monoHTML('util', nb(ZASADA.mono)) + hotyaHTML(nb(ZASADA.hotya)) +
         '<div class="d2next"><button class="btn seen" type="button" data-z="tocr">' + ZASADA.foundBtn + '</button></div></div>';
     }
     if (d.stage === 'crumbs') {
@@ -1606,7 +1670,7 @@
       var ca = e.target.closest('.cr2 [data-a]');
       if (ca && main) {
         var art = ca.closest('.cr2'), c = d.cr.filter(function (x) { return x.id === art.getAttribute('data-c'); })[0];
-        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Вернёмся к нему через пару дней.'; redraw(false); return;
+        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Лежит в Кодексе, пока не решишь.'; redraw(false); return;
       }
       var b = e.target.closest('[data-z]'); if (!b) return;
       var k = b.getAttribute('data-z'); if (main) U.S().real = true; U.buzz(10);
@@ -1658,7 +1722,7 @@
   function screenDay6(U, o) {
     var s = ex(U);
     if (U.S().real && !(s.d5 && s.d5.fin)) return screenHome(U, { step: '' }); /* Засада открывается только после Дела 5 */
-    if (U.S().real) { homeState(U); if (!U.opt().now && !(s.d6 && s.d6.stage && s.d6.stage !== 'intro') && Date.now() < unlockAt(s.d5.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Засада ещё не начата) */
+    if (U.S().real) { homeState(U); if (!noWait(U) && !(s.d6 && s.d6.stage && s.d6.stage !== 'intro') && Date.now() < unlockAt(s.d5.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Засада ещё не начата) */
     if (!o.step && U.S().real && !s.d6Ts) s.d6Ts = Date.now(); /* время первого открытия Засады — в «Для взрослых» */
     d6prep(U);
     var d = d6state(U);
@@ -1701,7 +1765,7 @@
     hotya: 'стоики возразили бы: правило, которое меняется от места, перестаёт быть правилом и становится настроением. Эпиктет в «Энхиридионе» советовал назначить себе образ и держаться его и наедине, и на людях. Кто с друзьями один человек, а дома другой, тот нашёл не меру, а лазейку. И первыми это замечают как раз друзья. «Смотря где» звучит мудро, пока «где» не начинает выбирать тот, кому так удобнее.',
     c1: { text: 'У каждого моего правила есть своё место.', alts: ['Мера — не середина, а то, что к месту.', 'Решаю по месту, а не по таблице.'] },
     c2: { text: 'Держусь своего правила и наедине, и на людях.', alts: ['Правило, которое гнётся по месту, — не правило.', 'Где бы ни было — веду себя одинаково.'] },
-    crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить на пару дней.',
+    crNarr: 'Кнопки те же: забрать вывод, отказаться, переписать своими словами или отложить.',
     foundBtn: 'К выводам'
   };
   var D7AT = { pre: '10:40', leva: '10:46', scene: '10:52', reply: '10:58' };
@@ -1716,7 +1780,7 @@
     d3: { msgs: [['Алина', 'для канала нужна обложка. готовый шаблон — пять минут. или рисую свою, но это неделя, и как выйдет — пока не знаю'], ['Лёва', 'шаблон, и запускаемся сегодня. неделю ждать ради картинки — ну такое']], ask: ['Даня', 'опять два на два. ты за шаблон или за рисунок?'] },
     d4: { msgs: [['Макс', 'ролик надо монтировать как надо: титры, цвет, звук отдельно. я гайд смотрел, там минимум три вечера'], ['Лёва', 'а я хочу выложить сегодня как есть и поржать над комментами. это гараж, а не кино']], ask: ['Даня', 'ты с кем? или тебе вообще без разницы, как выйдет?'] },
     d5: { msgs: [['Даня', 'под роликом коммент от парня из параллели: «гараж для неудачников, ролик кринж». неприятно, снимал-то я'], ['Макс', 'кто-то должен ему ответить. жёстко, чтоб запомнил']], ask: ['Макс', 'ответишь ему? ты ж не из тех, кто молчит'] },
-    d6: { msgs: [['Лёва', 'на ярмарке сок не идёт, полбака осталось. а деньги — на экскурсию всему классу'], ['Лёва', 'давайте напишем на баннере «последние пять стаканов». разберут за десять минут. сок-то честный']], ask: ['Даня', 'пишем или нет? после вчерашней засады тебе виднее'] }
+    d6: { msgs: [['Лёва', 'на перемене сок не идёт, полбака осталось. а деньги — на экскурсию всему классу'], ['Лёва', 'давайте напишем на баннере «последние пять стаканов». разберут за десять минут. сок-то честный']], ask: ['Даня', 'пишем или нет? после вчерашней засады тебе виднее'] }
   };
   var D7G = {
     first: 'Главнее первое', second: 'Главнее второе',
@@ -1876,6 +1940,7 @@
     else if (o === 'out' || o === 'drop') c.status = 'out';
     else if (o === 'back') { c.status = 'keep'; cxInit(U).revisit++; }
     else if (o === 'take') c.status = 'keep';
+    delete c.prev; /* прежний статус из Кодекса устарел: статус только что решён здесь */
     c.rev = o; c.revTs = Date.now(); d.rev = o; d.fitOpen = false; d.stage = 'done';
   }
   /* игровые дни, а не календарь: 7 − день происхождения (своя формулировка, день 0 → 6) */
@@ -2061,7 +2126,7 @@
       var ca = e.target.closest('.cr2 [data-a]');
       if (ca) {
         var art = ca.closest('.cr2'), c = d.cr.filter(function (x) { return x.id === art.getAttribute('data-c'); })[0]; if (!c) return;
-        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Вернёмся к нему через пару дней.'; redraw(false); return;
+        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Лежит в Кодексе, пока не решишь.'; redraw(false); return;
       }
       var b = e.target.closest('[data-q]'); if (!b) return;
       var k = b.getAttribute('data-q'); U.S().real = true; U.buzz(10);
@@ -2120,7 +2185,7 @@
   function screenDay7(U, o) {
     var s = ex(U);
     if (U.S().real && !(s.d6 && s.d6.fin)) return screenHome(U, { step: '' }); /* седьмой день открывается только после Засады */
-    if (U.S().real) { homeState(U); if (!U.opt().now && !(s.d7 && s.d7.stage && s.d7.stage !== 'intro') && Date.now() < unlockAt(s.d6.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если день ещё не начат) */
+    if (U.S().real) { homeState(U); if (!noWait(U) && !(s.d7 && s.d7.stage && s.d7.stage !== 'intro') && Date.now() < unlockAt(s.d6.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если день ещё не начат) */
     if (!o.step && U.S().real && !s.d7Ts) s.d7Ts = Date.now(); /* время первого открытия дня — в «Для взрослых» */
     d7prep(U, /^rev/.test(o.step || ''));
     var d = d7state(U);
@@ -2169,7 +2234,7 @@
       return screenHome(U, { step: '' });
     }
     if (U.S().real && !(s.d7 && s.d7.fin)) return screenHome(U, { step: '' }); /* Дело 8 открывается только после дня 7 */
-    if (U.S().real) { homeState(U); if (!U.opt().now && !(s.d8 && s.d8.move) && Date.now() < unlockAt(s.d7.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
+    if (U.S().real) { homeState(U); if (!noWait(U) && !(s.d8 && s.d8.move) && Date.now() < unlockAt(s.d7.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
     if (!o.step && U.S().real && !s.d8Ts) s.d8Ts = Date.now(); /* время первого открытия Дела 8 — в «Для взрослых» */
     d8prep(U);
     cur = { name: 'day8', opts: o };
@@ -2223,10 +2288,12 @@
     });
     return '<div class="lupa-card z-card" data-view="' + view + '"><div class="artifact"><div class="af-h mono"><span>' + esc(P.head) + '</span></div>' + h + '</div></div>';
   }
-  function zfBtns() { return '<div class="d2btns z-fbtns"><button class="btn seen" type="button" data-zf="build">' + ZFRIEND.build + '</button><button class="btn" type="button" data-zf="about">' + ZFRIEND.about + '</button></div>'; }
+  /* у посетителя с настоящим сохранением главная кнопка ведёт в его игру и так и называется; «Играть с первого дня» видит только посетитель без сохранения */
+  function zAboutLab(U) { return ex(U).day1Done ? ZFRIEND.back : ZFRIEND.about; }
+  function zfBtns(U) { return '<div class="d2btns z-fbtns"><button class="btn seen" type="button" data-zf="about">' + zAboutLab(U) + '</button>' + (ex(U).day1Done && ex(U).d6 ? '' : '<button class="btn" type="button" data-zf="build">' + ZFRIEND.build + '</button>') + '</div>'; }
   function zfHTML(U, f) {
-    if (!f.ok) return zHead(ZFRIEND.kick, ZFRIEND.brokenH, '<p class="narr z-sub">' + esc(nb(ZFRIEND.brokenP)) + '</p>') + '<div class="d2side z-side">' + zfBtns() + '</div>';
-    if (f.cold) return zHead(ZFRIEND.kick, ZFRIEND.coldH, '<p class="narr z-sub">' + esc(nb(ZFRIEND.coldP)) + '</p>') + '<div class="d2side z-side">' + zfBtns() + '</div>';
+    if (!f.ok) return zHead(ZFRIEND.kick, ZFRIEND.brokenH, '<p class="narr z-sub">' + esc(nb(ZFRIEND.brokenP)) + '</p>') + '<div class="d2side z-side">' + zfBtns(U) + '</div>';
+    if (f.cold) return zHead(ZFRIEND.kick, ZFRIEND.coldH, '<p class="narr z-sub">' + esc(nb(ZFRIEND.coldP)) + '</p>') + '<div class="d2side z-side">' + zfBtns(U) + '</div>';
     if (!f.open) return zHead(ZFRIEND.kick, ZFRIEND.introH, '<p class="narr z-sub">' + esc(nb(ZFRIEND.introP)) + '</p>') + '<div class="d2side z-side"><div class="d2next"><button class="btn seen" type="button" data-zf="open">' + ZFRIEND.introBtn + '</button></div></div>';
     if (!zfDone(f)) {
       var used = f.labels.filter(Boolean), sel = f.sel, tray = '';
@@ -2243,7 +2310,7 @@
       zfCardHTML(f, 'result') +
       '<div class="z-rs">' + R.rows.map(function (x) {
         var nm = x.kind === 'honest' ? 'без подвоха' : zLabel(x.t), sn = x.text.length > 40 ? x.text.slice(0, 40).replace(/\s+\S*$/, '') + '…' : x.text;
-        return '<div class="z-r ' + (x.ok ? 'good' : 'bad') + '"><q class="mono">' + esc(sn) + '</q><p><b>' + ZFRIEND.here + esc(nm) + '.</b> ' + esc(x.kind === 'honest' ? PLOTS[f.plot].honestWhy : zWhy(x.t)) + '</p></div>'; }).join('') + '</div>' + zfBtns() + '</div>';
+        return '<div class="z-r ' + (x.ok ? 'good' : 'bad') + '"><q class="mono">' + esc(sn) + '</q><p><b>' + ZFRIEND.here + esc(nm) + '.</b> ' + esc(x.kind === 'honest' ? PLOTS[f.plot].honestWhy : zWhy(x.t)) + '</p></div>'; }).join('') + '</div>' + zfBtns(U) + '</div>';
   }
   function zgHTML(U, g) {
     var c = zCommon(U, g, true); if (c !== null) return c;
@@ -2325,7 +2392,7 @@
       return screenHome(U, { step: o.step === 'wait' ? 'wait' : '' });
     }
     if (U.S().real && !(s.d2 && s.d2.fin)) return screenHome(U, { step: '' }); /* Дело 3 открывается только после Дела 2 */
-    if (U.S().real) { homeState(U); if (!U.opt().now && !(s.d3 && s.d3.move) && Date.now() < unlockAt(s.d2.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
+    if (U.S().real) { homeState(U); if (!noWait(U) && !(s.d3 && s.d3.move) && Date.now() < unlockAt(s.d2.finTs)) return screenHome(U, { step: '' }); } /* и не раньше срока (если Дело ещё не начато) */
     if (!o.step && U.S().real && !s.d3Ts) s.d3Ts = Date.now(); /* время первого открытия Дела 3 — в «Для взрослых» */
     d3prep(U);
     cur = { name: 'day3', opts: o };
@@ -2359,7 +2426,7 @@
   function cxInit(U) {
     var s = ex(U), cx = s.cx;
     if (!cx) {
-      cx = { crumbs: [], panel: 'card', compose: false, draft: { text: '', views: [], contra: '' }, dropped: [], revisit: U.opt().demo ? 1 : 0 };
+      cx = { crumbs: [], panel: 'card', compose: false, draft: { text: '', views: [], contra: '' }, revisit: U.opt().demo ? 1 : 0 };
       if (U.opt().demo) {
         BASE_CRUMBS.forEach(function (c) { cx.crumbs.push({ id: c.id, view: c.view, text: c.text, sph: c.sph, contra: c.contra, bit: c.bit, status: 'mine' }); });
         cx.crumbs.push({ id: 'own1', view: 'stoic', view2: 'cynic', text: 'Не иду туда, где надо доказывать, что я свой.', sph: ['friends', 'school'], contra: 'c8', own: true, status: 'mine', bit: 90 });
@@ -2370,7 +2437,8 @@
     cx.crumbs = cx.crumbs.filter(function (c) { return !c.fromCand; });
     allCands(U).forEach(function (c, i) {
       if (c.status === 'keep' || c.status === 'fit') cx.crumbs.push({ id: c.id, view: c.view, text: c.text, sph: [c.sph || 'friends'], status: 'mine', bit: 60 + i, fit: c.fit, own: !!c.own, fromCand: true, fresh: true, contra: c.contra, tn: c.tn, scope: c.scope, fnote: c.fnote, rev: c.rev });
-      else if (c.status === 'pocket') cx.crumbs.push({ id: c.id, view: c.view, text: c.text, sph: [c.sph || 'friends'], status: 'pocket', hrs: 19, bit: 60 + i, fit: c.fit, fromCand: true, contra: c.contra, tn: c.tn, scope: c.scope, fnote: c.fnote, rev: c.rev });
+      else if (c.status === 'pocket') cx.crumbs.push({ id: c.id, view: c.view, text: c.text, sph: [c.sph || 'friends'], status: 'pocket', bit: 60 + i, fit: c.fit, fromCand: true, contra: c.contra, tn: c.tn, scope: c.scope, fnote: c.fnote, rev: c.rev });
+      else if (c.status === 'out' && VIEWS[c.view]) cx.crumbs.push({ id: c.id, view: c.view, text: c.text, sph: [c.sph || 'friends'], status: 'out', bit: 60 + i, fit: c.fit, fromCand: true, contra: c.contra });
     });
     return cx;
   }
@@ -2408,30 +2476,37 @@
     svg += '<path d="' + SILH + '" fill="#08070c" transform="translate(300 ' + FY + ') scale(150)"/></svg>';
     return svg;
   }
-  function bitmap(cx) {
-    var v = 0, n = 0; cx.crumbs.forEach(function (c) { if (c.status !== 'out') { v = (v * 31 + c.bit * 7 + 3) % 4294967291; n++; } });
-    var h = (v >>> 0).toString(16); while (h.length < 8) h = '0' + h; return 'v1.' + h + '.' + (n < 10 ? '0' : '') + n.toString(16);
-  }
   function crumbBy(cx, id) { return cx.crumbs.filter(function (c) { return c.id === id; })[0]; }
   /* связь contradicts: каталожная (предложение игры) живёт, пока игрок не ответил «нет»; ответ «да» делает её действующей */
   function tensOn(cx, c) { var d = c.contra && crumbBy(cx, c.contra); return !!d && d.status !== 'out' && c.tn !== 'no' && d.tn !== 'no'; }
   function tensConfirmed(c, d) { return c.tn === 'yes' || (d && d.tn === 'yes'); }
+  /* выброшенные выводы: из Кодекса и с карточек дней; «Вернуть» возвращает прежний статус */
+  function cxDropped(cx) {
+    var out = cx.crumbs.filter(function (c) { return c.status === 'out' && VIEWS[c.view]; });
+    if (!out.length) return '';
+    return '<details class="dropped"' + (cxDropOpen ? ' open' : '') + '><summary class="mono">Выброшенные · ' + out.length + '</summary><ul class="droplist">' + out.map(function (c) {
+      return '<li><q>' + esc(c.text) + '</q><span class="ss mono">' + VIEWS[c.view].name + '</span><button class="btn" type="button" data-cx="ret" data-id="' + esc(c.id) + '">Вернуть</button></li>';
+    }).join('') + '</ul></details>';
+  }
   function cxSheet(cx) {
     var rows = '', live = cx.crumbs.filter(function (c) { return c.status === 'mine'; }).concat(cx.crumbs.filter(function (c) { return c.status === 'pocket'; }));
     live.forEach(function (c, i) {
       var tn = TONE[VIEWS[c.view].tone], sub = VIEWS[c.view].name + (c.view2 ? ' и ' + VIEWS[c.view2].name : '');
       var pair = tensOn(cx, c);
-      rows += '<li class="srow' + (c.own ? ' own' : '') + (c.status === 'pocket' ? ' pocket' : '') + '" style="--tc:' + tn + (c.view2 ? ';--tc2:' + TONE[VIEWS[c.view2].tone] : '') + '"><span class="sn">' + (i + 1) + '</span>' +
+      rows += '<li class="srow' + (c.own ? ' own' : '') + (c.status === 'pocket' ? ' pocket' : '') + '" style="--tc:' + tn + (c.view2 ? ';--tc2:' + TONE[VIEWS[c.view2].tone] : '') + '"><span class="sn">' + (c.status === 'pocket' ? '·' : i + 1) + '</span>' +
         '<span class="sab"><b>' + VIEWS[c.view].ab + '</b></span><div class="sb"><q>' + esc(c.text) + '</q><div class="ss mono">' + sub +
-        (c.own ? ' · <em>моя формулировка</em>' : '') + (c.scope !== undefined && c.scope !== '' && SCOPES[+c.scope] ? ' · ' + SCOPES[+c.scope] : '') + (c.status === 'pocket' ? ' · <em class="pk">созревает ' + c.hrs + ' ч</em>' : '') +
-        (pair && c.own ? ' · спорит с №' + (live.indexOf(crumbBy(cx, c.contra)) + 1) : '') + '</div></div></li>';
+        (c.own ? ' · <em>моя формулировка</em>' : '') + (c.scope !== undefined && c.scope !== '' && SCOPES[+c.scope] ? ' · ' + SCOPES[+c.scope] : '') + (c.status === 'pocket' ? ' · <em class="pk">отложено</em>' : '') +
+        (pair && c.own ? ' · спорит с №' + (live.indexOf(crumbBy(cx, c.contra)) + 1) : '') + '</div>' +
+        (cxConfirm === c.id ? '<div class="sconf" role="group" aria-label="Выбросить вывод"><span>Выбросить этот вывод?</span> <button class="btn seen" type="button" data-cx="dropyes" data-id="' + esc(c.id) + '">Да, не моё</button> <button class="btn" type="button" data-cx="dropno">Оставить</button></div>'
+          : '<button class="sdrop mono" type="button" data-cx="drop" data-id="' + esc(c.id) + '">Не моё</button>') + '</div></li>';
       var nx = live[i + 1];
       if (c.contra && nx && nx.id === c.contra && pair) {
         rows += '<li class="tens" style="--ta:' + TONE[VIEWS[c.view].tone] + ';--tb:' + TONE[VIEWS[nx.view].tone] + '"><svg viewBox="0 0 300 22" preserveAspectRatio="none" aria-hidden="true"><path d="M2 4 C60 22 110 -4 150 11 S240 20 298 4" fill="none" stroke="url(#thr)" stroke-width="3.4" stroke-linecap="round"/><path d="M2 18 C60 0 110 26 150 11 S240 2 298 18" fill="none" stroke="url(#thr)" stroke-width="3.4" stroke-linecap="round" opacity=".7"/></svg>' +
           '<span class="mono">спор: тянут в разные стороны · игра не решает за тебя · ' + (tensConfirmed(c, nx) ? 'подтверждено тобой' : 'предложение игры') + (c.fnote || nx.fnote ? ' · ' + esc(c.fnote || nx.fnote) : '') + '</span><button class="fork" type="button" data-cx="fork" data-p="' + c.id + '|' + nx.id + '">Развилка</button></li>';
       }
     });
-    for (var k = live.length; k < 12; k++) rows += '<li class="srow empty"><span class="sn">' + (k + 1) + '</span><span class="sb">место свободно</span></li>';
+    var mineN = live.filter(function (c) { return c.status === 'mine'; }).length; /* места получают только принятые выводы; отложенные номера не имеют */
+    for (var k = mineN; k < 12; k++) rows += '<li class="srow empty"><span class="sn">' + (k + 1) + '</span><span class="sb">место свободно</span></li>';
     return '<ol class="sheet">' + rows + '</ol>';
   }
   function cxSpheres(cx) {
@@ -2452,8 +2527,7 @@
   }
   function cxPanel(cx, U) {
     var live = cx.crumbs.filter(function (c) { return c.status !== 'out'; });
-    if (cx.panel === 'card') {
-      var mine0 = live.filter(function (c) { return c.status === 'mine'; });
+    var mine0 = live.filter(function (c) { return c.status === 'mine'; });
       var A = crumbBy(cx, 'cA'), B = crumbBy(cx, 'cB'), pair = A && B && A.status === 'mine' && B.status === 'mine';
       var rest = mine0.filter(function (c) { return !pair || (c.id !== 'cA' && c.id !== 'cB'); });
       var note = function (c) { return '<div class="sc-note" style="--tc:' + TONE[VIEWS[c.view].tone] + '">' + esc(c.text) + '<span class="vchip sm" style="--tc:' + TONE[VIEWS[c.view].tone] + '">' + VIEWS[c.view].name + '</span></div>'; };
@@ -2461,54 +2535,34 @@
       if (pair) {
         body = note(A) + '<div class="thr2" aria-hidden="true"><svg viewBox="0 0 120 44"><defs><linearGradient id="thr2g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="' + TONE.quiet + '"/><stop offset="1" stop-color="' + TONE.thorn + '"/></linearGradient></defs><path d="M60 0 C20 12 100 24 60 44" fill="none" stroke="url(#thr2g)" stroke-width="4" stroke-linecap="round"/><path d="M60 0 C100 12 20 24 60 44" fill="none" stroke="url(#thr2g)" stroke-width="4" stroke-linecap="round" opacity=".6"/></svg><b class="rus">живу с обоими</b></div>' + note(B) + (rest[0] ? note(rest[0]) : '');
       } else body = mine0.slice(0, 3).map(note).join('') || '<div class="sc-note">Пока пусто: забери вывод в Деле.</div>';
-      return '<p class="cap">' + (pair ? 'Три вывода и один спор. Без имени и аватара.' : 'До трёх выводов. Без имени и аватара.') + '</p>' +
-        '<div class="sharecard v2"><div class="sc-top mono"><span>Мой кодекс · неделя 1</span><span>12+</span></div><h3>Что я беру с собой</h3><div class="sc-n">' + body + '</div>' +
-        '<div class="sc-foot mono"><span>без имени и аватара</span><span>ссылка на игру</span></div></div>' +
-        '<div class="sharebtns"><button class="btn" type="button" data-cx="copy">Скопировать</button><button class="btn seen" type="button" data-cx="send">Отправить →</button></div>';
-    }
-    if (cx.panel === 'cmp') {
-      var mine = live.filter(function (c) { return !c.own && c.status === 'mine'; });
-      var same = mine.filter(function (c) { return FRIEND.shown.indexOf(c.id) >= 0; }), only = mine.filter(function (c) { return FRIEND.shown.indexOf(c.id) < 0; });
-      var friendOnly = FRIEND.shown.filter(function (id) { return !mine.some(function (c) { return c.id === id; }); }).length, one = only.length + friendOnly;
-      var ul = function (a) { return '<ul>' + a.map(function (c) { return '<li>' + esc(c.text) + '</li>'; }).join('') + '</ul>'; };
-      return '<p class="cap">Друг присылает ссылку. В ней только номера выводов, без слов и без имён. Твои слова остаются у тебя.</p>' +
-        '<div class="linkbox mono"><span>твоя ссылка</span><code>/c#' + bitmap(cx) + '</code></div>' +
-        '<div class="linkbox mono"><span>ссылка друга</span><code>/c#v1.7be40c1a.0b</code></div>' +
-        '<p class="cmpsum"><b>Общее в открытых частях кодексов: ' + same.length + '.</b> Ещё ' + one + ' ' + plural(one, ['вывод показан', 'вывода показаны', 'выводов показаны']) + ' только у одного</p>' +
-        '<div class="cmp"><div class="grp g-same"><h4 class="mono"><span>общее</span><span>' + same.length + '</span></h4>' + ul(same) + '</div>' +
-        '<div class="grp"><h4 class="mono"><span>показано только у тебя</span><span>' + only.length + '</span></h4>' + ul(only) + '</div>' +
-        (only.length ? '<div class="ask"><i>Можно спросить друга</i>Что он думает про «' + esc(only[0].text.replace(/[.]$/, '')) + '»?</div>' : '') + '<p class="cap" style="margin-top:10px">Отсутствие вывода в ссылке — не несогласие: друг мог его не показать.</p></div>';
-    }
-    return '<p class="cap">Кодекс — главное, что у тебя здесь есть, а хранится он на устройстве. Одна ссылка спасает его при смене телефона.</p>' +
-      '<div class="backup"><div class="bk-row"><b>Сохранить себе</b><span>Ссылка с кодексом во фрагменте уходит тебе в «Избранное» мессенджера одним тапом.</span></div>' +
-      '<div class="linkbox mono"><span>ссылка-копия</span><code>/r#v1.' + btoa(unescape(encodeURIComponent(bitmap(cx)))).slice(0, 18) + '…</code></div>' +
-      '<button class="btn seen" type="button" data-cx="save">Отправить себе в «Избранное»</button>' +
-      '<div class="bk-row" style="margin-top:14px"><b>Восстановить</b><span>Открой ссылку-копию на новом устройстве: кодекс вернётся целиком, с формулировками.</span></div>' +
-      '<button class="btn" type="button" data-cx="restore">Восстановить по ссылке</button></div>' +
-      '<p class="cap" style="margin-top:12px">В прототипе ничего не уходит наружу: ссылки показаны образцом.</p>';
+      return '<p class="cap">' + (pair ? 'Три вывода и один спор. Без имени и аватара.' : 'До трёх твоих выводов на одной карточке. Захочешь показать — сделай скриншот: имени и аватара на ней нет.') + '</p>' +
+        '<div class="sharecard v2"><div class="sc-top mono"><span>Мой кодекс</span><span>12+</span></div><h3>Что я беру с собой</h3><div class="sc-n">' + body + '</div>' +
+        '<div class="sc-foot mono"><span>без имени и аватара</span><span>Не По Сценарию</span></div></div>';
   }
   function cxCompose(cx) {
     var d = cx.draft;
     var vs = Object.keys(VIEWS).map(function (k) { return '<button type="button" class="vc' + (d.views.indexOf(k) >= 0 ? ' on' : '') + '" style="--tc:' + TONE[VIEWS[k].tone] + '" data-cx="dv" data-k="' + k + '">' + VIEWS[k].name + '</button>'; }).join('');
     var cs = cx.crumbs.filter(function (c) { return c.status === 'mine'; }).map(function (c) { return '<button type="button" class="vc' + (d.contra === c.id ? ' on' : '') + '" data-cx="dc" data-k="' + c.id + '">' + esc(c.text.replace(/[.]$/, '')) + '</button>'; }).join('');
-    return '<div class="compose"><h3 class="rus">Своя формулировка</h3><p class="cap">Твои слова — полноправный вывод: у него есть взгляд, споры, он попадает в сверку и карточку. Сам текст не покидает устройство.</p>' +
+    return '<div class="compose"><h3 class="rus">Своя формулировка</h3><p class="cap">Твои слова — полноправный вывод: у него есть взгляд, споры, он попадает в карточку. Сам текст не покидает устройство.</p>' +
       '<label class="mono lb" for="cxtext">твоими словами</label><textarea id="cxtext" maxlength="90" rows="2" placeholder="Например: «Не обещаю того, чего не смогу»">' + esc(d.text) + '</textarea>' +
       '<div class="mono lb">на какие взгляды похоже (1–2)</div><div class="vcs">' + vs + '</div>' +
       '<div class="mono lb">с каким выводом спорит (если спорит)</div><div class="vcs list">' + cs + '</div>' +
       '<button class="btn seen" type="button" data-cx="add">Добавить в кодекс</button></div>';
   }
+  /* вопрос «Выбросить этот вывод?» и раскрытость раздела «Выброшенные» живут только пока игрок на экране Кодекса: не в сохранении, при входе сбрасываются */
+  var cxConfirm = null, cxDropOpen = false;
   function screenCodex(U, o) {
     cur = { name: 'codex', opts: o };
     var cx = cxInit(U);
+    if (!o.keep) { cxConfirm = null; cxDropOpen = false; }
     if (o.step === 'compose') cx.compose = true;
-    if (o.step === 'cmp') cx.panel = 'cmp';
-    if (o.step === 'backup') cx.panel = 'bk';
+    if (cx.panel === 'bk') cx.panel = 'card'; /* сохранения со старой вкладкой копии */
     var mineL = cx.crumbs.filter(function (c) { return c.status === 'mine'; }), pockL = cx.crumbs.filter(function (c) { return c.status === 'pocket'; });
-    var slots = ''; for (var i = 0; i < 12; i++) slots += '<i class="' + (i < mineL.length ? 'on' : (i < mineL.length + pockL.length ? 'pk' : '')) + '"></i>';
+    var slots = ''; for (var i = 0; i < 12; i++) slots += '<i class="' + (i < mineL.length ? 'on' : '') + '"></i>';
     var own = mineL.filter(function (c) { return c.own; }).length;
     var inner = '<div class="wrap"><div class="cx-wrap"><div class="cx-main">' +
       '<div class="cx-head"><div class="kick mono"><span class="dot" style="background:var(--seen)"></span><span>Только на этом устройстве</span></div><h1>Мой кодекс</h1>' +
-      '<p class="sub">Это твои выводы. Не школьные и не наши — твои. Любой можно переписать или выбросить. Хранятся только на этом телефоне.</p>' + (mineL.length + pockL.length ? '' : '<p class="sub emptyline">Тут будут твои выводы. Пока пусто: ни один не забран.</p>') +
+      '<p class="sub">Это твои выводы. Не школьные и не наши — твои. Любой можно выбросить, а потом вернуть. Хранятся только на этом телефоне.</p>' + (mineL.length + pockL.length ? '' : '<p class="sub emptyline">Тут будут твои выводы. Пока пусто: ни один не забран.</p>') +
       '<div class="cx-count mono"><span>' + mineL.length + ' из 12' + (pockL.length ? ' · отложено ' + pockL.length : '') + '</span><div class="slots">' + slots + '</div></div></div>' +
       '<section class="shadowbox" aria-label="Картина мира">' + shadowSVG(cx) + '</section>' +
       '<div class="legend">' + cxLegend(cx) + '</div><p class="lgnote">Длина тени — доля твоих выводов у этого взгляда. Серое пересечение — два твоих вывода спорят друг с другом.</p>' +
@@ -2519,24 +2573,24 @@
       '<div class="cx-btns"><button class="btn" type="button" data-cx="compose">+ Своя формулировка</button><span class="mono">своих: ' + own + '</span></div>' +
       (cx.compose ? cxCompose(cx) : '') +
       '<p class="localnote"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" fill="none" stroke="#1C1411" stroke-width="2"/><path d="M7 9V6a3 3 0 0 1 6 0v3" fill="none" stroke="#1C1411" stroke-width="2"/></svg><span>Взгляды — личное дело. Слова, написанные тобой, с устройства не уходят.</span></p></div>' +
-      '<aside class="cside" aria-label="Карточка, сверка, копия"><div class="seg" role="tablist"><button role="tab" class="' + (cx.panel === 'cmp' ? 'on' : '') + '" data-cx="p-cmp">Сверить с другом</button><button role="tab" class="' + (cx.panel === 'card' ? 'on' : '') + '" data-cx="p-card">Карточка</button><button role="tab" class="' + (cx.panel === 'bk' ? 'on' : '') + '" data-cx="p-bk">Сохранить себе</button></div>' +
-      '<div class="panel" id="cxpanel">' + cxPanel(cx, U) + '</div><div class="forkbox" id="forkbox" hidden></div></aside></div></div>';
+      '<aside class="cside" aria-label="Карточка">' +
+      '<div class="panel" id="cxpanel">' + cxPanel(cx, U) + '</div><div class="forkbox" id="forkbox" hidden></div></aside></div>' + cxDropped(cx) + '</div>';
     var el = mount(U, 'scr-codex', 'codex', inner);
     if (!el._wired) {
       el._wired = true;
+      el.addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('dropped')) cxDropOpen = e.target.open; }, true);
       el.addEventListener('click', function (e) {
         var b = e.target.closest('[data-cx]'); if (!b) return;
         var cx2 = cxInit(U), a = b.getAttribute('data-cx'); U.S().real = true; U.buzz(8);
         var keepScroll = el.scrollTop;
-        if (a === 'p-cmp') cx2.panel = 'cmp'; else if (a === 'p-card') cx2.panel = 'card'; else if (a === 'p-bk') cx2.panel = 'bk';
-        else if (a === 'compose') cx2.compose = !cx2.compose;
+        if (a === 'compose') cx2.compose = !cx2.compose;
         else if (a === 'dv') { var k = b.getAttribute('data-k'), v = cx2.draft.views, ix = v.indexOf(k); if (ix >= 0) v.splice(ix, 1); else { v.push(k); if (v.length > 2) v.shift(); } cx2.draft.text = ($('#cxtext') || {}).value || cx2.draft.text; }
         else if (a === 'dc') { cx2.draft.contra = cx2.draft.contra === b.getAttribute('data-k') ? '' : b.getAttribute('data-k'); cx2.draft.text = ($('#cxtext') || {}).value || cx2.draft.text; }
         else if (a === 'add') {
           var t = (($('#cxtext') || {}).value || '').replace(/\s+/g, ' ').trim(), d = cx2.draft;
           if (!t) { U.toast('Напиши формулировку своими словами'); return; }
           if (!d.views.length) { U.toast('Выбери хотя бы один близкий взгляд'); return; }
-          if (cx2.crumbs.filter(function (c) { return c.status === 'mine'; }).length >= 12) { U.toast('12 мест заняты: сначала выбрось одну'); return; }
+          if (cx2.crumbs.filter(function (c) { return c.status === 'mine'; }).length >= 12) { U.toast('Все 12 мест заняты. Сначала выбрось один вывод.'); return; }
           cx2.crumbs.push({ id: 'own' + (cx2.crumbs.length + 1), view: d.views[0], view2: d.views[1], text: t, sph: ['friends'], contra: d.contra || undefined, own: true, status: 'mine', bit: 91 });
           cx2.draft = { text: '', views: [], contra: '' }; cx2.compose = false; U.toast('Добавлено: это теперь полноправный вывод');
         }
@@ -2550,11 +2604,28 @@
         }
         else if (a === 'fork') { var fb = $('#forkbox'); fb.hidden = false; fb.innerHTML = '<b class="mono">Развилка</b><p>Завтра зачёт, а друзья зовут на вечер. Что перевесит: покой или рекорд?</p><div class="fo"><button class="btn" type="button" data-cx="fk">В этот раз покой</button><button class="btn" type="button" data-cx="fk">В этот раз рекорд</button><button class="btn" type="button" data-cx="fk">Живу с обоими</button></div>'; return; }
         else if (a === 'fk') { var f2 = $('#forkbox'); f2.innerHTML = '<b class="mono">Записано</b><p>Выводы остаются оба. Игра не выбирает за тебя, она запомнила, как всё взвешено.</p>'; return; }
-        else if (a === 'copy') { U.toast('Скопировано (в прототипе наружу не уходит)'); return; }
-        else if (a === 'send') { U.toast('Отправка: в прототипе нет'); return; }
-        else if (a === 'save') { U.toast('Ссылка-копия готова. В прототипе наружу не уходит'); return; }
-        else if (a === 'restore') { U.toast('Восстановление: в прототипе только образец'); return; }
-        screenCodex(U, { step: '' }); $('#scr-codex').scrollTop = keepScroll;
+        else if (a === 'drop') { cxConfirm = b.getAttribute('data-id'); }
+        else if (a === 'dropno') { cxConfirm = null; }
+        else if (a === 'dropyes') {
+          var did = b.getAttribute('data-id'), dc = crumbBy(cx2, did); cxConfirm = null;
+          if (dc && dc.status !== 'out') {
+            if (dc.fromCand) { var dcand = allCands(U).filter(function (q) { return q.id === did; })[0]; if (dcand) { dcand.prev = dcand.status; dcand.status = 'out'; } }
+            else { dc.prev = dc.status; dc.status = 'out'; }
+            cxDropOpen = true;
+            U.toast('Выброшено. Вернуть можно внизу Кодекса.');
+          }
+        }
+        else if (a === 'ret') {
+          var rid = b.getAttribute('data-id'), rc = crumbBy(cx2, rid), rcand = rc && rc.fromCand ? allCands(U).filter(function (q) { return q.id === rid; })[0] : null;
+          if (rc && rc.status === 'out') {
+            var prev = rcand ? (rcand.prev || 'keep') : (rc.prev || 'mine'), toMine = prev === 'mine' || prev === 'keep' || prev === 'fit';
+            if (toMine && cx2.crumbs.filter(function (c) { return c.status === 'mine'; }).length >= 12) { U.toast('Все 12 мест заняты. Сначала выбрось один вывод.'); return; }
+            if (rcand) { rcand.status = prev; delete rcand.prev; } else { rc.status = prev; delete rc.prev; }
+            cx2.revisit = (cx2.revisit || 0) + 1;
+            U.toast('Вывод снова в Кодексе.');
+          }
+        }
+        screenCodex(U, { step: '', keep: 1 }); $('#scr-codex').scrollTop = keepScroll;
       });
     }
     return el;
@@ -2586,7 +2657,6 @@
     var d = document.createElement('div'); d.innerHTML = creatureSvg(t.getAttribute('data-cr')); t.parentNode.replaceChild(d.firstChild, t);
   }, true);
   /* игровой день и ротация: один артефакт в день. «N из M»: N — сколько артефактов игрок уже видел, M — размер пула ротации (ТЗ §7: в MVP 30; прототип показывает восемь образцов по кругу) */
-  var LUPA_POOL = 30;
   var LDAY = null; /* день «Ещё одного на сегодня», заданный сценой Дела (inDay) */
   /* вне сцены: пока идёт ожидание после Дела 2 и позже — день последнего законченного выпуска, пока Дело открыто — игровой день; ожидание после первой сессии прежнее (в квесте своя лупа) */
   function lupaDay(U) { if (LDAY !== null) return LDAY; var hs = homeState(U); return Math.max(1, hs.wait && hs.n >= 3 ? U.day() - 1 : U.day()); }
@@ -2610,8 +2680,6 @@
     Object.keys(s.lpH || {}).forEach(function (k) { var r = s.lpH[k]; t.views++; if (r.honest) t.honest++; if (!r.fin) return; if (r.pause) t.pause++; t.need += r.need; t.ok += r.ok; t.ne += r.ne; t.fa += r.fa; t.pz += r.pz; t.pm += r.pm; t.ms += r.ms; });
     return t;
   }
-  /* лестница существа: форматы, в которых приём проверен после первого называния */
-  function noteFmt(U, tech, kind) { var s = ex(U); s.fmt = s.fmt || {}; var a = s.fmt[tech] = s.fmt[tech] || []; if (a.indexOf(kind) < 0) a.push(kind); }
   function techNames(a) { return a.zones.filter(function (z) { return z.tech; }).map(function (z) { return tray(TECH_NAME[z.tech]); }).join(', '); }
   function zoneBadge(zn, done, fin) {
     if (done === 'hit') return '<span class="vizhu">' + tray(TECH_NAME[zn.tech]) + '</span>';
@@ -2647,12 +2715,12 @@
     if (T.honest < 5) { if (T.need) sc = '<span>Найдено ' + (T.ok + T.ne) + ' из ' + T.need + '</span>'; }
     else sc = '<span>Найдено ' + (T.ok + T.ne) + ' из ' + T.need + '</span><span>ложных тревог ' + T.fa + ' из ' + T.honest + '</span><span>имя верно ' + T.ok + ' из ' + (T.ok + T.ne) + '</span><span>пауза к месту ' + T.pz + ' из ' + T.pause + '</span>' +
       (T.pm ? '<span>промахов паузы ' + T.pm + '</span>' : '') + (T.ms ? '<span>пропущено ' + T.ms + '</span>' : '') + '<span class="idx">зоркость ' + (T.ok + T.ne - T.fa) + '</span>';
-    return '<div class="lupa-card"><div class="lc-top mono"><span>Ещё одно на сегодня · минута</span><span>артефакт ' + T.views + ' из ' + LUPA_POOL + '</span></div>' +
+    return '<div class="lupa-card"><div class="lc-top mono"><span>Ещё одно на сегодня · минута</span><span>артефакт ' + T.views + '</span></div>' +
       '<div class="artifact"><div class="af-h mono"><span>' + a.app + '</span><span>' + a.kind + '</span></div><div class="af-t">' + esc(a.head) + '</div>' + z + '</div>' + tr +
       '<div class="lp-foot"><button class="btn" type="button" data-lp="clean"' + (L.fin ? ' disabled' : '') + '>Здесь чисто</button>' +
       '<button class="btn" type="button" data-lp="few"' + (L.fin ? ' disabled' : '') + '>Мало данных</button></div>' +
       (sc ? '<div class="lp-score mono">' + sc + '</div>' : '') +
-      '<details class="lp-why"><summary aria-label="Как считается счёт">?</summary><p class="lp-note">Честных сообщений не меньше трети, и «Здесь чисто» — полноценный ответ. «Мало данных» тоже: бывают сообщения, где верный ход — пауза или вопрос. Зоркость — найденное минус ложные тревоги; ошибка в названии при настоящем давлении считается отдельно. Индекс виден после пяти честных сообщений.</p></details></div>';
+      '<details class="lp-why"><summary aria-label="Как считается счёт">?</summary><p class="lp-note">Бывают честные сообщения, и «Здесь чисто» — полноценный ответ. «Мало данных» тоже: бывают сообщения, где верный ход — пауза или вопрос. Счёт — это найденное; ложные тревоги считаются отдельно.</p></details></div>';
   }
   /* подсказка на неверное название: хвост «или про то, боишься ли ты?» только там, где в лотке есть «Берёт на слабо» (артефакт «Арена»); у остальных — прежний текст */
   function missHint(a) { if (lupaTray(a).indexOf('НА СЛОВЕ') >= 0) return 'Не то. Перечитай строку: она про время, про людей, про тебя, про того, кто так сказал, про то, боишься ли ты, — или про твоё прошлое «да»? '; return lupaTray(a).indexOf('СЛАБО') >= 0 ? 'Не то. Перечитай строку: она про время, про людей, про тебя, про того, кто так сказал, — или про то, боишься ли ты? ' : 'Не то. Перечитай строку: она про время, про людей, про тебя — или про того, кто так сказал? '; }
@@ -2667,7 +2735,7 @@
       var pick = b.getAttribute('data-n'), zi = L.sel, zn = a.zones[zi], right = zn.tech ? TECH_NAME[zn.tech] : 'ЧИСТО', why = zoneWhy(zn);
       L.sel = null; L.hint = ''; L.hk = '';
       if (a.pause) { L.pm++; L.done[zi] = 'pm'; lupaFin(L, 'Тут нужна была пауза, а не ответ. ' + a.pauseWhy); } /* названный приём или «чисто» на паузном артефакте — промах паузы, не ложная тревога (§7) */
-      else if (pick === right) { if (zn.tech) { L.done[zi] = 'hit'; L.ok++; if (!Q) noteFmt(U, zn.tech, a.kind); } else L.done[zi] = 'clean'; L.hint = 'Точно. ' + why; L.hk = 'ok'; }
+      else if (pick === right) { if (zn.tech) { L.done[zi] = 'hit'; L.ok++; } else L.done[zi] = 'clean'; L.hint = 'Точно. ' + why; L.hk = 'ok'; }
       else if (zn.tech && pick === 'ЧИСТО') { L.ms++; L.done[zi] = 'miss'; L.hint = missHint(a) + why; }
       else if (zn.tech) { L.ne++; L.done[zi] = 'name'; L.hint = missHint(a) + why; }
       else { L.fa++; L.done[zi] = 'fa'; L.hint = 'Мимо. Цена не давит, она просто есть. Решать, дорого ли, — тебе.'; } /* ложная тревога без штрафа: порция не закрывается */
@@ -2739,17 +2807,12 @@
     }
     qlTick(U, QT.tk);
   }
-  /* лестница существа: встречен → назван → проверено в двух форматах. Ни один статус не объявляет броню */
-  function ladderHTML(U, id) {
-    var s = ex(U), n = ((s.fmt || {})[id] || []).length, full = n >= 2;
-    return '<ol class="ladder mono" aria-label="Лестница существа"><li class="on">встречен</li><li class="on">назван</li><li class="' + (full ? 'on' : '') + '">' + (full ? 'проверено в двух форматах' : 'проверено: ' + n + ' из 2 форматов') + '</li></ol>';
-  }
   function bestiaryFound(U) { var s = ex(U), b = (s.beasts || []).slice(); if (s.flameCaught && b.indexOf('loss') < 0) b.push('loss'); return b; }
   function bestiaryCards(U) {
     return bestiaryFound(U).map(function (id) {
       var b = BEASTS[id];
       return '<article class="beast' + (id === 'loss' ? ' trophy-new' : '') + '" data-c="' + id + '"><div class="b-top"><div class="b-art">' + creature(id) + '</div><div class="b-k mono">пойман · ' + b.epi + (id === 'loss' ? ' · скрытый приём игры' : '') + '</div><h3 class="rus">' + b.name + '</h3></div><div class="b-body">' +
-        '<dl><dt class="mono">Чем берёт</dt><dd>' + b.power + '</dd><dt class="mono">Где водится</dt><dd>' + b.where + '</dd><dt class="mono weak">Как отшить</dt><dd>' + b.weak + '</dd></dl>' + ladderHTML(U, id) + '</div></article>';
+        '<dl><dt class="mono">Чем берёт</dt><dd>' + b.power + '</dd><dt class="mono">Где водится</dt><dd>' + b.where + '</dd><dt class="mono weak">Как отшить</dt><dd>' + b.weak + '</dd></dl></div></article>';
     }).join('');
   }
   function screenBestiary(U, o) {
@@ -2762,14 +2825,12 @@
     if (o.step === 'lp-pause') { s.lpForce = 2; var L3 = lupaState(U); L3.pz = 1; L3.fin = true; L3.res = 'Пауза к месту. ' + LUPA[2].pauseWhy; }
     if (o.step === 'lp-few') { s.lpForce = 2; }
     var found = bestiaryFound(U), cards = bestiaryCards(U);
-    var lock = []; for (var li = 0; li < 12 - found.length; li++) lock.push(li); lock = lock.map(function (n) { return '<div class="beast locked" aria-label="Не пойман"><div class="q rus">?</div><span class="mono">Ещё не пойман</span></div>'; }).join('');
+    var lock = []; for (var li = 0; li < Object.keys(BEASTS).length - found.length; li++) lock.push(li); lock = lock.map(function (n) { return '<div class="beast locked" aria-label="Не пойман"><div class="q rus">?</div><span class="mono">Ещё не пойман</span></div>'; }).join('');
     if (!found.length) cards = '<p class="sub emptyline">Тут живут пойманные приёмы. Поймай первого — и он появится с досье.</p>';
     var inner = '<div class="wrap bs"><div class="bs-head"><div class="kick mono"><span class="dot" style="background:var(--seen)"></span><span>Приёмы, а не люди</span></div><h1>Бестиарий</h1>' +
       '<p class="sub">Всех, кого удалось разглядеть, видно здесь — с досье: чем берёт, где водится, как отшить. Неразгаданные пока в тени. Приёмы, а не люди: ярлыков на людях здесь нет.</p>' +
-      '<p class="sub ladnote">Ступени: встречен → назван → проверено в двух форматах. Верхняя ступень — не броня: приёмы возвращаются в новой упаковке.</p>' +
-      '<div class="bs-count mono"><span>поймано ' + found.length + ' из 12' + (s.flameCaught ? ' · новый трофей' : '') + '</span><div class="slots" aria-hidden="true">' + (function () { var t = ''; for (var bi = 0; bi < 12; bi++) t += '<i class="' + (bi < found.length ? 'on' : '') + '"></i>'; return t; })() + '</div></div></div>' +
+      '<div class="bs-count mono"><span>поймано ' + found.length + ' из ' + Object.keys(BEASTS).length + (s.flameCaught ? ' · новый трофей' : '') + '</span><div class="slots" aria-hidden="true">' + (function () { var t = ''; for (var bi = 0; bi < Object.keys(BEASTS).length; bi++) t += '<i class="' + (bi < found.length ? 'on' : '') + '"></i>'; return t; })() + '</div></div></div>' +
       '<div id="lupahost" class="lupa-host">' + lupaHTML(U) + '</div>' +
-      '<div class="exam mono"><b>экзамен на зрение</b><span>раз в сезон: 12 артефактов, честных не меньше 5 · через 23 дня</span></div>' +
       '<h2 class="sect rus">Пойманные</h2><div class="beasts">' + cards + '</div>' +
       '<h2 class="sect rus">Ещё на свободе</h2><div class="lockedrow">' + lock + '</div></div>';
     var el = mount(U, 'scr-bestiary', 'bestiary', inner);
@@ -2778,20 +2839,34 @@
   }
 
   /* ================= ЭКРАН: Закулисье и Пульт ================= */
+  /* четыре настоящих рубильника; id прежние (0, 1, 3, 4), чтобы флаги s.sw из старых сохранений читались; записи 2, 5, 6, 7 удалены, их флаги не читаются */
   var HOOKS = [
-    { id: 0, name: 'Скрытые приёмы', say: 'Игра в ослабленной дозе применяет к тебе настоящие тёмные паттерны: огонёк серии, «осталось 2 часа» и другие. Поймаешь, и приём исчезнет.', cnt: 'Живёт не дольше 7 дней, по одному за раз', eff: 'Выключишь — приёмов в интерфейсе не будет.', on: true, trap: true },
-    { id: 1, name: 'Ритуал дня', say: 'Дело выходит раз в день в 07:00, чтобы было о чём поговорить, а не чтобы жить по расписанию.', cnt: 'Выпусков: 8, напоминаний нет', eff: 'Выключишь — можно играть архив подряд.', on: true },
-    { id: 2, name: 'Бустеры приёмов', say: 'Приём возвращается через 3–7, 14 и 30 дней в другой упаковке. Это повтор, и ты можешь его отключить.', cnt: 'Запланировано возвратов: 3', eff: 'Выключишь — приёмы сами не возвращаются.', on: true },
-    { id: 3, name: 'Засада', say: 'Друг открывает ссылку и ловит приёмы в твоей Засаде. Без табло и без «друг тебя обогнал».', cnt: 'Отправлено ссылок: 0', eff: 'Выключишь — кнопки ссылки не будет.', on: true },
-    { id: 4, name: 'Эхо выбора', say: 'Игра помнит твои ходы: «вчера был вопрос: кто эти все?». Только на этом устройстве.', cnt: 'Запомнено ходов: 4', eff: 'Выключишь — игра всё забывает.', on: true },
-    { id: 5, name: 'Как выбрали другие', say: 'После Развилки видно, как выбрали другие. Показываем, только если ответили 30+ человек. Это «все уже» в хорошей упаковке, поэтому ты видишь его и можешь выключить.', cnt: 'Показано раз: 0', eff: 'Выключишь — чужих процентов не видно.', on: true },
-    { id: 6, name: 'Пуш', say: 'Один в день, нейтральный: «Дело дня готово». В окне с 16 до 20.', cnt: 'Отправлено: 0', eff: 'Включишь — придёт один пуш в день.', on: false },
-    { id: 7, name: 'След вместо серии', say: 'Настоящий счётчик — дни с находкой. Он ничего не сжигает при пропуске.', cnt: 'Дней с находкой: 2', eff: 'Выключишь — счётчик скрыт.', on: true }
+    { id: 0, name: 'Спрятанный приём', say: 'Игра в малой дозе применяет к тебе настоящий приём давления — огонёк серии в шапке. Поймаешь лупой — он исчезнет.', eff: 'Выключишь — огонька не будет.', on: true, trap: true },
+    { id: 1, name: 'Ритуал дня', say: 'Дело выходит раз в день в 07:00 — чтобы было о чём поговорить, а не чтобы жить по расписанию.', eff: 'Выключишь — дни открываются подряд, без ожидания.', on: true },
+    { id: 3, name: 'Засада', say: 'Друг открывает ссылку и ловит приёмы в твоей Засаде. Без табло и без «друг тебя обогнал».', eff: 'Выключишь — кнопки ссылки не будет.', on: true },
+    { id: 4, name: 'Эхо выбора', say: 'Игра помнит твои ходы и после дня показывает реплику «на завтра». Со второго дня она зависит от твоего хода. Всё хранится только на этом устройстве.', eff: 'Выключишь — реплики «на завтра» не будет.', on: true }
   ];
+  /* чего в игре пока нет: не рубильники, а честный список */
+  var NOGAME = { h: 'Чего в игре пока нет', rows: ['Напоминаний. Игра не умеет звать сама: ни пушей, ни писем.', 'Повторов по расписанию. Пойманный приём сам не вернётся через неделю или месяц. Встретить его снова можно в Лупе.', 'Чужих ответов. Как выбрали другие, игра не знает и не показывает.'], cap: 'Появится — рубильник будет здесь.' };
+  /* сколько дней игрока оставили в сохранении ход: первый день — выбранный путь, дальше — ход в Деле или пройденная стадия */
+  function movesN(U) {
+    var e = ex(U), n = U.S().basis ? 1 : 0;
+    ['d2', 'd3', 'd4', 'd5', 'd8'].forEach(function (k) { if (e[k] && e[k].move) n++; });
+    ['d6', 'd7'].forEach(function (k) { var d = e[k]; if (d && (d.fin || (d.stage && d.stage !== 'intro'))) n++; });
+    return n;
+  }
+  function hookCnt(U, h, shownIds) {
+    var s = ex(U);
+    if (h.id === 0) return s.flameCaught ? 'Пойман твоей лупой' : (shownIds.indexOf('flame') >= 0 ? 'Показан, ещё не пойман' : 'Тебе ещё не показывался');
+    if (h.id === 1) return 'Выпусков: ' + LAST_DAY + '. Напоминаний нет.';
+    if (h.id === 3) return 'Отправлено ссылок: ' + ((s.d6 && s.d6.shared) || 0);
+    return 'Запомнено ходов: ' + movesN(U);
+  }
   function bsRig() {
     var svg = '<rect x="14" y="20" width="492" height="10" rx="2" fill="#1C1411"/><rect x="254" y="-6" width="10" height="30" fill="#1C1411"/>';
-    for (var i = 0; i < 9; i++) {
-      var px = 38 + i * 55, tx = 260 + (i - 4) * 9, ty = 122, bx = px + (tx - px) * 0.38, by = 25 + (ty - 25) * 0.38;
+    var n = HOOKS.length;
+    for (var i = 0; i < n; i++) {
+      var px = 38 + i * (n > 1 ? 440 / (n - 1) : 0), tx = 260 + (i - (n - 1) / 2) * 9, ty = 122, bx = px + (tx - px) * 0.38, by = 25 + (ty - 25) * 0.38;
       svg += '<circle cx="' + px + '" cy="25" r="3" fill="#F6F0DF"/><path d="M' + px + ' 25 L' + tx + ' ' + ty + '" fill="none" stroke="#1C1411" stroke-width="1.8" stroke-dasharray="5 4"/>' +
         '<g transform="translate(' + (bx - 13) + ' ' + (by - 11) + ')"><rect width="26" height="22" fill="#F6F0DF" stroke="#1C1411" stroke-width="2"/><text x="13" y="16" text-anchor="middle" font-family="Golos Text" font-weight="700" font-size="13" fill="#19A39B">' + (i + 1) + '</text></g>';
     }
@@ -2810,20 +2885,20 @@
     swInit(s);
     var caught = s.flameCaught ? 1 : 0;
     /* Р15: Закулисье раскрывает только ловушки, которые этому игроку действительно показывались (история показов); остальные — строкой «спрятано ещё N» */
-    var shownIds = o.step === 'fresh' ? ['flame'] : (!U.S().real ? ['flame', 'two', 'five'] : (s.shown || []).slice());
-    var listed = TRAPS.filter(function (t) { return shownIds.indexOf(t.id) >= 0; });
+    var shownIds = o.step === 'fresh' ? ['flame'] : (!U.S().real ? ['flame'] : (s.shown || []).slice());
+    var listed = TRAPS.filter(function (t) { return t.rel && shownIds.indexOf(t.id) >= 0; });
     var tr = listed.map(function (t) {
       var st = t.id === 'flame' ? (s.flameCaught ? 'caught' : 'open') : 'revealed';
       var lab = { caught: 'пойман тобой', open: 'ещё висит · раскрыто здесь', revealed: 'не пойман · раскрыто здесь' }[st];
       return '<li class="trap ' + st + '"><span class="tdot"></span><div><b>' + t.name + '</b><em class="mono">' + lab + '</em><p>Игра говорила: «' + t.says + '» ' + t.truth + '</p><small class="mono">где был след: ' + t.trace + '</small></div></li>';
     }).join('');
-    /* ловушки сезона 2 (s2) не считаются: Закулисье не раскрывает будущее */
-    var hidN = TRAPS.filter(function (t) { return !t.s2 && shownIds.indexOf(t.id) < 0; }).length;
+    /* считаются только выпущенные (rel) и ещё не показанные этому игроку: Закулисье не раскрывает невыпущенное */
+    var hidN = (s.traps === false || s.sw[0] === false) ? 0 : TRAPS.filter(function (t) { return t.rel && shownIds.indexOf(t.id) < 0 && !(t.id === 'flame' && s.flameCaught); }).length;
     if (hidN > 0) tr += '<li class="trap later more"><span class="tdot"></span><div><b>Спрятано ещё ' + hidN + '</b><em class="mono">этому игроку пока не показывались</em></div></li>';
-    var hooks = HOOKS.map(function (h) {
+    var hooks = HOOKS.map(function (h, hi) {
       var on = s.sw[h.id];
-      return '<article class="hook' + (on ? '' : ' off') + '" data-h="' + h.id + '"><span class="no">' + (h.id + 1) + '</span><div class="tt"><h3>' + h.name + '</h3><button class="sw" type="button" role="switch" aria-checked="' + on + '" aria-label="' + h.name + '"></button></div>' +
-        '<p>' + h.say + '</p><div class="cnt mono">' + (h.id === 3 ? 'Отправлено ссылок: ' + ((s.d6 && s.d6.shared) || 0) : h.cnt) + '</div><div class="eff">' + h.eff + '</div></article>';
+      return '<article class="hook' + (on ? '' : ' off') + '" data-h="' + h.id + '"><span class="no">' + (hi + 1) + '</span><div class="tt"><h3>' + h.name + '</h3><button class="sw" type="button" role="switch" aria-checked="' + on + '" aria-label="' + h.name + '"></button></div>' +
+        '<p>' + h.say + '</p><div class="cnt mono">' + hookCnt(U, h, shownIds) + '</div><div class="eff">' + h.eff + '</div></article>';
     }).join('');
     var cs = allCands(U), fits = cs.filter(function (c) { return c.fit; }).length, own = cx.crumbs.filter(function (c) { return c.own && c.status === 'mine'; }).length;
     var pairs = pairsConfirmed(cx); /* противоречия, подтверждённые игроком, а не предложенные игрой */
@@ -2833,9 +2908,9 @@
       '<div class="wrap"><div class="score">' + (listed.length ? '<b>' + caught + ' из ' + listed.length + '</b><span>показанных скрытых приёмов поймано твоей лупой. Остальные из показанных игра раскрывает сама.</span>' : '<b>0</b><span>скрытых приёмов тебе пока не показывали, поэтому раскрывать нечего.</span>') + '</div>' +
       '<h2 class="sect rus">Что на тебя применяли</h2><ul class="traps">' + tr + '</ul>' +
       '<h2 class="sect rus">Пульт</h2><p class="sub" style="margin-top:4px">Каждый крючок можно выключить, игра останется игрой.</p><div class="hooks" id="hooks">' + hooks + '</div>' +
+      '<div class="hooks nogame-row"><article class="hook nogame"><div class="tt"><h3>' + NOGAME.h + '</h3></div>' + NOGAME.rows.map(function (r) { return '<p>' + r + '</p>'; }).join('') + '<div class="eff">' + NOGAME.cap + '</div></article></div>' +
       '<h2 class="sect rus">Твой путь</h2><p class="sub" style="margin-top:4px">Цифры видишь только ты, они считаются на устройстве. Это не оценка.</p>' +
-      '<div class="stats"><div><b>' + fits + ' из ' + cs.length + '</b><span>выводов подправлено под себя</span></div><div><b>' + cx.revisit + '</b><span>пересмотр: вывод возвращён из корзины</span></div><div><b>' + pairs + '</b><span>противоречия держишь осознанно</span></div><div><b>' + own + '</b><span>своя формулировка в кодексе</span></div></div>' +
-      '<p class="lgnote">В школьном пилоте до старта и через три недели учитель раздаёт на бумаге шесть коротких пунктов. Это вне игры: игра ответов не видит.</p>' +
+      '<div class="stats"><div><b>' + fits + ' из ' + cs.length + '</b><span>выводов подправлено под себя</span></div><div><b>' + cx.revisit + '</b><span>пересмотр: вывод возвращён из выброшенных</span></div><div><b>' + pairs + '</b><span>противоречия держишь осознанно</span></div><div><b>' + own + '</b><span>своя формулировка в кодексе</span></div></div>' +
       '<div class="instead"><h2>Что делать вместо</h2><p>Назови приём вслух, и у тебя появляется время проверить. «Все уже» превращается в «а кто именно?», «срочно» — в «до какого часа это правда?».</p><p class="t">Игра прошла тот же тест: каждый приём назван, и каждый выключается.</p></div>' +
       '<div class="help"><b>Если тяжело</b><span>Детский телефон доверия, бесплатно и анонимно: <strong>8-800-2000-122</strong>. Игра не заменяет разговор с живым человеком.</span></div>' +
       '<p class="endline rus">Зоркость не броня. Она работает, пока проверяешь.</p></div>';
@@ -2846,7 +2921,7 @@
         var sw = e.target.closest('.sw'); if (!sw) return;
         var art = sw.closest('.hook'), id = +art.getAttribute('data-h'), s2 = ex(U); U.S().real = true;
         s2.sw[id] = !s2.sw[id]; sw.setAttribute('aria-checked', s2.sw[id]); art.classList.toggle('off', !s2.sw[id]); U.buzz(10);
-        if (id === 0) { s2.traps = s2.sw[0]; if (!s2.sw[0]) U.toast('Скрытых приёмов больше не будет'); $$('.flame').forEach(function (f) { f.style.display = s2.sw[0] ? '' : 'none'; }); }
+        if (id === 0) { s2.traps = s2.sw[0]; if (!s2.sw[0]) U.toast('Спрятанного приёма больше не будет'); $$('.flame').forEach(function (f) { f.style.display = s2.sw[0] ? '' : 'none'; }); }
       });
     }
   }
@@ -2856,12 +2931,12 @@
     cur = { name: 'whatwas', opts: o };
     mount(U, 'scr-backstage', 'backstage', '<div class="wrap whatwas"><h1>Что это было</h1>' +
       '<p class="narr">Последние дни в углу экрана горел огонёк с цифрой: «Серия сгорит, если не зайти до полуночи». Ничего бы не сгорело. Серия — просто число, а огонёк пугал потерей и при этом даже не звал играть.</p>' +
-      '<p class="narr">Это был приём. Игра спрятала его нарочно — чтобы было кого ловить. Этот ушёл, но таких ещё несколько. Смотри внимательнее.</p>' +
+      '<p class="narr">Это был приём. Игра спрятала его нарочно — чтобы было кого ловить. Этот ушёл. Других спрятанных приёмов в игре пока нет.</p>' +
       '<p class="pr-b">' + esc(TRAPS[0].truth) + '</p>' +
-      '<div class="d2btns"><a class="btn seen" href="#s=home">Понятно</a><a class="btn" href="#s=bestiary">Что ещё спрятано?</a></div></div>');
+      '<div class="d2btns"><a class="btn seen" href="#s=home">Понятно</a><a class="btn" href="#s=bestiary">В Бестиарий</a></div></div>');
   }
 
-  var EXT = window.EXT = { dowOf: dowOf, nextLabel: nextLabel, unlockAt: unlockAt, rawMode: rawMode, VIEWS: VIEWS, TONE: TONE, TRAPS: TRAPS, BEASTS: BEASTS, MOVES: MOVES, CLIFF: CLIFF, d2rows: d2rows, debtRows: debtRows, DEBT: DEBT, SCENES: SCENES, REVEAL: REVEAL, ASK_DANYA: ASK_DANYA, d2state: d2state, markPressure: markPressure, questScene: questScene, qlupaMount: qlupaMount, qlExpire: qlExpire, lupaStateQ: function (U) { return lupaState(U, true); }, LUPA_Q: LUPA_Q, beastTag: beastTag, creature: creature, VERDICTS: VERDICTS, LUPA: LUPA, weekCells: weekCells, modeOf: modeOf, TIMUR_D2: TIMUR_D2, counts: function (U) { return EXT_counts(U); }, crCard: crCard, crAct: crAct, costHTML: costHTML, monoHTML: monoHTML, hotyaHTML: hotyaHTML, tray: tray, TRAY: TRAY, cliff3: cliff3, cliff4: cliff4, cliff5: cliff5, cliff6: cliff6, WAIT6: WAIT6, WALL: WALL, wallRows: wallRows, DANYA_D4: DANYA_D4, CLAIM_LABEL: CLAIM_LABEL, CLAIM_ROLIK: CLAIM_ROLIK, CLAIM_ZNAYU: CLAIM_ZNAYU, SOSED: SOSED, sosedRows: sosedRows, DANYA_D5: DANYA_D5, CLAIM_NOTE: CLAIM_NOTE, CLAIM_ZAYDI: CLAIM_ZAYDI, PAINT: PAINT, paintRows: paintRows, LEVA_D3: LEVA_D3, CLAIM_KASSA: CLAIM_KASSA, leadHTML: leadHTML, QUEST_TRAY: QUEST_TRAY, zoneWhy: zoneWhy, words: words, slotsHTML: slotsHTML, sphName: sphName,
+  var EXT = window.EXT = { bestiaryN: function (U) { return bestiaryFound(U).length; }, monoSplit: monoSplit, dowOf: dowOf, nextLabel: nextLabel, unlockAt: unlockAt, rawMode: rawMode, VIEWS: VIEWS, TONE: TONE, TRAPS: TRAPS, BEASTS: BEASTS, MOVES: MOVES, CLIFF: CLIFF, d2rows: d2rows, debtRows: debtRows, DEBT: DEBT, SCENES: SCENES, REVEAL: REVEAL, ASK_DANYA: ASK_DANYA, d2state: d2state, markPressure: markPressure, questScene: questScene, qlupaMount: qlupaMount, qlExpire: qlExpire, lupaStateQ: function (U) { return lupaState(U, true); }, LUPA_Q: LUPA_Q, beastTag: beastTag, creature: creature, VERDICTS: VERDICTS, LUPA: LUPA, weekCells: weekCells, modeOf: modeOf, TIMUR_D2: TIMUR_D2, counts: function (U) { return EXT_counts(U); }, crCard: crCard, crAct: crAct, costHTML: costHTML, monoHTML: monoHTML, hotyaHTML: hotyaHTML, tray: tray, TRAY: TRAY, cliff3: cliff3, cliff4: cliff4, cliff5: cliff5, cliff6: cliff6, WAIT6: WAIT6, WALL: WALL, wallRows: wallRows, DANYA_D4: DANYA_D4, CLAIM_LABEL: CLAIM_LABEL, CLAIM_ROLIK: CLAIM_ROLIK, CLAIM_ZNAYU: CLAIM_ZNAYU, SOSED: SOSED, sosedRows: sosedRows, DANYA_D5: DANYA_D5, CLAIM_NOTE: CLAIM_NOTE, CLAIM_ZAYDI: CLAIM_ZAYDI, PAINT: PAINT, paintRows: paintRows, LEVA_D3: LEVA_D3, CLAIM_KASSA: CLAIM_KASSA, leadHTML: leadHTML, QUEST_TRAY: QUEST_TRAY, zoneWhy: zoneWhy, words: words, slotsHTML: slotsHTML, sphName: sphName,
     HOME6: HOME6, WAIT7: WAIT7, cliff7: cliff7, PLOTS: PLOTS, ZLINES: ZLINES, ZTIMUR: ZTIMUR, ZASADA: ZASADA, ZUI: ZUI, ZCHECK: ZCHECK, ZLIGHT: ZLIGHT, END6: END6, ZSHARE: ZSHARE, ZFRIEND: ZFRIEND, ZTECH: ZTECH,
     zVerdict: zVerdict, zLight: zLight, zEncode: zEncode, zDecode: zDecode, zOrder: zOrder, zLayout: zLayout, zPos: zPos, zDay: zDay, zStart: zStart, zShareText: zShareText, nb: nb, zPose: zPose,
     d6Caught: function (U) { var d = ex(U).d6; return d && d.picks && d.picks.every(Boolean) ? zVerdict(d.picks).caughtN : 0; },

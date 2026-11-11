@@ -364,20 +364,6 @@ body.done .cards{display:none}
 .sc-note .vst{font-size:8.5px;margin-top:5px;padding:1px 5px;display:inline-block}
 .sc-note.blank{border-style:dashed;box-shadow:none;background:transparent;color:var(--ink-soft);font-weight:500}
 .sharecard .sc-foot{font-size:9px;color:var(--ink-soft);display:flex;justify-content:space-between}
-.sharebtns{display:flex;gap:9px;margin-top:16px;justify-content:center}
-.sharebtns .btn{min-height:42px;font-size:14px;box-shadow:3px 3px 0 var(--soot);padding:0 12px}
-.cmp{margin-top:26px;background:var(--chalk);border:2px solid var(--soot);box-shadow:var(--shadow);padding:14px 14px 12px}
-.cmp h3{font:400 22px/1 "Russo One",sans-serif}
-.cmp .cap{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
-.cmp .grp{margin-top:12px}
-.cmp .grp h4{font-size:10.5px;display:flex;justify-content:space-between;color:var(--ink-soft);margin-bottom:6px;border-bottom:1px dashed var(--ink-soft);padding-bottom:3px}
-.cmp ul{list-style:none;display:flex;flex-direction:column;gap:6px}
-.cmp li{font-size:14px;line-height:1.25;font-weight:600;padding-left:14px;position:relative}
-.cmp li::before{content:"";position:absolute;left:0;top:6px;width:7px;height:7px;background:var(--soot)}
-.cmp .g-same li::before{background:var(--seen);border:1.5px solid var(--soot)}
-.cmp .g-diff li::before{background:var(--lamp);border:1.5px solid var(--soot)}
-.cmp .ask{margin-top:10px;background:var(--canvas);border:2px dashed var(--soot);padding:8px 10px;font-size:13.5px;font-weight:600}
-.cmp .ask i{font-style:normal;font-family:"Golos Text",sans-serif;font-size:10.5px;display:block;color:var(--ink-soft);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
 .localnote{margin-top:22px;font-size:12.5px;color:var(--ink-soft);display:flex;gap:8px;align-items:flex-start;line-height:1.35}
 .localnote svg{flex:none;width:20px;height:20px}
 

@@ -91,25 +91,6 @@
 #scr-codex .seg button.on { background: linear-gradient(180deg, #fff08a, var(--yellow) 40%, var(--yellow-2)); box-shadow: 0 4px 0 var(--yellow-lip), 0 4px 0 3px var(--ink); color: #fff; }
 #scr-codex .seg button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
 #scr-codex .cside .panel { margin-top: 16px; padding: 14px 14px 16px; border: 3px solid var(--ink); border-radius: 16px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; }
-#scr-codex .linkbox { gap: 4px; margin-top: 11px; font: 800 11px/1.2 "Golos Text", sans-serif; letter-spacing: .02em; text-transform: none; color: rgba(255, 255, 255, .86); }
-#scr-codex .linkbox code { padding: 8px 10px; border: 2.5px solid var(--ink); border-radius: 10px; background: #fff; box-shadow: inset 0 3px 0 rgba(11, 22, 51, .1); color: var(--ink); font: 700 13px/1.3 "Golos Text", sans-serif; }
-#scr-codex .cmpsum { color: #fff; font-size: 14.5px; }
-#scr-codex .cmpsum b { color: var(--yellow); }
-#scr-codex .cmp { margin-top: 12px; padding: 0; border: 0; background: none; box-shadow: none; display: grid; gap: 10px; }
-#scr-codex .cmp .grp { padding: 9px 10px 10px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); }
-#scr-codex .cmp .grp.g-same { border: 3px solid var(--ink); background: rgba(255, 255, 255, .1); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .12); }
-#scr-codex .cmp h4 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 0 7px; font: 400 12px/1.1 "Russo One", sans-serif; letter-spacing: .02em; text-transform: uppercase; color: #fff; }
-#scr-codex .cmp h4 span:last-child { min-width: 24px; padding: 2px 7px 1px; border: 2.5px solid var(--ink); border-radius: 8px; background: linear-gradient(180deg, #fff08a, var(--yellow)); box-shadow: 0 2px 0 var(--ink); color: var(--ink); text-align: center; }
-#scr-codex .cmp .g-same h4 span:last-child { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
-#scr-codex .cmp ul { list-style: none; display: grid; gap: 7px; margin: 0; padding: 0; }
-#scr-codex .cmp li { padding: 8px 10px; border: 3px solid var(--ink); border-radius: 12px; background: var(--card); box-shadow: 0 3px 0 var(--ink); color: var(--ink); font: 700 14px/1.28 "Golos Text", sans-serif; }
-#scr-codex .cmp .ask { margin-top: 9px; padding: 8px 10px; border: 3px solid var(--ink); border-radius: 12px; background: linear-gradient(#fff6b8, #ffe872); box-shadow: 0 3px 0 var(--ink); color: var(--ink); font: 700 13.5px/1.3 "Golos Text", sans-serif; }
-#scr-codex .cmp .ask i { display: block; margin-bottom: 3px; font: 400 11px/1 "Russo One", sans-serif; font-style: normal; color: var(--blue-2); letter-spacing: .02em; text-transform: uppercase; }
-#scr-codex .backup .bk-row b { font: 400 18px/1.1 "Russo One", sans-serif; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
-#scr-codex .backup .bk-row span { margin-top: 5px; color: rgba(255, 255, 255, .9); font-size: 13.5px; }
-#scr-codex .backup .btn, #scr-codex .sharebtns .btn { width: 100%; margin-top: 10px; }
-#scr-codex .sharebtns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-#scr-codex .sharebtns .btn { margin-top: 0; padding: 0 8px; font-size: 14px; }
 #scr-codex .forkbox { margin-top: 14px; padding: 12px 14px; border: 3px solid var(--ink); border-radius: 16px; background: var(--card); box-shadow: var(--card-sh); color: var(--ink); animation: cx3rise .35s var(--ease-out) both; }
 #scr-codex .forkbox[hidden] { display: none; }
 #scr-codex .forkbox b { font: 400 12px/1 "Russo One", sans-serif; color: var(--blue-2); text-transform: uppercase; letter-spacing: .03em; }
@@ -153,9 +134,6 @@
 #scr-bestiary .lupa-card .lz.done .vizhu { right: -6px; }
 
 /* «Экзамен на зрение» — панель-анонс со слотом */
-#scr-bestiary .exam { margin-top: 18px; padding: 10px 12px 12px; gap: 7px; border: 3px solid var(--ink); border-radius: 16px; background: var(--pan); box-shadow: var(--pan-sh); color: #fff; font-size: 13px; }
-#scr-bestiary .exam b { font: 400 16px/1.05 "Russo One", sans-serif; text-transform: uppercase; letter-spacing: .01em; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 2px 0 var(--ink); }
-#scr-bestiary .exam span { display: block; padding: 8px 10px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 12px; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .86); font: 650 13px/1.35 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
 
 /* ---------- коллекционные карты существ ---------- */
 #scr-bestiary .beasts { display: grid; grid-template-columns: minmax(0, 1fr); gap: 46px 18px; margin-top: 52px; }
@@ -184,9 +162,6 @@
 #scr-bestiary .beast dt { display: block; width: fit-content; margin: 10px 0 5px; padding: 3px 8px 2px; border: 2.5px solid var(--ink); border-radius: 8px; box-shadow: 0 2px 0 var(--ink); color: #fff; font: 400 11px/1.1 "Russo One", sans-serif; letter-spacing: .02em; text-transform: none; -webkit-text-stroke: 2.4px var(--ink); paint-order: stroke fill; background: linear-gradient(180deg, #8ab6ff, var(--blue-2)); }
 #scr-bestiary .beast dt.weak { background: linear-gradient(180deg, #8bff8a, var(--green-2)); }
 #scr-bestiary .beast dd { margin: 0; color: var(--ink); font: 600 14px/1.34 "Golos Text", sans-serif; }
-#scr-bestiary .ladder { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
-#scr-bestiary .ladder li { padding: 4px 9px 3px; border: 2px dashed rgba(11, 22, 51, .45); border-radius: 8px; background: rgba(11, 22, 51, .05); color: var(--ink-soft); font: 800 11px/1.2 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
-#scr-bestiary .ladder li.on { border: 2.5px solid var(--ink); background: linear-gradient(180deg, #8bff8a, var(--green) 40%, var(--green-2)); box-shadow: 0 2px 0 var(--ink); color: var(--ink); }
 
 /* ---------- «Ещё на свободе»: тёмные карты-силуэты ---------- */
 #scr-bestiary .lockedrow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
@@ -210,9 +185,6 @@
 }
 
 /* ---------- правки по первому кругу кадров ---------- */
-#scr-codex .cmp li::before { display: none; }
-#scr-codex .cmp h4 { border-bottom: 0; padding-bottom: 0; }
-#scr-codex .cmp .grp { margin-top: 0; }
 body.dk #scr-bestiary .lupa-card .prompt { color: var(--ink-soft); text-shadow: none; }
 body.dk #scr-bestiary .lupa-card .lp-score, body.dk #scr-bestiary .lupa-card .lp-score span { color: var(--ink-soft); }
 body.dk #scr-bestiary .lupa-card .lp-score .idx { color: var(--ink); }
@@ -231,7 +203,6 @@ body.dk #scr-bestiary .bs-head > .sub:not(.emptyline) {
   background: linear-gradient(180deg, rgba(36, 52, 130, .96), rgba(22, 34, 96, .96));
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .16), 0 4px 0 var(--ink), 0 12px 18px -8px rgba(0, 0, 0, .5);
 }
-body.dk #scr-bestiary .bs-head > .sub.ladnote { margin-top: 10px; padding: 6px 12px 7px; font-size: 13px; line-height: 1.35; font-weight: 600; color: rgba(255, 255, 255, .9); }
 
 /* 2. зазор между надстрочником и заголовком */
 body.dk .kick:not(.todaycard .kick) { margin-bottom: 12px; }
@@ -300,3 +271,33 @@ body.dk .tabs a .plus1 { position: absolute; right: -2px; top: -7px; margin: 0; 
   #scr-codex .wrap, #scr-bestiary .wrap { max-width: 1100px; margin-inline: auto; }
   #scr-codex .cx-wrap { grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; }
 }
+
+/* w0-18: действия Кодекса («Не моё», подтверждение, «Выброшенные») и кнопка «А дальше?» у монолога взгляда */
+#scr-codex .srow .sdrop { display: inline-flex; align-items: center; min-height: 44px; margin: 0 0 -8px -8px; padding: 0 8px; border: 0; border-radius: 10px; background: none; box-shadow: none; color: var(--ink-soft); font: 700 13px/1 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#scr-codex .srow .sconf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 6px; }
+#scr-codex .srow .sconf span { flex: 1 1 100%; font: 800 13.5px/1.25 "Golos Text", sans-serif; color: var(--ink); }
+#scr-codex .srow .sconf .btn { min-height: 44px; padding: 0 14px; border-width: 2px; font: 800 13px/1 "Golos Text", sans-serif; box-shadow: 0 2px 0 var(--ink); }
+#scr-codex .srow .sconf .btn.seen { background: var(--ink); color: #fff; text-shadow: none; -webkit-text-stroke: 0; }
+#scr-codex details.dropped { margin-top: 22px; padding: 4px 12px 8px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .86); }
+#scr-codex details.dropped summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; font: 700 13px/1.2 "Golos Text", sans-serif; letter-spacing: 0; text-transform: none; }
+#scr-codex .droplist { list-style: none; display: grid; gap: 0; margin: 0; padding: 0; }
+#scr-codex .droplist li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; padding: 8px 0; border-top: 1px dashed rgba(255, 255, 255, .28); }
+#scr-codex .droplist q { grid-column: 1; quotes: none; font: 600 14px/1.3 "Golos Text", sans-serif; color: rgba(255, 255, 255, .86); }
+#scr-codex .droplist .ss { grid-column: 1; font: 650 12px/1.3 "Golos Text", sans-serif; color: rgba(255, 255, 255, .64); letter-spacing: 0; text-transform: none; }
+#scr-codex .droplist .btn { grid-column: 2; grid-row: 1 / span 2; min-height: 44px; padding: 0 14px; font: 800 13px/1 "Golos Text", sans-serif; }
+.viewcard .mono-ex, .hotya .mono-ex { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--ink); font: 800 14px/1 "Golos Text", sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* w0-18, часть H: «Чего в игре пока нет» не похожа на рубильник; знак раскрытия у «Выброшенных»; свёрнутая карточка взгляда плотнее; переносы */
+#scr-backstage .hooks.nogame-row { grid-template-columns: 1fr; }
+#scr-backstage .hook.nogame { padding: 12px 14px; border: 2px dashed rgba(255, 255, 255, .34); border-radius: 14px; background: rgba(255, 255, 255, .06); box-shadow: none; color: rgba(255, 255, 255, .86); }
+#scr-backstage .hook.nogame h3, #scr-backstage .hook.nogame p { color: rgba(255, 255, 255, .9); opacity: 1; text-shadow: none; -webkit-text-stroke: 0; }
+#scr-backstage .hook.nogame h3 { font-size: 16px; }
+#scr-backstage .hook.nogame .eff { color: rgba(255, 255, 255, .7); }
+#scr-codex details.dropped summary { justify-content: space-between; list-style: none; }
+#scr-codex details.dropped summary::-webkit-details-marker { display: none; }
+#scr-codex details.dropped summary::after { content: "▾"; margin-left: 10px; font-size: 14px; }
+#scr-codex details.dropped[open] summary::after { content: "▴"; }
+#scr-codex .srow .sb q, #scr-codex .droplist q { overflow-wrap: anywhere; }
+.viewcard .mono-ex { margin-bottom: -12px; }
+.viewcard .mono-ex + .srcd { margin-top: 0; }
+.hotya .mono-ex { margin-bottom: 0; }

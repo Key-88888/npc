@@ -15,7 +15,7 @@
   'use strict';
   var EXT = window.EXT;
   /* штамп сборки: наблюдатель записывает его в лист (виден в настройках → «Для взрослых»); при заморозке версии менять код вручную */
-  var BUILD = '2026-11-08 · w0-17';
+  var BUILD = '2026-11-11 · w0-18';
 
   /* ================= ДАННЫЕ ================= */
   /* Тексты — из материалы/тексты-первой-сессии.md (заход D, 04.11): голос А — рассказчик («что происходит»), голос Б — реплики персонажей строчными.
@@ -94,11 +94,11 @@
     intro2: ['Тот же Тимур. Только теперь у тебя нет приёмов: ни лести, ни толпы, ни сроков. Позови его так, чтобы решал он сам.', 'Одно известно точно: Тимур живёт в наушниках. Музыка — это его.'],
     invites: [
       { id: 'clear', text: 'В субботу в гараже собираем колонку и настраиваем звук. Хочешь — приходи, без обязательств.', say: 'Колонку? Так, это уже интересно. Загляну на часок.', act: 'снимает наушник', to: 7,
-        cap: 'Вот. Ясно, по делу и с тем, что ему правда интересно. А выбор остался за ним. Это и есть честно уговорить.', end: 'Тимур в гараже. Сам решил.' },
+        cap: 'Вот. Ясно, по делу и с тем, что ему правда интересно. А выбор остался за ним. Это и есть честно уговорить.', end: 'Тимур придёт. Сам решил.' },
       { id: 'vague', text: 'Ну… приходи, если что.', say: 'Не знаю… посмотрим.', act: '', to: 4,
         cap: 'Дверь открыта, но заходить незачем. Тимур не понял, что там будет и зачем ему туда.', end: 'Тимур пока сомневается. Дверь открыта.' },
       { id: 'guilt', text: 'Без тебя всё развалится. Ты же нас не бросишь?', say: 'Звучит как долг. Не, пас.', act: 'отворачивается', to: 2,
-        cap: 'Без лести, без толпы, без сроков — а всё равно давит. Это вина. Тоже давление, только тихое.', end: 'Тимур не пришёл. Это тоже результат — и честный.' }
+        cap: 'Без лести, без толпы, без сроков — а всё равно давит. Это вина. Тоже давление, только тихое.', end: 'Тимур пока не идёт. Это тоже результат — и честный.' }
     ]
   };
   var ALL = ['sro', 'vse', 'lest'];
@@ -758,12 +758,15 @@
     var all = cands().concat(S.ext.d2 && S.ext.d2.cr ? S.ext.d2.cr : []).concat(S.ext.d3 && S.ext.d3.cr ? S.ext.d3.cr : []).concat(S.ext.d4 && S.ext.d4.cr ? S.ext.d4.cr : []).concat(S.ext.d5 && S.ext.d5.cr ? S.ext.d5.cr : []).concat(S.ext.d6 && S.ext.d6.cr ? S.ext.d6.cr : []).concat(S.ext.d7 && S.ext.d7.cr ? S.ext.d7.cr : []).concat(S.ext.d8 && S.ext.d8.cr ? S.ext.d8.cr : []).concat((S.ext && S.ext.drafts) || []);
     return all.filter(function (c) { return c.status === 'keep' || c.status === 'fit'; });
   }
+  /* на экране конца именно шестого дня (Засада): по нему подпись и заметка Засады, рубильник «Засада» и то, что уходит в буфер */
+  var endZ = false;
   function enterEnd() {
     showScreen('end');
     var d2 = S.ext && S.ext.d2 && S.ext.d2.fin ? S.ext.d2 : null, kept = 0, sum, cl, nl = EXT.nextLabel(Date.now());
     var rules = keptRules().map(function (c) { return c.text; }); kept = rules.length;
     var allBeasts = S.ext.beasts || [];
     var d3 = S.ext && S.ext.d3 && S.ext.d3.fin ? S.ext.d3 : null, d4 = S.ext && S.ext.d4 && S.ext.d4.fin ? S.ext.d4 : null, d5 = S.ext && S.ext.d5 && S.ext.d5.fin ? S.ext.d5 : null, d6 = S.ext && S.ext.d6 && S.ext.d6.fin ? S.ext.d6 : null, d7 = S.ext && S.ext.d7 && S.ext.d7.fin ? S.ext.d7 : null, d8 = S.ext && S.ext.d8 && S.ext.d8.fin ? S.ext.d8 : null;
+    endZ = !!(d6 && !d7 && !d8);
     if (d8) {
       $('#endh').textContent = 'На сегодня всё'; $('#endh').className = ''; $('#endcap').textContent = '';
       kept = EXT.counts(U).sheet; /* тот же счётчик, что на плитке главного экрана */
@@ -781,7 +784,7 @@
       $('#endh').textContent = 'На сегодня всё'; $('#endh').className = ''; $('#endcap').textContent = '';
       kept = EXT.counts(U).sheet; /* тот же счётчик, что на плитке главного экрана */
       sum = '<p class="narr">Поймано у Тимура: ' + EXT.d6Caught(U) + ' из 3. В Кодексе теперь: ' + kept + '.</p>';
-      var em6 = $('.tomorrow em'); em6.textContent = EXT.nb(EXT.END6.tomorrow); em6.className = '';
+      var em6 = $('.tomorrow em'); em6.textContent = EXT.nb(EXT.END6.tomorrow + ' Откроется ' + nl + '.'); em6.className = '';
       cl = EXT.cliff7(U);
     } else if (d5) {
       var t5 = ['dare'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
@@ -813,8 +816,8 @@
       cl = EXT.cliff3(U);
     } else {
       var pk = S.honest && S.honest.pick, inv = pk && inviteById(pk), first = ['sro', 'fact', 'vse'].filter(function (id) { return allBeasts.indexOf(id) >= 0; });
-      $('#endh').textContent = 'СУББОТА СОСТОЯЛАСЬ'; $('#endh').className = 'qstamp';
-      $('#endcap').textContent = inv ? inv.end : 'Тимур в гараже. Сам решил.';
+      $('#endh').textContent = 'СУББОТА В СИЛЕ'; $('#endh').className = 'qstamp';
+      $('#endcap').textContent = inv ? inv.end : 'Тимур придёт. Сам решил.';
       if (S.real && !S.ext.day1Done) S.ext.day1Done = Date.now(); /* игровой день = номер завершённого шага квеста + 1; дата визита считается отдельно */
       var q = qState(); if (q) { q.on = false; q.step = 5; }
       sum = '<p class="narr">Сегодня поймано ' + (NUMW[first.length] || first.length) + ': ' + esc(listAnd(beastNames(first))) + '. Они теперь в Бестиарии — с досье и способом отшить.</p>' +
@@ -823,13 +826,16 @@
       var em = $('.tomorrow em'); em.textContent = cap1(nl) + ' — продолжение.'; em.className = 'qstep4';
       cl = EXT.CLIFF[2];
     }
+    /* рубильник «Ритуал дня» выключен: дни открыты подряд, подпись про завтра заменяется (кроме последнего дня: там «скоро») */
+    if (!d8 && !EXT.swOn(U, 1)) { var emo = $('.tomorrow em'), tl = /\s*Откроется\s.*\sв\s7\sутра\.$/; emo.textContent = tl.test(emo.textContent) ? emo.textContent.replace(tl, ' Уже можно играть.') : 'Следующий день уже открыт.'; }
+    if (endZ && !EXT.swOn(U, 3)) sum += '<p class="narr">Ссылка выключена в Закулисье.</p>';
     $('#qsum').innerHTML = sum;
-    $('#cliff').innerHTML = '<div class="bub"><b>' + esc(cl[0]) + '</b>' + esc(cl[1]) + '</div>';
-    var pocket = ((S.ext && S.ext.drafts) || []).length; /* отложенное считается отдельно */
+    /* рубильник «Эхо выбора» выключен: пузыря «на завтра» нет */
+    $('#cliff').innerHTML = EXT.swOn(U, 4) ? '<div class="bub"><b>' + esc(cl[0]) + '</b>' + esc(cl[1]) + '</div>' : '';
     var b = $('#newbadge'); b.textContent = kept; b.hidden = kept === 0;
     /* у шестого дня вместо «Скинуть другу» — ссылка на свою Засаду (если переключатель «Засада» включён); у остальных дней кнопка прежняя */
     var cg = $('#copygrid'), cn = $('#copynote');
-    if (d6) { var zon = EXT.swOn(U, 3); cg.style.display = zon ? '' : 'none'; cn.style.display = zon ? '' : 'none'; $('#copylab').textContent = EXT.ZSHARE.lab; cn.textContent = zon ? EXT.ZSHARE.note : ''; }
+    if (endZ) { var zon = EXT.swOn(U, 3); cg.style.display = zon ? '' : 'none'; cn.style.display = zon ? '' : 'none'; $('#copylab').textContent = EXT.ZSHARE.lab; cn.textContent = zon ? EXT.ZSHARE.note : ''; }
     else { cg.style.display = ''; cn.style.display = ''; $('#copylab').textContent = 'Скинуть другу'; cn.textContent = shareNote(); }
     $('#copydone').textContent = '';
     setHashQuiet('end');
@@ -838,7 +844,7 @@
   function shareNote() { return 'Другу улетит ссылка на игру и твой счёт: сколько приёмов поймано и сколько выводов в Кодексе. Твоих ответов в ссылке нет: каждый проходит по-своему.'; }
   function shareText() {
     var url = ''; try { if (/^https?:$/.test(location.protocol)) url = location.origin + location.pathname; } catch (e) { /* без адреса */ }
-    return 'Не По Сценарию. Суббота: поймано приёмов — ' + (S.ext.beasts || []).length + ', выводов в Кодексе — ' + keptRules().length + '. Попробуй поймать быстрее' + (url ? ': ' + url : '.');
+    return 'Не По Сценарию — игра про то, как нас уговаривают. Поймано приёмов — ' + EXT.bestiaryN(U) + ', выводов в Кодексе — ' + EXT.counts(U).sheet + '. Глянь' + (url ? ': ' + url : '.');
   }
 
   function toast(msg) {
@@ -989,8 +995,10 @@
   /* ----- переходы по шагам ----- */
   function qGoStep(n) {
     qCurtain(function () {
+      /* шаг 2: до ответа про ник шаг не меняется (перезагрузка на экране ника возвращает к крупице шага 1); enterQ2 ставит шаг 2 сама */
+      if (n === 2) { qNick(function () { enterQ2(); persist(); }, true); return; }
       var q = qInit(); q.step = n;
-      if (n === 2) enterQ2(); else if (n === 3) enterQ3(); else enterHonest();
+      if (n === 3) enterQ3(); else enterHonest();
       persist();
     });
   }
@@ -1033,12 +1041,13 @@
     var q = qInit(); q.step = 1;
     showScreen('play'); renderPlay(false);
     if (OPT.nostart || q.titled) tipsForPlay();
-    else qSplash(function () { q.titled = true; qNick(tipsForPlay); });
+    else qSplash(function () { q.titled = true; tipsForPlay(); });
   }
-  /* ----- ник: «Как тебя подписать в чате?» (заход E, п. 5) — после заставки; хранится только в S.ext.nick на устройстве, никуда не уходит; пропуск → в чатах «ты» без @ ----- */
+  /* ----- ник: «Как тебя подписать в чате?» (заход E, п. 5) — перед шагом 2 (чат класса), после занавеса; хранится только в S.ext.nick на устройстве, никуда не уходит; пропуск → в чатах «ты» без @ ----- */
   function nickClean(v) { return String(v || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').replace(/^[@\s]+/, '').trim().slice(0, 16); }
-  function qNick(done) {
-    var el = $('#qnick'); if (!el || S.ext.nick !== undefined) { done(); return; }
+  /* перед шагом 2 («Чат класса»): ник спрашивается один раз, после занавеса и до чата; в рендере с #nostart не показывается; пропуск тоже ответ */
+  function qNick(done, gate) {
+    var el = $('#qnick'); if (!el || S.ext.nick !== undefined || (gate && OPT.nostart)) { done(); return; }
     var inp = $('#nickin'), fin = false;
     var end = function (v) {
       if (fin) return; fin = true;
@@ -1214,6 +1223,8 @@
     parseFlags();
     if (zt !== null && !m) { clearTimers(); applyW0(); EXT.zStart(U, zt); return; }
     if (!m && S && S.real && S.scr && !hasFlag('reset')) { resume(S.scr); return; } /* «назад» на запись без s=: прогресс не сбрасываем */
+    /* посетитель без настоящего сохранения и без служебных флагов (адрес #s=… появляется из ссылок игры и resume(), его легко скопировать, поэтому он сам ничего не подставляет) всегда начинает с заставки: подставной прогресс — только по явному флагу (demo, day, step и подобные) */
+    if (m && !(S && S.real) && !hashTokens().some(function (t) { return /^(demo|day|step|t|reset|w0|now|notips|nostart)(=|$)/.test(t); })) { enter('intro', ''); return; }
     enter(m ? m[1] : 'intro', st ? st[1] : '');
   }
   function resume(scr) {
@@ -1224,7 +1235,7 @@
       case 'pillar': enterPillar(); break;
       case 'q2': enterQ2(); break;
       case 'q3': enterQ3(); break;
-      case 'verdict': enterVerdict(); break;
+      case 'verdict': { var qv = qState(); if (qv && qv.on && qv.step === 2) qGoStep(2); else enterVerdict(); break; } /* подстраховка: сохранение со step 2 на крупице шага 1 ведёт к нику и в чат */
       case 'honest': enterHonest(); break;
       case 'end': enterEnd(); break;
       default:
@@ -1290,7 +1301,7 @@
       if (e.target.closest('#honestnext')) enterEnd();
     });
     $('#copygrid').addEventListener('click', function () {
-      var z6 = S.ext && S.ext.d6 && S.ext.d6.fin, zt = z6 ? EXT.zShareText(U) : null; /* день Засады: уходит ссылка на свою Засаду (#z=…), счётчик ссылок растёт */
+      var z6 = endZ, zt = z6 ? EXT.zShareText(U) : null; /* только на экране конца шестого дня (как в enterEnd, где ставится подпись ZSHARE.lab): уходит ссылка на свою Засаду (#z=…), счётчик ссылок растёт */
       var good = function () { if (z6) S.ext.d6.shared = (S.ext.d6.shared || 0) + 1; $('#copydone').textContent = z6 ? EXT.ZSHARE.good : 'Ссылка скопирована. Вставь в любой чат.'; }, bad = function () { $('#copydone').textContent = z6 ? EXT.ZSHARE.bad : 'Скопировать не получилось: перешли ссылку на игру вручную.'; };
       try { var pr = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(z6 ? zt : shareText()) : null; if (pr && pr.then) pr.then(good, bad); else if (pr === null) bad(); else good(); } catch (e) { bad(); }
       buzz(10);
@@ -1309,5 +1320,5 @@
 
   /* экран загрузки из index.html снимается здесь: первый экран уже нарисован (или запуск упал — тогда тем более не прячем страницу) */
   try { wire(); boot(); } finally { if (window.__npcBooted) window.__npcBooted(); }
-  window.__nit ={ intro: { c: CODEX_INTRO, b: BEST_INTRO }, qBeast3: qBeast3, SND: SND, RIGS: function () { return RIGS; }, S: function () { return S; }, enter: enter, U: U, TIPS: TIPS, armTip: function (id, ms) { tipAfter(id, ms); }, tip: function () { return { cur: TIP.cur, text: TIP.el ? TIP.el.textContent : '', on: !!(TIP.el && TIP.el.classList.contains('on')), flags: (S.ext && S.ext.tips) || {} }; } };
+  window.__nit ={ goStep: qGoStep, intro: { c: CODEX_INTRO, b: BEST_INTRO }, qBeast3: qBeast3, SND: SND, RIGS: function () { return RIGS; }, S: function () { return S; }, enter: enter, U: U, TIPS: TIPS, armTip: function (id, ms) { tipAfter(id, ms); }, tip: function () { return { cur: TIP.cur, text: TIP.el ? TIP.el.textContent : '', on: !!(TIP.el && TIP.el.classList.contains('on')), flags: (S.ext && S.ext.tips) || {} }; } };
 })();
