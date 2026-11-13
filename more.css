@@ -536,12 +536,6 @@ body.lupa-on .lupastrip{display:flex}
 .pricerow li{display:inline-flex;align-items:baseline;gap:6px}
 .pricerow li+li::before{content:"·";margin:0 11px;color:var(--ink-soft);font-weight:600}
 .pricerow b{font:700 18px/1 "Golos Text",sans-serif}
-.viewcard .srcd{margin-top:6px}
-.srcd summary{list-style:none;cursor:pointer;display:flex;align-items:center;min-height:32px;font-size:10.5px;color:var(--ink-soft)}
-.srcd summary::-webkit-details-marker{display:none}
-.srcd summary::before{content:"▸";margin-right:6px}
-.srcd[open] summary::before{content:"▾"}
-.srcd .src{margin-top:0}
 .hotya .hv{font:600 14px/1.2 "Golos Text",sans-serif;text-transform:none;letter-spacing:0;opacity:.92;margin-top:5px}
 
 /* крупицы первой сессии: две большие кнопки */
@@ -962,4 +956,35 @@ body.has-info #scr-play .info{padding-top:12px}
   #info .gauge i.goal::before{font-size:11px}
   .qn-in{width:min(460px,100%)}
   .qn-note{font-size:12px}
+}
+
+/* ===== w0-19, часть A «По шагам»: порции первого и второго дня ===== */
+.pt { display: contents; }
+.pbtn { margin: 16px 0 6px; margin-bottom: 10px; margin-bottom: calc(10px + env(safe-area-inset-bottom)); position: sticky; bottom: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 25; } /* G4: нижнее поле равно отступу прилипания, запасные объявления без env() для браузеров без него */
+/* F11(а): под кнопкой мягкая тень цвета страницы, без жёстких краёв: когда кнопка прилипла и лежит поверх светлого телефона, тень отделяет её от текста; на своём месте кнопка просто отбрасывает тень, прямоугольной плашки нет */
+.pbtn::before { content: ""; position: absolute; z-index: -1; left: 10px; right: 10px; top: 8px; bottom: 6px; border-radius: 18px; background: rgba(16, 23, 66, .9); box-shadow: 0 3px 20px 14px rgba(16, 23, 66, .9); pointer-events: none; }
+@media (min-width: 900px) { .pbtn::before { display: none; } } /* на широком экране тень не нужна: под прилипшей кнопкой там нет текста */
+.scbody > .pbtn { max-width: 420px; margin-left: auto; margin-right: auto; }
+@media (min-width: 900px) { .scbody > .pbtn { max-width: none; margin-left: 448px; margin-right: 0; } } /* на широком экране кнопка сцены стоит в правой колонке сетки (400px телефон + 48px зазор), а не поперёк края телефона */
+#hnpb, #endpb1, #endpb2 { display: contents; } /* кнопке нужен просторный родитель: иначе прилипание ограничено пустой обёрткой */
+/* G1: пока в чате открыта одна порция, лоток не имеет своей коробки (класс pb1 ставит код): кнопка K4 прилипает к низу окна на любой ширине и не меняет высоту страницы в момент прихода */
+#scr-chat .tray.pb1 { display: contents; }
+#scr-chat .tray.pb1 > .pbtn { margin-left: 14px; margin-right: 14px; }
+@media (min-width: 900px) {
+  #scr-chat .tray.pb1 > .pbtn { width: 750px; max-width: calc(100% - 28px); margin-left: auto; margin-right: auto; }
+  #scr-chat .pbtn::before { display: block; } /* на невысоком окне кнопка ложится поверх низа телефона */
+}
+.pbtn .btn, .pbtn .pb { display: block; width: 100%; box-sizing: border-box; }
+@keyframes ptin { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes casin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.pt-in > *, .pt-in:not(.pt) { animation: ptin .27s ease-out backwards; }
+.cas-run [data-cas] { animation: casin .26s ease-out backwards; animation-delay: calc(var(--i, 0) * var(--st, .11s)); }
+.pt [tabindex="-1"]:focus, [data-pt]:focus { outline: none; }
+/* сцена «Уговори Тимура»: строка рассказчика, карточки и шкала приходят по очереди (A1) */
+#scr-play.pl-hc #lampcap, #scr-play.pl-hk #cards { visibility: hidden; }
+#scr-play.pl-g .gauge { display: none; }
+#scr-play.pl-deal #cards .card { animation: casin .26s ease-out backwards; animation-delay: calc(var(--i, 0) * .12s); }
+#scr-play .gauge.gin { animation: ptin .27s ease-out backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .pt-in > *, .pt-in:not(.pt), .cas-run [data-cas], #scr-play.pl-deal #cards .card, #scr-play .gauge.gin { animation: none; }
 }

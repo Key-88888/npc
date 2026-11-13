@@ -15,7 +15,7 @@
   'use strict';
   var EXT = window.EXT;
   /* штамп сборки: наблюдатель записывает его в лист (виден в настройках → «Для взрослых»); при заморозке версии менять код вручную */
-  var BUILD = '2026-11-11 · w0-18';
+  var BUILD = '2026-11-12 · w0-19';
 
   /* ================= ДАННЫЕ ================= */
   /* Тексты — из материалы/тексты-первой-сессии.md (заход D, 04.11): голос А — рассказчик («что происходит»), голос Б — реплики персонажей строчными.
@@ -24,7 +24,7 @@
     open: 'В субботу? Не, у меня дел куча.',
     gaveUp: 'Ладно. Всё. Иду. Только отстань.',
     sceneIntro: 'Коридор, большая перемена. Тимур стоит у окна, наушники на шее, в руке телефон. Позови его в гараж на субботу.',
-    lampIntro: 'Внизу четыре фразы. Каждая двигает Тимура по шкале. На семёрке он сдаётся.',
+    lampIntro: 'Внизу четыре фразы. Попробуй любую — и смотри, что будет с Тимуром.',
     lampLate: 'Честный вопрос после трёх приёмов звучит уже как издёвка. Но спросить никогда не поздно.',
     stampCap: 'Есть. Три фразы — и человек сдался.',
     feelSay: 'Тимур идёт. Только настроение у него теперь как у человека, которого уговорили.',
@@ -130,11 +130,11 @@
      Гаснет на первом верном тапе по цели (fade 150 мс, флаг пишется сразу); цель обводится пульсирующим контуром --lamp.
      Подсказки — управление, а не текст: ≤7 слов, без форм рода. T1 — сцена, T2 — после хода 1, T3 — штамп, T4 — чат, T5 — правило. */
   var TIPS = {
-    t1: { text: 'Тапни фразу — Тимур её услышит', dir: 'down', targets: function () { return $$('#cards .card'); }, anchor: function (t) { return t[Math.min(1, t.length - 1)]; } },
+    t1: { text: 'Тапни фразу — Тимур её услышит', dir: 'down', targets: function () { return $$('#cards .card').filter(function (c) { return c.offsetParent !== null && getComputedStyle(c).visibility !== 'hidden'; }); }, anchor: function (t) { return t[Math.min(1, t.length - 1)]; } },
     t2: { text: 'Набери 7 — и Тимур идёт', dir: 'up', narrow: 134, align: 'start', targets: function () { return $$('#notches i.goal'); } },
     t3: { text: 'Жми штамп — дело сделано', dir: 'up', targets: function () { return [$('#stamp')]; } },
     t4: { text: 'Тапни сообщение — назови приём', dir: 'down', targets: function () { return $$('#tags .tag').slice(0, 1); } },
-    t5: { text: 'Подходит? Забирай в свои выводы', dir: 'up', targets: function () { var b = $('.cr2[data-c="n1"] [data-a="keep"]'); return b ? [b] : []; } }
+    t5: { text: 'Подходит? Забирай в свои выводы', dir: 'up', targets: function () { var b = $('.cr2[data-c="n1"] [data-a="keep"]'); return b && b.offsetParent !== null ? [b] : []; } }
   };
   var TIP = { cur: null, el: null, hold: {} };
   function tipOn() { return !!(S && S.ext && !S.ext.day1Done && !OPT.notips); }
@@ -337,6 +337,7 @@
                   home: 'scr-home', settings: 'scr-settings', day2: 'scr-day2', day3: 'scr-day3', day4: 'scr-day4', day5: 'scr-day5', day6: 'scr-day6', day7: 'scr-day7', day8: 'scr-day8', zf: 'scr-zf', codex: 'scr-codex', bestiary: 'scr-bestiary', backstage: 'scr-backstage' };
   var DARK = { play: 1, chat: 1, pillar: 1, verdict: 1, q2: 1, q3: 1, honest: 1, end: 1, home: 1, settings: 1, day2: 1, day3: 1, day4: 1, day5: 1, day6: 1, day7: 1, day8: 1, zf: 1, codex: 1, bestiary: 1, backstage: 1 }; /* служебные экраны тоже в тёмном мире (перенос, часть 2: look/BRIEF-PORT-2.md) */
   function showScreen(name) {
+    if (EXT.closeView) EXT.closeView(false); /* карточка взгляда не переживает смену экрана: закрывается и снимает блокировку прокрутки фона */
     Object.keys(screens).forEach(function (k) { $('#' + screens[k]).classList.toggle('on', k === name); });
     document.body.className = document.body.className.replace(/\bscr-\w+/g, '').trim();
     document.body.classList.add('scr-' + name);
@@ -384,12 +385,36 @@
     $('#stampcap').textContent = DATA.stampCap;
   }
 
+  /* A1: до первого хода строка рассказчика, четыре карточки и шкала приходят по очереди; хореография идёт один раз, при ходах, возврате, перезагрузке и #nostage — всё сразу (шкала до первого хода скрыта и без #nostage) */
+  var PL = { t0: 0 };
+  function playApply(keepG) {
+    var scr = $('#scr-play'), n = S.moves.length, off = OPT.nostage || n > 0, e = PL.t0 ? Date.now() - PL.t0 : -1;
+    scr.classList.toggle('pl-g', !OPT.nostage && (n === 0 || !!keepG));
+    scr.classList.toggle('pl-hc', !off && !REDUCED && e < 500);
+    scr.classList.toggle('pl-hk', !off && !REDUCED && e < 900);
+    if (off) scr.classList.remove('pl-deal');
+  }
+  function playIntro() {
+    if (!PL.t0) PL.t0 = Date.now();
+    if (OPT.nostage || REDUCED) { playApply(); tipAfter('t1', 2500); return; }
+    var e = Date.now() - PL.t0;
+    $$('#cards .card').forEach(function (c, i) { c.style.setProperty('--i', i); });
+    if (e < 500) later(playApply, 500 - e);
+    if (e < 900) later(function () { playApply(); $('#scr-play').classList.add('pl-deal'); }, 900 - e);
+    later(function () { tipAfter('t1', 2500); }, Math.max(0, 900 + 3 * 120 + 260 - e)); /* отсчёт подсказки — от конца раздачи карточек */
+  }
+  function showGauge() {
+    var scr = $('#scr-play'); if (!scr.classList.contains('pl-g')) return;
+    scr.classList.remove('pl-g'); var g = $('#scr-play .gauge'); g.classList.remove('gin'); void g.offsetWidth; g.classList.add('gin');
+    layoutPlay();
+  }
   function renderPlay(animLast) {
     var n = S.moves.length, th = threads(), nt = th.length, last = n ? S.moves[n - 1] : null;
     /* цель видна с нулевой секунды: шкала «Готов пойти 0/10» стоит на экране сразу (решения 04.11, A3) */
     document.body.classList.add('has-info');
     document.body.classList.toggle('first', n === 0); /* до первого хода: на узком экране вторая строка рассказчика убирается, её заменяет T1 (заход E, п. 7) */
     if (!document.body.classList.contains('turn')) setSub(DATA.sceneIntro);
+    playApply(animLast && n === 1);
     var R = rigOf('a');
     // шкала: метка цели на седьмой клетке подписана «идёт»
     var nt2 = $('#notches');
@@ -422,6 +447,7 @@
     later(function () { setReply(true); if (id === 'lest') sc.squash(2.2); }, REDUCED ? 0 : 170);
     later(function () {
       var from = sc.screen('top'); snd('pop');
+      showGauge(); /* шкала приходит вместе с первым «+N» */
       plusFly('+' + c.plus, from, function () {
         gaugeTo(ready(), function () {
           if (nt < 3) return;
@@ -435,7 +461,7 @@
   /* подсказки при входе на экран игры: T1 на 2,5-й секунде, если тапа не было; T3 на штампе (демо-вход и возврат после перезагрузки) */
   function tipsForPlay() {
     var n = S.moves.length;
-    if (n === 0) tipAfter('t1', 2500);
+    if (n === 0) playIntro();
     else if (threads().length >= 3) tipAfter('t3', 2000);
   }
 
@@ -506,14 +532,36 @@
     showScreen('chat');
     document.body.classList.add('turn');
     /* первый вход: строки проявляются по очереди (0,5 с), своя вспыхивает жёлтым; возврат после перезагрузки и демо-вход — сразу */
-    CHAT.fresh = S.caught.length === 0 && !S.open && !REDUCED; CHAT.t0 = performance.now();
+    var first = S.caught.length === 0 && !S.open;
+    CHAT.fresh = first && !REDUCED && !OPT.nostage; CHAT.t0 = performance.now(); CHAT.t3 = 0;
+    /* A2: при свежем входе чат идёт порциями (1 — шапка, телефон, сообщения; 2 — «Ничего не напоминает?»; 3 — задание, ярлыки и нити); при возврате всё открыто */
+    EXT.stgGet('chat', first && !OPT.nostage ? 1 : 3, 0, 3 * 500 + 400 + 400);
     renderChat();
-    /* T4: через 4 с после появления чата (четыре строки успевают прочитаться), пока ни одно сообщение не тронуто */
+    /* T4: через 4 с после того, как открылась третья порция (ярлыки на месте), пока ни одно сообщение не тронуто */
+    if (S.caught.length === 0 && !S.open && chatUnlocked()) tipAfter('t4', 4000);
+  }
+  function chatUnlocked() { return EXT.stgN('chat', 3) >= 3; }
+  /* G1: пока в чате открыта одна порция (включая время до прихода кнопки), у лотка класс pb1; с открытием второй порции он снимается */
+  function trayPb1() { var t = $('#tray'); if (!t) return; if (EXT.stgState('chat') && EXT.stgN('chat', 3) <= 1) t.classList.add('pb1'); else t.classList.remove('pb1'); }
+  /* порция 3: сообщения становятся нажимаемыми, ярлыки и нити приходят по одному (шаг 0,25 с) */
+  function chatUnlock() {
+    CHAT.t3 = performance.now();
+    $$('#msgs .msg').forEach(function (m) {
+      var id = m.getAttribute('data-id');
+      if (id !== 'real' && S.caught.indexOf(id) < 0 && !m.classList.contains('seen')) { m.classList.add('tappable'); m.setAttribute('role', 'button'); m.setAttribute('tabindex', '0'); }
+    });
+    layoutThreads(); later(layoutThreads, 120); later(layoutThreads, 700);
     if (S.caught.length === 0 && !S.open) tipAfter('t4', 4000);
+  }
+  function stgOpened(key, n) {
+    if (key === 'chat') trayPb1();
+    if (key === 'chat' && n === 3) chatUnlock();
+    else if (key === 'verdict' && n === 2) tipAfter('t5', 5000);
+    else if (key === 'honest') { later(layoutHonest, 0); later(layoutHonest, 280); } /* A0.12: у скрытого размеров не было */
   }
   function msgHTML(m, i, mine) {
     var caught = m.tag && S.caught.indexOf(m.id) >= 0, mn = mine[m.id], isMine = m.tag && mn !== undefined;
-    return '<div class="msg ' + (caught ? 'seen' : '') + (caught && m.id === 'ok' ? ' clean' : '') + (isMine ? ' mine' : '') + (CHAT.fresh && isMine ? ' flash' : '') + (m.tag && !caught ? ' tappable' : '') + (m.real ? ' real' : '') + '" data-id="' + m.id + '" style="--d:' + (CHAT.fresh ? (0.5 * i).toFixed(1) : 0) + 's"' + (m.tag && !caught ? ' role="button" tabindex="0"' : '') + '>' +
+    return '<div class="msg ' + (caught ? 'seen' : '') + (caught && m.id === 'ok' ? ' clean' : '') + (isMine ? ' mine' : '') + (CHAT.fresh && isMine ? ' flash' : '') + (m.tag && !caught && chatUnlocked() ? ' tappable' : '') + (m.real ? ' real' : '') + '" data-id="' + m.id + '" style="--d:' + (CHAT.fresh ? (0.5 * i).toFixed(1) : 0) + 's"' + (m.tag && !caught && chatUnlocked() ? ' role="button" tabindex="0"' : '') + '>' +
       esc(m.text) + (isMine ? '<span class="mine-lab">' + mineLab(mn) + '</span>' : '') +
       (caught ? '<span class="vizhu' + (m.id === 'ok' ? ' clean' : '') + '">' + badgeOf(m.id) + '</span>' : '') + '<time>' + m.time + '</time></div>';
   }
@@ -526,6 +574,8 @@
     $('#invintro').innerHTML = DATA.invIntro.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
     $('#caught').innerHTML = S.caught.map(function (id) { return '<span class="chip' + (id === 'ok' ? ' clean' : '') + '">' + badgeOf(id) + '</span>'; }).join('');
     renderTray();
+    trayPb1();
+    EXT.stgApply($('#scr-chat'), 'chat', 3);
     var vb = $('#vagabar');
     if (!vb.firstChild) { var r = ''; for (var i = 0; i < 6; i++) r += '<i style="left:' + (10 + i * 17) + '%"></i>'; vb.innerHTML = r; }
     layoutThreads();
@@ -539,6 +589,7 @@
     var wrap = $('#phonewrap'); if (!wrap || !wrap.offsetWidth || !$('#scr-chat').classList.contains('on')) return;
     var wr = wrap.getBoundingClientRect(), svg = $('#threads'), tags = $('#tags');
     svg.setAttribute('viewBox', '0 0 ' + wr.width + ' ' + wr.height);
+    if (!chatUnlocked()) { svg.innerHTML = ''; tags.innerHTML = ''; return; } /* до третьей порции ярлыков и нитей нет */
     var vbar = $('#vagabar').getBoundingClientRect();
     var vy = vbar.top - wr.top + 4, vx0 = vbar.left - wr.left, vw = vbar.width, now = performance.now(), mr = $('#msgs').getBoundingClientRect();
     var all = chatMsgs(), th = all.filter(function (m) { return m.tag && S.caught.indexOf(m.id) < 0; });
@@ -549,7 +600,7 @@
       var cx = mr.left - wr.left + el.offsetLeft + el.offsetWidth + 24, top = mr.top - wr.top + el.offsetTop - 2 + 7; /* точка подвеса: у правого верхнего угла пузыря */
       var px = vx0 + vw * (10 + PIN_OF[idx] * 17) / 100, ey = top - 3.5;
       /* метка и нить появляются вместе со своей строкой; при повторной раскладке задержка считается от начала показа, а не заново */
-      var d = CHAT.fresh ? 0.5 * idx + 0.3 - (now - CHAT.t0) / 1000 : 0;
+      var d = CHAT.t3 && !REDUCED && !OPT.nostage ? 0.25 * idx - (now - CHAT.t3) / 1000 : 0; /* ярлык и нить идут по одному, шаг 0,25 с от открытия третьей порции */
       ph += '<path data-t="' + m.id + '" style="--d:' + d.toFixed(2) + 's" d="M' + px + ' ' + vy + ' C' + px + ' ' + (vy + (ey - vy) * 0.5) + ' ' + cx + ' ' + (ey - (ey - vy) * 0.3) + ' ' + cx + ' ' + ey + '"/>';
       tg += '<button class="tag' + (S.open === m.id ? ' open' : '') + '" type="button" data-t="' + m.id + '" style="left:' + cx + 'px;top:' + top + 'px;--d:' + d.toFixed(2) + 's" aria-label="Сообщение «' + esc(m.text) + '». Тапни и скажи, что в нём: приём или честно"><span>что тут?</span></button>';
     });
@@ -577,7 +628,9 @@
         (rest === 1 && left[0] && left[0].id !== 'ok' ? '<div class="more end"><button class="btn seen" type="button" id="autoNext">Дальше</button></div>' : '') + '</div>';
     } else {
       /* до первого тапа в лотке — рассказчик объясняет задачу; управление подсказывает T4 */
-      t.innerHTML = cnt + '<div class="idle" id="invcall">' + DATA.invCall.map(function (x) { return '<p class="narr">' + esc(x) + '</p>'; }).join('') + '</div>';
+      var stc = EXT.stgState('chat'), B = EXT.PBTN;
+      t.innerHTML = (stc ? '<div class="pt" data-pt="3">' + cnt + '</div>' : cnt) +
+        (stc ? '<div class="pt" data-pt="2">' : '') + '<div class="idle" id="invcall">' + DATA.invCall.map(function (x) { return '<p class="narr">' + esc(x) + '</p>'; }).join('') + '</div>' + (stc ? EXT.stgBtn('chat', 2, B.K5) + '</div>' + EXT.stgBtn('chat', 1, B.K4) : '');
     }
   }
 
@@ -588,6 +641,7 @@
     $$('.tag').forEach(function (x) { x.classList.toggle('open', x.getAttribute('data-t') === id); });
     $$('.msg').forEach(function (x) { x.classList.toggle('open', x.getAttribute('data-id') === id); });
     renderTray();
+    EXT.stgCas($('#tray .opts4'), '.opt'); /* четыре ответа — каскадом */
     var tr = $('#tray'); if (tr && tr.scrollIntoView) tr.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
   }
   function onTagTap(e) {
@@ -595,7 +649,7 @@
     openTag(tg.getAttribute('data-t'));
   }
   function onMsgTap(e) {
-    var m = e.target.closest('.msg.tappable'); if (!m) return;
+    var m = e.target.closest('.msg.tappable'); if (!m || !chatUnlocked()) return;
     openTag(m.getAttribute('data-id'));
   }
   /* приём назван: игроком или автоматически (Р3: последняя строка с приёмом называется сама; честная реплика остаётся на суд игрока) */
@@ -646,22 +700,26 @@
     sl.className = 'slips' + (S.basis ? ' done' : '');
     $('#ctxhost').innerHTML = '<div class="ctx big"><b class="mono">Тимур</b><q>' + esc(DATA.realQ) + '</q></div>';
     var vs = $('#vsub'); vs.textContent = DATA.vsub; vs.style.display = S.basis ? 'none' : '';
-    sl.innerHTML = DATA.pillars.map(function (p) {
+    /* после выбора невыбранные ответы убираются с экрана (A0.8) */
+    sl.innerHTML = DATA.pillars.filter(function (p) { return !S.basis || S.basis === p.id; }).map(function (p) {
       return '<button class="slip' + (S.basis === p.id ? ' chosen' : '') + '" type="button" data-p="' + p.id + '">«' + esc(p.move) + '»</button>';
     }).join('');
-    var vh = $('#viewhost');
+    if (!S.basis) EXT.stgCas(sl, '.slip'); /* три ответа — каскадом */
+    var vh = $('#viewhost'), pn = $('#pillnext');
     if (S.basis) {
-      var p = pillarById(S.basis);
-      /* один экран: ответ → реакция Тимура → «Что это тебе стоило» → «Так рассуждают …» → «А с другой стороны —» */
-      vh.innerHTML = '<div class="react"><div class="rl"><b class="mono">Тимур</b>' + esc(p.say) + '</div></div>' + EXT.costHTML(p.cost) +
-        EXT.monoHTML(p.view, p.mono) + EXT.hotyaHTML(p.hotya.text);
-      $('#pillnext').hidden = false;
-    } else { vh.innerHTML = ''; $('#pillnext').hidden = true; }
+      var p = pillarById(S.basis), K = 'pillar', B = EXT.PBTN;
+      /* A3, по порциям: реакция Тимура (сама) → «Что это тебе стоило» → карточка взгляда → «А с другой стороны —» и «Дальше» */
+      EXT.stgGet(K, 1);
+      vh.innerHTML = EXT.stgPt(1, '<div class="react"><div class="rl"><b class="mono">Тимур</b>' + esc(p.say) + '</div></div>', { key: K, label: B.K1 }) +
+        EXT.stgPt(2, EXT.costHTML(p.cost), { key: K, label: B.K2 }) + EXT.stgPt(3, EXT.monoHTML(p.view, p.mono), { key: K, label: B.K3 }) + EXT.stgPt(4, EXT.hotyaHTML(p.hotya.text));
+      pn.setAttribute('data-pt', '4'); pn.hidden = false;
+      EXT.stgApply($('#scr-pillar'), K, 4);
+    } else { vh.innerHTML = ''; pn.removeAttribute('data-pt'); pn.hidden = true; }
   }
   function onSlip(e) {
     var b = e.target.closest('.slip'); if (!b || S.basis) return;
     S.real = true; buzz([10, 20]); S.basis = b.getAttribute('data-p'); renderPillar();
-    later(function () { var v = $('.react'); if (v && v.scrollIntoView) v.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
+    EXT.stgReveal('pillar', 1); /* реакция Тимура приходит сама; прокрутка одна — общая, к верху новой порции */
   }
 
   /* ---------- ПРАВИЛА КОДЕКСА: из двух разных взглядов; забираю / не моё (со второго дня ещё «подправлю» и «пока не знаю») ---------- */
@@ -686,7 +744,11 @@
     if (q && q.on && q.step <= 3) cs = cs.filter(function (c) { return c.id === (q.step === 3 ? 'n2' : 'n1'); }); /* квест: по одному выводу — первый в шаге 1, второй в шаге 3 */
     var step = q && q.on && q.step <= 3 ? q.step : 0;
     $('#vh1').textContent = step ? CR_TITLE[step === 3 ? 3 : 1] : 'Выводы из этой истории';
-    $('#crintro').innerHTML = step ? CR_INTRO[step === 3 ? 3 : 1].map(function (t) { return '<p class="narr">' + esc(t) + '</p>'; }).join('') : '';
+    /* A4, только первый вывод: порция 1 — заголовок и два абзаца про Кодекс (кнопка K6), порция 2 — карточка вывода */
+    var vstg = step === 1, vroot = $('#scr-verdict'), vch = $('#crhost'), vpk = $('#scr-verdict .pocket');
+    $('#crintro').innerHTML = (step ? CR_INTRO[step === 3 ? 3 : 1].map(function (t) { return '<p class="narr">' + esc(t) + '</p>'; }).join('') : '') + (vstg ? EXT.stgBtn('verdict', 1, EXT.PBTN.K6) : '');
+    if (vstg) { vch.setAttribute('data-pt', '2'); vpk.setAttribute('data-pt', '2'); }
+    else { vch.removeAttribute('data-pt'); vpk.removeAttribute('data-pt'); vch.hidden = false; vpk.hidden = false; vch.classList.remove('pt-in'); vch.classList.remove('cas-run'); } /* G6: на втором выводе (экран без порций) каскад не нужен */
     /* первая сессия: у вывода две большие кнопки «Забираю» / «Не моё» (пятый аргумент crCard); «Подправлю» и «Пока не знаю» — со второго дня */
     $('#crhost').innerHTML = cs.map(function (c, i) { return EXT.crCard(c, i, cs.length, cands().filter(function (x) { return x.id === c.contra; })[0], true); }).join('');
     /* заход E, п. 3: после решения карточка и отклик «Записано…» ждут тапа: «В Кодекс» (карточка летит во вкладку) или «Дальше» (для «Не моё») */
@@ -697,10 +759,12 @@
     var k = EXT.counts(U);
     $('#pslots').innerHTML = EXT.slotsHTML(k);
     $('#pocketlab').textContent = 'В Кодексе: ' + k.sheet + ' из 12';
+    if (vstg) { EXT.stgGet('verdict', cs[0] && cs[0].status !== 'new' ? 2 : 1); EXT.stgApply(vroot, 'verdict', 2); } /* решённый вывод после перезагрузки: сразу вторая порция (A0.7) */
     if (TIP.cur === 't5') tipPlace();
   }
   function enterVerdict() {
-    showScreen('verdict'); renderCrumbs(); tipAfter('t5', 5000);
+    showScreen('verdict'); renderCrumbs();
+    var qv0 = qState(); if (!(qv0 && qv0.on && qv0.step === 1) || EXT.stgN('verdict', 2) >= 2) tipAfter('t5', 5000); /* на первом выводе подсказка стартует, когда открыта карточка (порция 2) */
     var qk = qState(); $('#vkick').textContent = qk && qk.on && qk.step <= 3 ? 'Вывод' : 'Выводы';
     $('#qcapline').hidden = true; $('#qcapgo').hidden = true;
     /* возврат после перезагрузки после решения: карточка и кнопка «В Кодекс» / «Дальше» на месте (renderCrumbs), переход ждёт тапа */
@@ -738,12 +802,15 @@
     $('#act2').textContent = inv && inv.act ? '(' + inv.act + ')' : '';
     $('#who2').textContent = 'Тимур, 15 · в наушниках';
     var st = $('#stray'); st.hidden = !(inv && inv.id === 'guilt');
-    $('#honestinv').innerHTML = h.order.map(function (id) { var x = inviteById(id); return '<button class="inv' + (h.pick === id ? ' chosen' : '') + '" type="button" data-inv="' + id + '"' + (h.pick ? ' disabled' : '') + '>«' + esc(x.text) + '»</button>'; }).join('');
+    /* A7: порция 1 — шапка, сцена, подпись (кнопка K10); порция 2 — шкала и три приглашения (каскадом); после выбора остаётся одно приглашение (A0.8) */
+    $('#hnpb').innerHTML = EXT.stgBtn('honest', 1, EXT.PBTN.K10);
+    $('#honestinv').innerHTML = h.order.filter(function (id) { return !h.pick || h.pick === id; }).map(function (id) { var x = inviteById(id); return '<button class="inv' + (h.pick === id ? ' chosen' : '') + '" type="button" data-inv="' + id + '"' + (h.pick ? ' disabled' : '') + (h.pick ? '' : ' data-cas') + '>«' + esc(x.text) + '»</button>'; }).join('');
     var res = '';
     /* реакция рассказчика после ответа: ясное — «это и есть честно уговорить»; расплывчатое — «дверь открыта, но заходить незачем»; с виной — «тоже давит» */
     if (inv) res = '<div class="hres' + (inv.id === 'clear' ? ' ok' : '') + '"><p>' + esc(inv.cap) + '</p></div><div class="hbtns"><button class="btn seen" type="button" id="honestnext">Дальше</button></div>';
     $('#honestres').innerHTML = res;
     document.body.classList.toggle('honest-done', !!inv);
+    EXT.stgGet('honest', h.pick ? 2 : 1); EXT.stgApply($('#scr-honest'), 'honest', 2);
   }
   function onInvite(e) {
     var b = e.target.closest('.inv'); if (!b || (S.honest && S.honest.pick)) return;
@@ -830,6 +897,16 @@
     if (!d8 && !EXT.swOn(U, 1)) { var emo = $('.tomorrow em'), tl = /\s*Откроется\s.*\sв\s7\sутра\.$/; emo.textContent = tl.test(emo.textContent) ? emo.textContent.replace(tl, ' Уже можно играть.') : 'Следующий день уже открыт.'; }
     if (endZ && !EXT.swOn(U, 3)) sum += '<p class="narr">Ссылка выключена в Закулисье.</p>';
     $('#qsum').innerHTML = sum;
+    /* A8, только первый день: порция 1 — штамп и подпись (K11), 2 — итог дня (K12), 3 — «Завтра…», реплика на завтра, «Скинуть другу», ссылки */
+    var e1 = !(d2 || d3 || d4 || d5 || d6 || d7 || d8), eq = $('#qsum'), et = $('#scr-end .tomorrow'), eb = $('#scr-end .endbtns');
+    if (e1) {
+      eq.setAttribute('data-pt', '2'); et.setAttribute('data-pt', '3'); eb.setAttribute('data-pt', '3');
+      $('#endpb1').innerHTML = EXT.stgBtn('end', 1, EXT.PBTN.K11); $('#endpb2').innerHTML = EXT.stgBtn('end', 2, EXT.PBTN.K12);
+      EXT.stgGet('end', 1); EXT.stgApply($('#scr-end'), 'end', 3);
+    } else {
+      [eq, et, eb].forEach(function (x) { x.removeAttribute('data-pt'); x.hidden = false; });
+      $('#endpb1').innerHTML = ''; $('#endpb2').innerHTML = '';
+    }
     /* рубильник «Эхо выбора» выключен: пузыря «на завтра» нет */
     $('#cliff').innerHTML = EXT.swOn(U, 4) ? '<div class="bub"><b>' + esc(cl[0]) + '</b>' + esc(cl[1]) + '</div>' : '';
     var b = $('#newbadge'); b.textContent = kept; b.hidden = kept === 0;
@@ -909,7 +986,7 @@
 
   /* ----- карточка поимки: «Пойман кто-то по имени Таймер» — имя, подпись, досье из трёх строк; тап — карточка летит во вкладку «Бестиарий» ----- */
   var CATCH = { busy: false };
-  var BEST_INTRO = 'Это Бестиарий — твоя коллекция пойманных приёмов. Кого разглядишь, тот попадает сюда с досье: чем берёт, где водится, как отшить. Всего их двенадцать. Один уже есть.';
+  var BEST_INTRO = 'Это Бестиарий — твоя коллекция пойманных приёмов. Кого разглядишь, тот попадает сюда с досье: чем берёт, где водится, как отшить. Всего их одиннадцать. Один уже есть.';
   var CODEX_INTRO = 'Это Кодекс — твоя копилка выводов. Сюда попадает только то, что ты забираешь. Хранится на этом телефоне и больше нигде.';
   var STAND = '<svg viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="sb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#4a2fc0"/></linearGradient><linearGradient id="st" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe98a"/><stop offset="1" stop-color="#ffb21a"/></linearGradient></defs>' +
     '<ellipse cx="150" cy="70" rx="140" ry="9" fill="#0b1633" opacity=".35"/><path d="M30 40H270V62Q270 72 150 72T30 62Z" fill="url(#sb)" stroke="#0b1633" stroke-width="6" stroke-linejoin="round"/><ellipse cx="150" cy="38" rx="124" ry="17" fill="url(#st)" stroke="#0b1633" stroke-width="6"/><ellipse cx="150" cy="35" rx="96" ry="9" fill="#fff" opacity=".35"/></svg>';
@@ -942,7 +1019,7 @@
     persist();
     var card = $('.qc-card', ov);
     var finish = function () {
-      ov.hidden = true; ov.innerHTML = ''; ov.className = 'qcatch'; CATCH.busy = false;
+      ov.hidden = true; ov.innerHTML = ''; ov.className = 'qcatch'; CATCH.busy = false; if (EXT.layerClosed) EXT.layerClosed(); /* G3 */
       var q = qState(); if (q && q.on && QSCR[S.scr]) qTabArrive('b'); else qTopSet();
       if (cb) cb();
     };
@@ -1075,6 +1152,8 @@
     if (step === 'title') { qSeed(1); S.ext.q.titled = false; OPT.nostart = false; qStart(); return; }
     if (step === 'nick') { qSeed(1); S.ext.q.titled = true; OPT.nostart = false; S.ext.nick = undefined; showScreen('play'); renderPlay(false); qNick(function () { /* только показать */ }); return; }
     if (step === 'step2') { qSeed(2); var d = EXT.d2state(U, EXT.SCENES.q2); d.move = 'b'; d.stage = 'thread'; d.open = 2; enterQ2(); return; }
+    if (step === 'step2m') { qSeed(2); enterQ2(); return; } /* стадия хода (для замера первой порции) */
+    if (step === 'step2t') { qSeed(2); var dt = EXT.d2state(U, EXT.SCENES.q2); dt.move = 'b'; dt.stage = 'thread'; enterQ2(); return; } /* «Кто давил?» без действий (первая порция) */
     if (step === 'step3') { qSeed(3); enterQ3(); return; }
     if (step === 'catch') { qSeed(1); enterPillar(); setTimeout(function () { catchBeast('sro', null, { hold: true }); }, 60); return; }
     if (step === 'final') { qSeed(4); S.honest = { pick: 'clear', tries: 1, ok: true, order: ['clear', 'vague', 'guilt'] }; S.cands[1].status = 'keep'; enterEnd(); return; }
@@ -1084,6 +1163,7 @@
   /* ================= РОУТЕР ================= */
   function resetAll() {
     clearTimers(); S = fresh(); gaugeBuilt = false; GAUGE.n = 0;
+    EXT.stgReset(); PL.t0 = 0; CHAT.t3 = 0; /* порции: счётчики живут только в памяти страницы и сбрасываются вместе с состоянием */
     rigReset();
     document.body.classList.remove('turn', 'has-info', 'done', 'lupa-on', 'quest', 'first'); document.body.classList.remove('demo');
     qReset();
@@ -1104,7 +1184,7 @@
       if (OPT.demo) { c[1].status = 'fit'; c[1].fit = true; c[1].text = c[1].alts[0]; } else c[1].status = 'pocket';
     }
   }
-  var OPT = { demo: false, day: 2, t: -1, dayFlag: false, now: false, w0: false, notips: false, nostart: false };
+  var OPT = { demo: false, day: 2, t: -1, dayFlag: false, now: false, w0: false, notips: false, nostart: false, nostage: false };
   /* игровой день = номер завершённого Дела + 1 (Р8). Явный флаг day=N и демо важнее; без завершённых Дел в состоянии — день из OPT */
   function gameDay() {
     var e = S && S.ext;
@@ -1113,7 +1193,7 @@
   }
   var U = {
     S: function () { return S; }, $: $, $$: $$, esc: esc, buzz: buzz, later: later, showScreen: showScreen, toast: toast,
-    go: function (n) { location.hash = '#s=' + n; }, quiet: setHashQuiet, seed: seedDemo, cands: cands, DATA: DATA, cap1: cap1, opt: function () { return OPT; }, day: gameDay, build: BUILD,
+    go: function (n) { location.hash = '#s=' + n; }, quiet: setHashQuiet, reduced: function () { return REDUCED; }, stgOpened: function (k, n) { stgOpened(k, n); }, stgBefore: function (k) { if (k === 'chat') trayPb1(); }, seed: seedDemo, cands: cands, DATA: DATA, cap1: cap1, opt: function () { return OPT; }, day: gameDay, build: BUILD,
     enterEnd: function () { enterEnd(); }, nick: function () { return (S && S.ext && S.ext.nick) || ''; }, catchBeast: catchBeast, questNext: questNext, forget: function () { lsDel(); try { history.replaceState(null, '', location.pathname + location.search + '#s=intro'); } catch (e) { /* file:// */ } route(); toast('Всё стёрто с этого устройства'); }
   };
   EXT.U = U;
@@ -1204,6 +1284,8 @@
     if (hasFlag('now')) OPT.now = true;
     if (hasFlag('w0')) OPT.w0 = true;
     if (hasFlag('notips')) OPT.notips = true; /* #notips — без подсказок-стрелок (для проверок, где они мешают) */
+    /* F12: флаг nostage живёт только до перезагрузки страницы (после неё адрес без флага, порции работают как у игрока); когда порции включат в днях 3–8, цепочке --play понадобится перезагрузка после Дела 2 */
+    if (hasFlag('nostage')) OPT.nostage = true; /* #nostage — все порции первого и второго дня открыты сразу, без ожиданий и каскадов (для стенда и отладки, игроку нигде не показывается) */
     if (hasFlag('nostart')) OPT.nostart = true; /* #nostart — без заставки квеста (для проверок шага 1; сама заставка и её пропуск проверяются отдельно) */
   }
   /* #w0: скрытые приёмы выключены с самого начала; значение лежит в состоянии (ext.w0, ext.traps) и видно в настройках */
@@ -1224,7 +1306,7 @@
     if (zt !== null && !m) { clearTimers(); applyW0(); EXT.zStart(U, zt); return; }
     if (!m && S && S.real && S.scr && !hasFlag('reset')) { resume(S.scr); return; } /* «назад» на запись без s=: прогресс не сбрасываем */
     /* посетитель без настоящего сохранения и без служебных флагов (адрес #s=… появляется из ссылок игры и resume(), его легко скопировать, поэтому он сам ничего не подставляет) всегда начинает с заставки: подставной прогресс — только по явному флагу (demo, day, step и подобные) */
-    if (m && !(S && S.real) && !hashTokens().some(function (t) { return /^(demo|day|step|t|reset|w0|now|notips|nostart)(=|$)/.test(t); })) { enter('intro', ''); return; }
+    if (m && !(S && S.real) && !hashTokens().some(function (t) { return /^(demo|day|step|t|reset|w0|now|notips|nostart|nostage)(=|$)/.test(t); })) { enter('intro', ''); return; }
     enter(m ? m[1] : 'intro', st ? st[1] : '');
   }
   function resume(scr) {

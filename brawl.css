@@ -63,7 +63,7 @@ body.quest .app { padding-top: 0; }
 body.quest:not(.scr-play):not(.scr-honest) .app { padding-top: var(--qh); }
 body.quest .head { padding-top: 10px; }
 .qtop { height: calc(var(--qh) + env(safe-area-inset-top)); padding: calc(7px + env(safe-area-inset-top)) 10px 0; background: linear-gradient(180deg, #1a2760 0%, #223179 100%); border-bottom: 3px solid var(--ink); box-shadow: 0 5px 0 rgba(11, 22, 51, .35); z-index: 60; }
-body.scr-play .qtop, body.scr-honest .qtop { background: linear-gradient(180deg, rgba(10, 18, 52, .72) 0%, rgba(10, 18, 52, .3) 70%, rgba(10, 18, 52, 0) 100%); border-bottom: 0; box-shadow: none; }
+body.scr-play .qtop { background: linear-gradient(180deg, rgba(10, 18, 52, .72) 0%, rgba(10, 18, 52, .3) 70%, rgba(10, 18, 52, 0) 100%); border-bottom: 0; box-shadow: none; }
 .qtrail { max-width: 236px; margin: 0; height: 52px; padding: 0; align-items: flex-start; position: relative; }
 .qn { flex-direction: column; gap: 2px; width: 38px; align-items: center; }
 .qn b { width: 31px; height: 31px; border-radius: 50%; border: 3px solid var(--ink); font: 400 16px/1 "Russo One", sans-serif; color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill;
@@ -137,6 +137,7 @@ body.has-info #scr-play .side { display: flex; padding: 0; }
 #scr-play .info { flex: none; padding: 0; margin: 0; display: block; }
 #scr-play .lampcap { margin: 0 0 8px; min-height: 0; font-size: 12px; line-height: 1.27; padding: 5px 9px 6px; border-radius: 12px; }
 @media (max-width: 899px) and (max-height: 700px) { body:not(.first):not(.turn) #scr-play .head .sub { display: none; } }
+/* до первого хода строка рассказчика не показывается ни на какой ширине: подсказка одна (T1) */
 body.first #lampcap { display: none; }
 
 /* шкала «Готов пойти» */
@@ -401,7 +402,6 @@ body.dk .tagleft { padding: 6px 11px 7px; border-radius: 12px; border: 3px solid
 .costw li { font: 600 14.5px/1.35 "Golos Text", sans-serif; border-bottom: 2px dashed rgba(35, 88, 220, .25); padding: 6px 0; }
 .costw li b { color: var(--blue-2); }
 .viewcard .mono-t, .hotya p { font: 500 15.5px/1.45 "Golos Text", sans-serif; margin: 2px 0 0; color: var(--ink); }
-.srcd summary { color: var(--blue-2); font: 800 11.5px "Golos Text", sans-serif; text-transform: none; letter-spacing: 0; }
 .cr2 { position: relative; padding: 22px 16px 16px; margin-top: 18px; }
 .cr2 q { font: 700 21px/1.25 "Golos Text", sans-serif; color: var(--ink); }
 .cr2 .bsrc .from { color: var(--ink-soft); font: 650 12px "Golos Text", sans-serif; text-transform: none; }
@@ -647,6 +647,7 @@ body.scr-end .helpchip { top: calc(8px + env(safe-area-inset-top)); }
   #scr-honest .head, #scr-honest .stage, #scr-honest .honestside, #scr-honest .honesthand { width: min(820px, calc(100% - 48px)); margin-left: auto; margin-right: auto; }
   #scr-honest .head { padding-left: 0; padding-right: 0; }
   #scr-honest .honestside, #scr-honest .honesthand { padding-left: 0; padding-right: 0; }
+  #scr-honest .honestside { padding-bottom: 14px; } /* w0-19, F3: нижний отступ подложки равен верхнему, кнопка порции не прижата к краю */
   .invites { flex-direction: row; }
   .invites .inv { flex: 1; font-size: 17px; }
   .feel { max-width: 520px; }

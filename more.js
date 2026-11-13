@@ -16,18 +16,18 @@
   var VIEWS = {
     skeptic:   { name: 'скептики',       ab: 'Сп', kind: 'школа',    tone: 'cold',  ang: -75, strong: 'требовать оснований', price: 'вечное «не знаю»', src: 'Секст Эмпирик', dark: '«ничего нельзя знать, так что слушай меня»' },
     stoic:     { name: 'стоики',         ab: 'Ст', kind: 'школа',    tone: 'cold',  ang: -66, strong: 'спокойствие: занимаешься тем, что зависит от тебя', price: 'можно остыть к тем, кому нужна твоя злость', src: 'Эпиктет, «Энхиридион»', dark: 'ледяное «не бери в голову», чтобы вопросов не было' },
-    confucius: { name: 'Конфуций',       ab: 'Кф', kind: 'традиция', tone: 'cold',  ang: -57, strong: 'отношения — обязанности в обе стороны', price: 'правила становятся клеткой', src: '«Лунь юй»', dark: '«так принято», после которого вопросы считаются грубостью' },
-    socrates:  { name: 'Сократ',         ab: 'Ск', kind: 'школа',    tone: 'cold',  ang: -48, strong: 'вопрос вместо давления', price: 'тебя могут счесть занудой', src: 'Платон, «Апология»', dark: 'допрос без конца, пока отказываться не надоест' },
-    kant:      { name: 'Кант',           ab: 'Ка', kind: 'школа',    tone: 'cold',  ang: -39, strong: 'поступать так, чтобы это годилось для всех', price: 'правило бывает жёстче жизни', src: 'Кант, «Основы метафизики нравов»', dark: '«а если бы все так делали?» как повод для стыда' },
-    pragm:     { name: 'прагматизм',     ab: 'Пр', kind: 'современная картина мира', tone: 'cold', ang: -30, strong: 'смотрит, работает ли идея на деле', price: 'можно оправдать любую выгоду', src: 'У. Джеймс, «Прагматизм»', dark: '«это же выгодно», пока цена не посчитана' },
+    confucius: { name: 'Конфуций',       ab: 'Кф', kind: 'мыслитель', tone: 'cold',  ang: -57, strong: 'отношения — обязанности в обе стороны', price: 'правила становятся клеткой', src: '«Лунь юй»', dark: '«так принято», после которого вопросы считаются грубостью' },
+    socrates:  { name: 'Сократ',         ab: 'Ск', kind: 'мыслитель',    tone: 'cold',  ang: -48, strong: 'вопрос вместо давления', price: 'тебя могут счесть занудой', src: 'Платон, «Апология»', dark: 'допрос без конца, пока отказываться не надоест' },
+    kant:      { name: 'Кант',           ab: 'Ка', kind: 'мыслитель',    tone: 'cold',  ang: -39, strong: 'поступать так, чтобы это годилось для всех', price: 'правило бывает жёстче жизни', src: 'Кант, «Основы метафизики нравов»', dark: '«а если бы все так делали?» как повод для стыда' },
+    pragm:     { name: 'прагматизм',     ab: 'Пр', kind: 'школа', tone: 'cold', ang: -30, strong: 'смотрит, работает ли идея на деле', price: 'можно оправдать любую выгоду', src: 'У. Джеймс, «Прагматизм»', dark: '«это же выгодно», пока цена не посчитана' },
     epicurus:  { name: 'эпикурейцы',     ab: 'Эп', kind: 'школа',    tone: 'quiet', ang: -21, strong: 'различать нужное и навязанное', price: 'можно проглядеть дело, ради которого стоит потерпеть', src: 'Эпикур, «Письмо Менекею»', dark: '«побалуй себя, хватит терпеть» как крючок покупки' },
     buddhism:  { name: 'буддизм',        ab: 'Бу', kind: 'традиция', tone: 'quiet', ang: -12, strong: 'отпустить прошедшее', price: 'принятие можно спутать с безразличием', src: '«Дхаммапада»', dark: '«расслабься, не цепляйся» вместо ответа на вопрос' },
-    romantic:  { name: 'романтизм',      ab: 'Ро', kind: 'современная картина мира', tone: 'quiet', ang: -4, strong: 'чувство и своя дорога важнее расписания', price: 'можно жить порывом и платить потом', src: 'Шиллер, «Письма об эстетическом воспитании»', dark: '«следуй за мечтой», а платить будешь ты' },
+    romantic:  { name: 'романтизм',      ab: 'Ро', kind: 'движение', tone: 'quiet', ang: -4, strong: 'чувство и своя дорога важнее расписания', price: 'можно жить порывом и платить потом', src: 'Шиллер, «Письма об эстетическом воспитании»', dark: '«следуй за мечтой», а платить будешь ты' },
     minimal:   { name: 'минимализм',     ab: 'Ми', kind: 'современная картина мира', tone: 'quiet', ang: 4, strong: 'меньше вещей — больше свободы', price: 'можно сжаться до скуки', src: 'Торо, «Уолден»', dark: '«избавься от старого» и купи новое, правильное' },
-    aristotle: { name: 'Аристотель',     ab: 'Ар', kind: 'школа',    tone: 'quiet', ang: 13, strong: 'искать меру между крайностями', price: 'середина бывает удобной отговоркой', src: 'Аристотель, «Никомахова этика»', dark: '«не перегибай, выбирай среднее» вместо ответа' },
+    aristotle: { name: 'Аристотель',     ab: 'Ар', kind: 'мыслитель',    tone: 'quiet', ang: 13, strong: 'искать меру между крайностями', price: 'середина бывает удобной отговоркой', src: 'Аристотель, «Никомахова этика»', dark: '«не перегибай, выбирай среднее» вместо ответа' },
     achiev:    { name: 'достигаторство', ab: 'До', kind: 'современная картина мира', tone: 'thorn', ang: 22, strong: 'рост и ясные цели', price: 'любой отдых начинает казаться провалом', src: 'Франклин, «Автобиография»', dark: '«ты отстаёшь, другие уже…»' },
     hedon:     { name: 'гедонизм',       ab: 'Ге', kind: 'школа',    tone: 'thorn', ang: 32, strong: 'жизнь должна радовать, и это не стыдно', price: 'радость превращается в погоню за радостью', src: 'Аристипп, в пересказе Диогена Лаэртского', dark: '«лови момент, пока скидка»' },
-    nihil:     { name: 'нигилизм',       ab: 'Ни', kind: 'современная картина мира', tone: 'thorn', ang: 43, strong: 'не верить готовым смыслам на слово', price: 'можно ничего не строить и звать это честностью', src: 'Тургенев, «Отцы и дети»', dark: '«всё равно ничего не изменится»' },
+    nihil:     { name: 'нигилизм',       ab: 'Ни', kind: 'движение', tone: 'thorn', ang: 43, strong: 'не верить готовым смыслам на слово', price: 'можно ничего не строить и звать это честностью', src: 'Тургенев, «Отцы и дети»', dark: '«всё равно ничего не изменится»' },
     cynic:     { name: 'киники',         ab: 'Ки', kind: 'школа',    tone: 'thorn', ang: 55, strong: 'свобода от чужих оценок', price: 'можно презирать людей, чтобы не бояться их', src: 'Диоген Лаэртский, «О жизни философов»', dark: '«тебе же всё равно, что скажут», чтобы советов не слушали' },
     util:      { name: 'утилитаристы',   ab: 'Ут', kind: 'школа',    tone: 'thorn', ang: 64, strong: 'считать, кому лучше', price: 'иногда приходится пожертвовать одним ради общего', src: 'Милль, «Утилитаризм»', dark: '«придётся потерпеть ради всех», и терпит почему-то всегда кто-то один' }
   };
@@ -36,6 +36,26 @@
     epicurus: 'Так рассуждали эпикурейцы', buddhism: 'Так рассуждают буддисты', romantic: 'Так рассуждают романтики', minimal: 'Так рассуждают минималисты', skeptic: 'Так рассуждали скептики',
     aristotle: 'Так рассуждал Аристотель', achiev: 'Так рассуждают достигаторы', hedon: 'Так рассуждали гедонисты', nihil: 'Так рассуждают нигилисты', cynic: 'Так рассуждали киники', util: 'Так рассуждают утилитаристы' };
   Object.keys(LEADS).forEach(function (k) { VIEWS[k].lead = LEADS[k]; });
+  /* карточка взгляда (w0-19, часть B): откуда взгляд, о чём он, подписи строк; поля strongC / priceC / darkC — для карточки, исходные strong / price / dark остаются для других фраз (день 7) */
+  var VIEW_CARD = { labels: { strong: 'В чём сила', price: 'Чем платят', dark: 'Как этим давят' }, src: 'Откуда:', close: 'Ясно', closeLabel: 'Закрыть', more: 'Что это за взгляд?', data: {
+    skeptic: { where: 'Древняя Греция и Рим, с IV века до н. э.', idea: 'Скептики заметили: почти на любой довод находится другой, такой же сильный. Один клянётся, что контрольную перенесли, второй — что нет, и оба «точно знают». Скептик не спешит выбирать, кому верить, а откладывает суждение — и от этого, как ни странно, спокоен.' },
+    stoic: { where: 'Древняя Греция и Рим, примерно с 300 года до н. э.', idea: 'Стоики считали: хорошим или плохим бывает только твой собственный поступок. Всё остальное — погода, чужое мнение, лайки, даже болезнь — просто обстоятельства. Злиться на них бесполезно, а вот как с ними обойтись, решаешь ты.' },
+    confucius: { where: 'Китай, VI–V века до н. э.', idea: 'Конфуций считал, что человек становится человеком среди людей: он чей-то сын, друг, ученик, старший. У каждой роли свои обязанности и своя вежливость. Им учатся всю жизнь — на примерах старших и на привычке, как учатся играть на гитаре.', strongC: 'отношения держатся на обязанностях в обе стороны', priceC: 'правила могут стать клеткой' },
+    socrates: { where: 'Афины, V век до н. э.', idea: 'Сократ ничего не записывал. Он ходил по Афинам и спрашивал тех, кто считался знатоком: что такое смелость? что такое справедливость? Обычно выходило, что говорить они умеют, а объяснить не могут. Честное «не знаю» Сократ считал началом ума, а не позором.' },
+    kant: { where: 'Пруссия, Кёнигсберг, XVIII век', idea: 'Кант проверял поступок правилом: хочется соврать, что болеешь, — представь, что так врут все. Тогда словам перестанут верить, и ложь потеряет смысл. Значит, правило негодное. И ещё: человека нельзя использовать только как инструмент, даже ради хорошей цели.' },
+    pragm: { where: 'США, конец XIX — начало XX века', idea: 'Прагматисты предлагали спрашивать о любой идее: а что изменится на деле, если она верна? Если ничего — спор пустой. Истина для них не наклейка «правильно», а то, что выдерживает проверку жизнью. Придумали это в Америке Пирс, Джеймс и Дьюи.', strongC: 'проверять идею делом: работает или нет' },
+    epicurus: { where: 'Афины, с конца IV века до н. э.', idea: 'Эпикур считал целью жизни удовольствие, но понимал его неожиданно: как жизнь без боли и тревоги. Хлеб, вода, друзья и спокойная голова — почти всё, что нужно. А пир каждый день, по его мнению, не радует, а привязывает.', darkC: '«побалуй себя, хватит терпеть» — и корзина уже полная' },
+    buddhism: { where: 'Индия, около двух с половиной тысяч лет назад', idea: 'Будда учил, что страдание растёт из жажды: хочется, чтобы приятное длилось, а неприятное исчезло, и человек цепляется. Но меняется всё — и вещи, и мы сами. Кто видит это ясно и тренирует ум, тот меньше мучается, когда что-то кончается.' },
+    romantic: { where: 'Германия и вся Европа, конец XVIII — XIX век', idea: 'Романтики спорили с веком разума: человек — не только расчёт и польза. Чувство, природа, воображение, своя единственная дорога — тоже способ понять мир, и не хуже логики. Отсюда образ художника, который живёт не по расписанию, а по призванию.' },
+    minimal: { where: 'США, от Торо в XIX веке до наших дней', idea: 'Торо два года жил в хижине у пруда, чтобы понять, без чего можно обойтись. Нынешние минималисты задают тот же вопрос шкафу и телефону: каждая вещь просит времени, денег и внимания, и если её не выбирать, она выбирает за тебя.' },
+    aristotle: { where: 'Афины, IV век до н. э.', idea: 'Аристотель считал добродетель мерой между двумя ошибками. Смелость лежит между трусостью и безрассудством, щедрость — между жадностью и транжирством. Мера ищется не линейкой, а по месту, времени и человеку, и вырабатывается привычкой, как любой навык.' },
+    achiev: { where: 'Америка, от Франклина в XVIII веке до наших дней', idea: 'Достигаторы верят, что жизнь можно прокачивать, как навык: поставить цель, разбить на шаги, отмечать прогресс. Франклин вёл табличку добродетелей и ставил точки за промахи. Сегодня это трекеры привычек, планы на год и «стань лучшей версией себя».' },
+    hedon: { where: 'греческая Кирена в Северной Африке, IV век до н. э.', idea: 'Аристипп из Кирены учил, что благо — это удовольствие, причём сегодняшнее: прошлого уже нет, будущее неизвестно. Но он хотел владеть удовольствием, а не быть у него в плену. Позже гедонизмом стали звать любую погоню за кайфом — у него было тоньше.', priceC: 'радость легко превращается в погоню за радостью' },
+    nihil: { where: 'Россия и Европа, XIX век', idea: 'Нигилисты XIX века не принимали ничего только потому, что в это верили отцы: ни авторитеты, ни традиции, ни «так положено». Базаров у Тургенева верит лишь опыту и пользе. Ницше потом назвал нигилизмом время, когда старые ценности рухнули, а новых нет.', darkC: '«всё равно ничего не изменится» — и пробовать уже незачем' },
+    cynic: { where: 'Древняя Греция, IV век до н. э.', idea: 'Киников дразнили собаками: жили на улице, ели при всех, плевали на приличия. Они и не спорили. Деньги, слава, чужое одобрение казались им условностями, за которыми люди гонятся зря. Жить надо просто и по природе, а остальное лишнее.' },
+    util: { where: 'Англия, конец XVIII — XIX век', idea: 'Утилитаристы судили поступок по последствиям: сколько счастья и страданий он принесёт всем, кого касается. Бентам считал удовольствие почти как бухгалтер. Милль возразил: радости бывают разного сорта, и лучше быть недовольным Сократом, чем довольным дураком.', strongC: 'считать, кому от поступка станет лучше, — всем вместе' }
+  } };
+  Object.keys(VIEW_CARD.data).forEach(function (k) { var d = VIEW_CARD.data[k]; Object.keys(d).forEach(function (f) { VIEWS[k][f] = d[f]; }); });
 
   /* крупицы кодекса: сферы — школа, друзья, семья, любовь, деньги, будущее, потеря */
   var SPHERES = [['school', 'Школа'], ['friends', 'Друзья'], ['family', 'Семья'], ['love', 'Любовь'], ['money', 'Деньги'], ['future', 'Будущее'], ['loss', 'Потеря']];
@@ -184,7 +204,7 @@
   function helpSheet(open) {
     var sh = $('#helpsheet');
     if (!sh) { sh = document.createElement('div'); sh.id = 'helpsheet'; sh.className = 'trapsheet'; $('#app').appendChild(sh); }
-    if (!open) { sh.classList.remove('on'); sh.innerHTML = ''; return; }
+    if (!open) { if (sh.classList.contains('on')) layerClosed(); sh.classList.remove('on'); sh.innerHTML = ''; return; }
     sh.classList.add('on');
     sh.innerHTML = '<div class="ts-in"><div class="ts-k mono">поддержка</div><h3>Если тяжело</h3>' +
       '<p>Если сейчас тяжело — с этим не обязательно разбираться в одиночку.</p>' +
@@ -208,7 +228,7 @@
     var sh = $('#trapsheet');
     if (!sh) { sh = document.createElement('div'); sh.id = 'trapsheet'; sh.className = 'trapsheet'; $('#app').appendChild(sh); }
     var s = ex(U), q = s.insp;
-    if (!open || !q) { sh.classList.remove('on'); sh.innerHTML = ''; return; }
+    if (!open || !q) { if (sh.classList.contains('on')) layerClosed(); sh.classList.remove('on'); sh.innerHTML = ''; return; }
     sh.classList.add('on');
     if (!q.order) q.order = shuffle(TRAP_NAMES);
     var c = chkState(U);
@@ -244,8 +264,8 @@
     var s = ex(U);
     if (e.target.closest('[data-help]')) { helpSheet(true); return; }
     if (e.target.closest('[data-help-close]')) { helpSheet(false); return; }
-    var cl = e.target.closest('[data-praise-close]'); if (cl) { $('#praise').classList.remove('on'); return; }
-    if (e.target.closest('#praise a')) { $('#praise').classList.remove('on'); return; }
+    var cl = e.target.closest('[data-praise-close]'); if (cl) { $('#praise').classList.remove('on'); layerClosed(); return; }
+    if (e.target.closest('#praise a')) { $('#praise').classList.remove('on'); layerClosed(); return; }
     var lb = e.target.closest('.lupa');
     if (lb) {
       if (!s.lupa && chkState(U).left <= 0) { U.toast('Проверки на сегодня кончились. Завтра будут новые'); return; }
@@ -285,9 +305,9 @@
   function crCard(c, i, n, partner, simple) {
     var v = VIEWS[c.view], st = c.status, h;
     h = '<article class="cr2 st-' + st + (simple ? ' simple' : '') + '" data-c="' + c.id + '">' + (simple ? '' : '<div class="cr2n mono">вывод ' + (i + 1) + ' из ' + n + '</div>') + '<q>' + esc(c.text) + '</q>' +
-      '<div class="bsrc mono">' + (simple ? '<span class="from">' + esc(c.from || 'из этой истории') + '</span>' : '<span class="vstamp" style="--tc:' + TONE[v.tone] + '">' + v.name + '</span>') + '</div>';
+      '<div class="bsrc mono">' + (simple ? '<span class="from">' + esc(c.from || 'из этой истории') + '</span>' : '<span class="vstamp"' + vattr(c.view) + ' style="--tc:' + TONE[v.tone] + '">' + v.name + '</span>') + '</div>';
     if (simple && st === 'new') {
-      h += '<div class="cr2-act two"><button type="button" class="take" data-a="keep"><span>Забираю</span></button><button type="button" data-a="out"><span>Не моё</span></button></div>';
+      h += '<div class="cr2-act two"><button type="button" class="take" data-a="keep" data-cas style="--i:0"><span>Забираю</span></button><button type="button" data-a="out" data-cas style="--i:1"><span>Не моё</span></button></div>'; /* F5: каскад при открытии порции (A4) */
     } else if (st === 'new') {
       h += '<div class="cr2-act"><button type="button" data-a="keep"><span>Забираю</span></button><button type="button" data-a="out"><span>Не моё</span></button>' +
         '<button type="button" data-a="fit"><span>Подправлю</span></button><button type="button" data-a="pocket"><span>Пока не знаю</span></button></div>';
@@ -329,7 +349,7 @@
       return '<li><b>' + esc(p[0]) + ':</b> ' + esc(p[1]) + '</li>';
     }).join('') + '</ul></div>';
   }
-  /* «Так рассуждают …» (заход D): короткий монолог взгляда вместо карточки «Находка» с силой и ценой; «Откуда это» свёрнуто */
+  /* «Так рассуждают …» (заход D): короткий монолог взгляда вместо карточки «Находка» с силой и ценой; с w0-19 вместо раскрывашки «Откуда это» — ссылка на карточку взгляда (источник внутри неё) */
   function words(t) { return String(t || '').trim().split(/\s+/).filter(Boolean).length; }
   /* монолог сворачивается: видна часть до конца первого предложения (если оно короче 60 знаков — двух); конец предложения не берётся внутри «…». Короткий монолог (меньше 160 знаков) и короткий хвост (меньше 40 знаков) показываются целиком. Правило одно для всех дней */
   function monoSplit(text) {
@@ -361,14 +381,213 @@
   }
   function monoHTML(k, text) {
     var v = VIEWS[k];
-    return '<div class="viewcard monoc"><h3>' + esc(v.lead) + '</h3>' + foldHTML('mono-t', text) +
-      (v.src ? '<details class="srcd"><summary class="mono">Откуда это</summary><div class="src">' + v.src + '</div></details>' : '') + '</div>';
+    return '<div class="viewcard monoc"><h3><span class="vlink"' + vattr(k, '', v.lead) + '>' + esc(v.lead) + '</span></h3>' + foldHTML('mono-t', text) +
+      '<button class="vmore" type="button" data-view="' + k + '">' + VIEW_CARD.more + '</button></div>';
   }
   document.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('.mono-ex') : null; if (!b) return;
     var box = b.parentNode, m = box && box.querySelector('.mono-more');
     if (m) { m.hidden = false; m.setAttribute('tabindex', '-1'); try { m.focus({ preventScroll: true }); } catch (err) { /* без фокуса — не страшно */ } }
     b.setAttribute('aria-expanded', 'true'); if (b.parentNode) b.parentNode.removeChild(b);
+  });
+  /* ---------- карточка взгляда (w0-19, часть B): нажатие на название любого взгляда открывает лист с объяснением ---------- */
+  /* общие атрибуты нажимаемого названия: не-кнопочный элемент ведёт себя как кнопка (Enter и пробел — в обработчике ниже) */
+  function vattr(k, suf, nm) { return ' role="button" tabindex="0" data-view="' + k + '" aria-label="' + esc((nm || VIEWS[k].name) + (suf || '')) + ': что это за взгляд"'; }
+  function vtext(k, text) { return '<span class="vlink"' + vattr(k) + '>' + text + '</span>'; }
+  function capFirst(t) { return String(t).replace(/^([^A-Za-zА-Яа-яЁё]*)([A-Za-zА-Яа-яЁё])/, function (m, a, b) { return a + b.toUpperCase(); }); }
+  function endDot(t) { t = String(t).replace(/\s+$/, ''); return /[.!?…][»"”]?$/.test(t) ? t : t + '.'; }
+  /* неразрывные пробелы в строках карточки: «до н. э.», «н. э.», век с числом, инициалы */
+  function nbv(t) { return String(t).replace(/н\. э\./g, 'н. э.').replace(/ (?=н\. э\.)/g, ' ').replace(/([IVX]+) (?=век)/g, '$1 ').replace(/(^|[\s(])([А-ЯЁ]\.) (?=[А-ЯЁ])/g, '$1$2 '); }
+  /* G3: после закрытия любого слоя поверх экрана (карточка взгляда, лист Лупы, «Если тяжело», карточка поимки) нажатия кнопки порции игнорируются 350 мс */
+  var LAYER_T = 0;
+  function layerClosed() { LAYER_T = Date.now(); }
+  var VS = null, vsPend = 0, vsSpace = null; /* открытая карточка: { el, opener, id, lock, pushed, t }; vsPend — сколько снятий записи истории ещё не дошло (popstate от них не считается «Назад» игрока) */
+  function viewSheetLock(on) {
+    if (on) { VS.lock = [document.documentElement, document.body, document.querySelector('.screen.on')].filter(Boolean).map(function (e) { var o = e.style.overflow; e.style.overflow = 'hidden'; return [e, o]; }); }
+    else if (VS && VS.lock) VS.lock.forEach(function (p) { p[0].style.overflow = p[1]; });
+  }
+  /* back: закрыли самим игроком (кнопка, затемнение, Esc, «Назад») — вернуть фокус и снять свою запись истории; fromPop: закрытие по «Назад», запись уже снята браузером */
+  function viewSheetClose(back, fromPop) {
+    if (!VS) return;
+    var v = VS; viewSheetLock(false); if (v.el.parentNode) v.el.parentNode.removeChild(v.el); VS = null; layerClosed();
+    if (back && v.pushed && !fromPop) { vsPend++; setTimeout(function () { vsPend = 0; }, 1200); try { history.back(); } catch (err) { vsPend = 0; } }
+    if (back) {
+      var t = v.opener && document.body.contains(v.opener) ? v.opener : (document.querySelector('.screen.on [data-view="' + v.id + '"]') || null);
+      if (t) { try { t.focus({ preventScroll: true }); } catch (err) { /* без фокуса — не страшно */ } }
+    }
+  }
+  function viewSheetOpen(id, opener) {
+    var v = VIEWS[id]; if (!v) return;
+    var carry = false; if (VS) { carry = !!VS.pushed; viewSheetClose(false); }
+    var L = VIEW_CARD.labels, rows = [['a', L.strong, v.strongC || v.strong], ['b', L.price, v.priceC || v.price], ['c', L.dark, v.darkC || v.dark]];
+    var el = document.createElement('div'); el.className = 'vsheet'; el.id = 'vsheet';
+    el.innerHTML = '<div class="vs-back" data-vs-close></div><div class="vs-in" role="dialog" aria-modal="true" aria-labelledby="vs-t">' +
+      '<button class="vs-x" type="button" data-vs-close aria-label="' + VIEW_CARD.closeLabel + '"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>' +
+      '<div class="vs-head"><b class="vs-ab" style="--tc:' + TONE[v.tone] + '" aria-hidden="true">' + esc(v.ab) + '</b><div class="vs-hd"><h3 id="vs-t">' + esc(capFirst(v.name)) + '</h3><p class="vs-kw">' + esc(nbv(v.kind + ' · ' + v.where)) + '</p></div></div>' +
+      '<div class="vs-body" tabindex="0"><p class="vs-idea">' + esc(v.idea) + '</p><dl class="vs-dos">' + rows.map(function (r) { return '<dt class="' + r[0] + '">' + r[1] + '</dt><dd>' + esc(endDot(capFirst(r[2]))) + '</dd>'; }).join('') + '</dl>' +
+      '<p class="vs-src">' + VIEW_CARD.src + ' ' + esc(nbv(v.src)) + '</p></div>' +
+      '<div class="vs-foot"><button class="btn seen vs-ok" type="button" data-vs-close>' + VIEW_CARD.close + '</button></div></div>';
+    document.body.appendChild(el);
+    VS = { el: el, opener: opener || null, id: id, lock: null, pushed: carry, t: Date.now() }; viewSheetLock(true);
+    /* «Назад» закрывает карточку, а не уводит экран под ней: в историю кладётся запись с тем же адресом (хэш не меняется, смены экрана нет) */
+    if (!VS.pushed && !vsPend) { try { history.pushState({ vs: 1 }, '', location.href); VS.pushed = true; } catch (err) { /* file:// — без записи */ } }
+    var ok = el.querySelector('.vs-ok'); try { ok.focus({ preventScroll: true }); } catch (err) { /* без фокуса — не страшно */ }
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target : null; if (!t) return;
+    if (VS) { var cl = t.closest('[data-vs-close]'); if (cl && VS.el.contains(t)) { if (t.closest('.vs-back') && Date.now() - VS.t < 350) return; /* двойной тап не закрывает только что открытую карточку */ e.preventDefault(); viewSheetClose(true); } return; }
+    if (e.defaultPrevented || document.body.classList.contains('lupa-on')) return; /* при включённой Лупе нажатие на название отдано Лупе */
+    var b = t.closest('[data-view]'); if (!b || !VIEWS[b.getAttribute('data-view')]) return;
+    e.preventDefault(); viewSheetOpen(b.getAttribute('data-view'), b);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (VS) {
+      if (e.key === 'Escape' || e.key === 'Esc') { e.preventDefault(); e.stopPropagation(); viewSheetClose(true); return; }
+      if (e.key === 'Tab') { var f = [].slice.call(VS.el.querySelectorAll('button, .vs-body')); if (!f.length) return; var i = f.indexOf(document.activeElement); if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && (i < 0 || i === f.length - 1)) { e.preventDefault(); f[0].focus(); } }
+      return;
+    }
+    var t = e.target; if (!(e.key === 'Enter' || e.key === ' ') || !t || !t.hasAttribute || !t.hasAttribute('data-view') || t.tagName === 'BUTTON' || !VIEWS[t.getAttribute('data-view')]) return;
+    e.preventDefault();
+    if (e.key === ' ') { vsSpace = t; return; } /* пробел открывает на отпускание: иначе кнопка «Ясно» получает то же отпускание и сразу закрывает карточку */
+    if (e.repeat) return;
+    viewSheetOpen(t.getAttribute('data-view'), t);
+  }, true);
+  document.addEventListener('keyup', function (e) {
+    if (e.key !== ' ' || !vsSpace) return;
+    var t = vsSpace; vsSpace = null;
+    if (VS || e.target !== t || !VIEWS[t.getAttribute('data-view')]) return;
+    e.preventDefault(); viewSheetOpen(t.getAttribute('data-view'), t);
+  }, true);
+  /* системное «Назад»: при открытой карточке закрывает её (запись ставили при открытии), экран остаётся тем же */
+  window.addEventListener('popstate', function () {
+    if (vsPend > 0) { vsPend--; return; }
+    if (VS) { VS.pushed = false; viewSheetClose(true, true); }
+  });
+  /* смена адреса (переход на другой экран) закрывает карточку и снимает блокировку прокрутки фона; фокус не возвращается: прежнего элемента на экране уже нет */
+  window.addEventListener('hashchange', function () { viewSheetClose(false); });
+  /* ---------- порции (w0-19, часть A «По шагам»): экран первого и второго дня приходит порциями ----------
+     Порция — группа блоков с общим номером (data-pt). Видны порции с первой по текущую; кнопка порции (data-pbtn) одна, под последним видимым содержимым.
+     Следующая порция открывается кнопкой, действием игрока или приходом сообщений. Счётчик живёт только в памяти страницы: ключ «экран|стадия» (A0.6).
+     Флаг #nostage: все порции открыты сразу, ожиданий и каскадов нет. Текстовые блоки по таймеру не приходят: по таймеру — только сообщения чата и кнопки. */
+  var PBTN = { K1: 'И чего мне это стоило?', K2: 'А кто ещё так думает?', K3: 'А кто бы со мной поспорил?', K4: 'Погоди, что-то знакомое', K5: 'Ой. Давай разберём', K6: 'И что из этого следует?', K7: 'Ну и что тут ответить?', K8: 'А кто тут на меня давил?', K9: 'Засекай', K10: 'Ладно, попробую без приёмов', K11: 'А что у меня в итоге?', K12: 'А что завтра?', K13: 'Давай по одному' };
+  var STG = {}, STGH = {}; /* состояния по ключам и обработчики открытия порции (ключ → функция) */
+  function stgOff() { var U = EXT.U; return !!(U && U.opt().nostage); }
+  function stgRed() { var U = EXT.U; return !!(U && U.reduced && U.reduced()); }
+  function stgReset() { Object.keys(STG).forEach(function (k) { clearTimeout(STG[k].tm); }); STG = {}; }
+  /* состояние ключа; n0 — с какой порции открыть; d1 — через сколько мс показывается содержимое первой порции, db — её кнопка (приход сообщений); без движения и без ожидания — нули */
+  function stgGet(key, n0, d1, db) {
+    var st = STG[key];
+    if (!st) {
+      var fresh = (!n0 || n0 <= 1) && !stgOff() && !stgRed();
+      st = STG[key] = { key: key, n: n0 || 1, t0: Date.now(), d1: fresh ? (d1 || 0) : 0, db: fresh ? (db || 0) : 0, arr: fresh, root: null, total: 1, tm: 0, seen1: false };
+    }
+    return st;
+  }
+  /* сколько порций видно сейчас (0 — первая ещё не пришла) */
+  function stgN(key, total) {
+    var st = STG[key]; if (stgOff()) return total; if (!st) return 1;
+    if (st.d1 && Date.now() - st.t0 < st.d1) return 0;
+    return Math.min(st.n, total);
+  }
+  function stgBtnReady(st) { return !st.db || Date.now() - st.t0 >= st.db; }
+  /* задержка (с) сообщения номер i при приходе по одному с шагом step; отрицательная — уже прошла (CSS-анимация с отрицательной задержкой начинается с середины) */
+  function stgDelay(st, i, step) { return (i * step - (Date.now() - st.t0) / 1000).toFixed(2) + 's'; }
+  function stgBtn(key, n, label) { return '<div class="pbtn" data-pbtn="' + n + '"><button class="btn seen pb" type="button" data-pb="' + n + '" data-key="' + key + '">' + esc(label) + '</button></div>'; }
+  function stgPt(n, inner, o) { o = o || {}; return '<div class="pt" data-pt="' + n + '"' + (o.gone ? ' data-gone="' + o.gone + '"' : '') + '>' + inner + (o.key && o.label ? stgBtn(o.key, n, o.label) : '') + '</div>'; }
+  function stgBox(el) {
+    for (var p = el.parentNode; p && p !== document.body && p.nodeType === 1; p = p.parentNode) {
+      var cs = window.getComputedStyle(p);
+      if (/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 1) return p;
+    }
+    return null;
+  }
+  /* прямоугольник порции: у обёртки display:contents своей раскладки нет, берутся дети */
+  function stgRect(els) {
+    var top = Infinity, bot = -Infinity;
+    els.forEach(function (e) {
+      if (e.classList && e.classList.contains('pbtn')) return; /* F11(г): у прилипшей кнопки координаты окна, а не её места — прямоугольник порции считается по блокам */
+      var rs = e.offsetParent !== null || window.getComputedStyle(e).display !== 'contents' ? [e] : [].slice.call(e.children).filter(function (c) { return !(c.classList && c.classList.contains('pbtn')); });
+      rs.forEach(function (c) { var r = c.getBoundingClientRect(); if (r.height || r.width) { top = Math.min(top, r.top); bot = Math.max(bot, r.bottom); } });
+    });
+    return bot > top ? { top: top, bot: bot } : null;
+  }
+  /* A0.4: верх новой порции виден; если порция помещается в окно, видна и её нижняя кнопка. Листается тот контейнер, который листается у экрана */
+  function stgScroll(els) {
+    if (!els.length) return;
+    var r = stgRect(els); if (!r) return;
+    var box = stgBox(els[0].children[0] || els[0]), cr = box ? box.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+    var lo = Math.max(cr.top, 0), qt = document.getElementById('qtop');
+    if (qt && !qt.hidden) { var qb = qt.getBoundingClientRect().bottom; if (qb > lo && qb < cr.bottom) lo = qb; }
+    var apb = document.querySelector('.screen.on .appbar'); /* F7: липкая шапка разделов (Дело 2) закрывает верх так же, как #qtop */
+    if (apb && apb.offsetParent !== null) { var ab2 = apb.getBoundingClientRect().bottom; if (ab2 > lo && ab2 < cr.bottom) lo = ab2; }
+    lo += 8; var hi = Math.min(cr.bottom, window.innerHeight) - 8, d = 0;
+    var pb = document.querySelector('.screen.on .pbtn:not([hidden])'); if (pb && pb.offsetParent !== null) hi -= pb.offsetHeight + 16 + (parseFloat(window.getComputedStyle(pb).bottom) || 10); /* F11(г): над прилипшей кнопкой остаётся место, она не закрывает низ нового блока */
+    if (r.bot - r.top <= hi - lo) { if (r.bot > hi) d = r.bot - hi; else if (r.top < lo) d = r.top - lo; }
+    else d = r.top - lo;
+    if (Math.abs(d) < 2) return;
+    var beh = stgRed() ? 'auto' : 'smooth';
+    try { if (box) box.scrollBy({ top: d, behavior: beh }); else window.scrollBy({ top: d, behavior: beh }); } catch (e) { if (box) box.scrollTop += d; else window.scrollBy(0, d); }
+  }
+  /* проставить скрытие: порции больше текущей и кнопки, кроме одной (у последней открытой порции) */
+  function stgApply(root, key, total) {
+    var st = STG[key]; if (!root || !st) return;
+    st.root = root; st.total = total;
+    var n = stgN(key, total), rdy = stgOff() || stgBtnReady(st);
+    [].forEach.call(root.querySelectorAll('[data-pt]'), function (el) { var p = +el.getAttribute('data-pt'), g = +el.getAttribute('data-gone'); el.hidden = p > n || !!(g && n >= g); });
+    [].forEach.call(root.querySelectorAll('[data-pbtn]'), function (el) { var p = +el.getAttribute('data-pbtn'); el.hidden = !(p === n && n < total && (p > 1 || rdy)); if (!el.hidden) { st.bt = st.bt || {}; if (!st.bt[p]) st.bt[p] = Date.now(); } }); /* bt — когда кнопка порции p стала видимой (F8) */
+    var wait = 0, now = Date.now();
+    if (st.d1 && now - st.t0 < st.d1) wait = st.d1 - (now - st.t0);
+    else if (st.db && now - st.t0 < st.db) wait = st.db - (now - st.t0);
+    clearTimeout(st.tm);
+    if (wait) st.tm = setTimeout(function () {
+      if (STG[key] !== st || !st.root || !document.body.contains(st.root)) return;
+      var was1 = st.seen1; /* до stgApply: он сам помечает первую порцию увиденной */
+      stgApply(st.root, key, st.total);
+      if (!was1 && stgN(key, st.total) >= 1) { st.seen1 = true; stgReveal(key, 1, true); }
+      /* F11(б): кнопка первой порции пришла с задержкой — экран по таймеру не листается, кнопка прилипает к низу окна сама (CSS) */
+    }, wait + 25);
+    else if (n >= 1) st.seen1 = true;
+  }
+  /* каскад внутри порции: элементы items получают шаг, контейнер — класс запуска; при нуле движения ничего не делается */
+  function stgCas(cont, items, step) {
+    if (!cont || stgOff() || stgRed()) return;
+    [].forEach.call(typeof items === 'string' ? cont.querySelectorAll(items) : items, function (e, i) { e.setAttribute('data-cas', ''); e.style.setProperty('--i', i); });
+    if (step) cont.style.setProperty('--st', step + 's');
+    cont.classList.remove('cas-run'); void cont.offsetWidth; cont.classList.add('cas-run');
+  }
+  /* новая порция появилась: проявление, каскад, фокус, прокрутка; обработчик ключа (запуск таймера и т. п.) */
+  function stgReveal(key, n, quiet) {
+    var st = STG[key]; if (!st || !st.root) return;
+    var els = [].slice.call(st.root.querySelectorAll('[data-pt="' + n + '"]')).filter(function (e) { return !e.hidden; });
+    var btn = [].slice.call(st.root.querySelectorAll('[data-pbtn="' + n + '"]')).filter(function (e) { return !e.hidden; });
+    if (!quiet || els.length) {
+      els.forEach(function (e) { e.classList.remove('pt-in'); void e.offsetWidth; e.classList.add('pt-in'); if (!stgOff() && !stgRed()) { var cs = e.querySelectorAll('[data-cas]'); [].forEach.call(cs, function (c, i) { c.style.setProperty('--i', i); }); e.classList.add('cas-run'); } });
+      var all = els.concat(btn.filter(function (b) { return els.indexOf(b.parentNode) < 0; }));
+      if (all.length) {
+        var f = (els[0] && els[0].children[0]) || els[0];
+        if (f) { f.setAttribute('tabindex', '-1'); try { f.focus({ preventScroll: true }); } catch (e) { /* без фокуса — не страшно */ } }
+        stgScroll(all);
+      }
+    }
+    if (STGH[key]) STGH[key](n);
+    if (EXT.U && EXT.U.stgOpened) EXT.U.stgOpened(key, n);
+  }
+  /* открыть порцию n на экране (для статичных экранов); для экранов с пересборкой (сцены) — см. sceneWire */
+  function stgOpen(key, n) {
+    var st = STG[key]; if (!st || n <= st.n) return;
+    st.n = n; if (EXT.U && EXT.U.stgBefore) EXT.U.stgBefore(key); /* H1: раскладка меняется до расчёта прокрутки (у чата снимается класс pb1 лотка) */
+    stgApply(st.root, key, st.total); stgReveal(key, n);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('[data-pb]') : null; if (!b) return;
+    var key = b.getAttribute('data-key'), n = +b.getAttribute('data-pb'), st = STG[key], U = EXT.U;
+    if (!st || n !== st.n || stgOff()) return;
+    e.preventDefault();
+    if (Date.now() - LAYER_T < 350) return; /* G3: сразу после закрытия слоя поверх экрана */
+    if (st.bt && st.bt[n] && Date.now() - st.bt[n] < 350) return; /* F8: двойное нажатие не проскакивает порцию — первые 350 мс после появления кнопки нажатие игнорируется */
+    if (U) { U.S().real = true; U.buzz(8); }
+    var scr = b.closest('.screen');
+    if (scr && scr._scPress) scr._scPress(key, n + 1); else stgOpen(key, n + 1);
   });
   /* «А с другой стороны —»: довод против выбранного пути; метки «Хотя» над ним нет */
   function hotyaHTML(text) {
@@ -616,7 +835,7 @@
       '<div class="tiles' + (hs.wait ? ' one' : '') + '">' + (hs.wait ? '' : '<a class="tile" data-insp="плитка «Лупа дня»" href="#s=bestiary"><b class="rus">Ещё одно на сегодня</b><span>Одно уведомление на разбор в день, минута: найди, где давят, или скажи «Здесь чисто».</span></a>') +
       '<a class="tile" data-insp="плитка «Кодекс»" href="#s=codex"><b class="rus">Кодекс</b><span>В Кодексе ' + sheet + ' из 12' + (pocket.length ? ', отложено ' + pocket.length : '') + '.</span></a></div>' +
       (pocket.length ? '<section class="pocketcard" data-insp="карточка Кармана"><h3>Всё ещё твоё?</h3><div class="pcs">' + pocket.map(function (c) {
-        return '<div class="pc" style="--tc:' + TONE[VIEWS[c.view].tone] + '"><i></i><span>' + esc(c.text) + '<small>' + VIEWS[c.view].name + '</small>' +
+        return '<div class="pc" style="--tc:' + TONE[VIEWS[c.view].tone] + '"><i></i><span>' + esc(c.text) + '<small>' + vtext(c.view, VIEWS[c.view].name) + '</small>' +
           '<span class="pcb"><button type="button" data-pk="keep" data-c="' + c.id + '">Моё</button><button type="button" data-pk="out" data-c="' + c.id + '">В корзину</button></span></span></div>'; }).join('') +
         '</div></section>' : '') +
       '<p class="fineprint mono">12+ · без рекламы и покупок · хранится на этом устройстве</p></div>';
@@ -727,9 +946,9 @@
   /* строки сцены: [кто, текст, верный приём, claim, ответы: none (закреп ничего не показывает) · ok (верно «Без подвоха») · miss (мимо) · lever («Без подвоха» на строке с давлением) · name (не то название)]; давит одна-две, остальные честные */
   /* заход E, п. 5: Тимур и Даня обращаются к игроку по нику («@Ник, …»); без ника (пропуск) — обычное «ты» без @ */
   function nickAt(U) { var n = String(ex(U).nick || '').trim(); return n ? '@' + n + ', ' : ''; }
-  function myBubble(U) {
+  function myBubble(U, sty) {
     var b = U.S().basis || 'socrates', p = U.DATA.pillars.filter(function (x) { return x.id === b; })[0] || U.DATA.pillars[0], n = String(ex(U).nick || '').trim();
-    return '<div class="d2msg me" style="animation-delay:0s"><small>' + esc(n || 'ты') + '</small>' + esc(p.move) + '</div>';
+    return '<div class="d2msg me" style="' + (sty || 'animation-delay:0s') + '"><small>' + esc(n || 'ты') + '</small>' + esc(p.move) + '</div>';
   }
   /* ветка pragm: игрок уже ответил «еду» (к двум), поэтому в чате класса Тимур объявил «с самого утра» за него, а текст хода и цена говорят об этом; ветки socrates и stoic — прежние */
   /* значения по умолчанию (ветки socrates и stoic, w0-17) */
@@ -980,11 +1199,11 @@
   /* сцены: q2 — шаг 2 квеста «Суббота» (чат класса, состояние ext.qs2), d2 — Дело второго дня «Должок» (ext.d2); один движок, разные данные.
      names — приёмы сцены (уже встреченные игроком плюс приём самой сцены) — в лоток строки попадают только они и «Без подвоха» */
   var SCENES = {
-    q2: { key: 'qs2', quest: true, moves: MOVES, rows: d2rows, names: ['ВСЕ УЖЕ', 'ПЕРЕД ФАКТОМ', 'СРОЧНОСТЬ'], beasts: { 'ПЕРЕД ФАКТОМ': 'fact' }, ava: '9Б', chat: '9Б · гараж', members: '14 участников', time: '18:12',
+    q2: { key: 'qs2', quest: true, stg: true, moves: MOVES, rows: d2rows, names: ['ВСЕ УЖЕ', 'ПЕРЕД ФАКТОМ', 'СРОЧНОСТЬ'], beasts: { 'ПЕРЕД ФАКТОМ': 'fact' }, ava: '9Б', chat: '9Б · гараж', members: '14 участников', time: '18:12',
           day: function () { return 'Сегодня'; },
           pre: 'Тимур уже всем пообещал за тебя. Отвечать — тебе.', press: 'Теперь разберём, что тут было. Тапни сообщение, если там давят. Если давления нет нигде — так и скажи.',
           allclean: 'Присмотрись к Тимуру. Он кое-что сделал раньше, чем тебя спросили.' },
-    d2: { key: 'd2', quest: false, mine: true, lday: 2, ask: true, moves: DEBT, rows: debtRows, names: ['ВЗАИМНОСТЬ', 'ЛОЖНЫЙ ВЫБОР', 'СРОЧНОСТЬ'], beasts: { 'ВЗАИМНОСТЬ': 'recip', 'ЛОЖНЫЙ ВЫБОР': 'fakec' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '16:40',
+    d2: { key: 'd2', quest: false, stg: true, mine: true, lday: 2, ask: true, moves: DEBT, rows: debtRows, names: ['ВЗАИМНОСТЬ', 'ЛОЖНЫЙ ВЫБОР', 'СРОЧНОСТЬ'], beasts: { 'ВЗАИМНОСТЬ': 'recip', 'ЛОЖНЫЙ ВЫБОР': 'fakec' }, ava: 'Г', chat: 'Гараж · красим', members: '6 участников', time: '16:40',
           day: function () { return 'Сегодня'; },
           pre: 'Лёва правда объяснял тебе физику. Вопрос в том, чем за это платить.', press: 'Тапни сообщение, если там давят. Закреп можно глянуть один раз.',
           allclean: 'Перечитай Лёву. Два его сообщения из трёх — не просто сообщения.',
@@ -1051,56 +1270,90 @@
   function ansSplit(t) { var m = /^([\s\S]*?[.!?»])\s+(Ответ(?![а-яё])[\s\S]*)$/.exec(t); return m ? [m[1], m[2]] : [t, '']; }
   function revP(t) { var a = ansSplit(t); return '<p>' + leadHTML(a[0]) + '</p>' + (a[1] ? '<p class="ans"><strong>' + esc(a[1]) + '</strong></p>' : ''); }
   /* исходящее сообщение игрока: то, что стоит в «ёлочках» хода */
-  function mineBubble(U, mv) { var m = /«([\s\S]*)»/.exec(mv.text), n = String(ex(U).nick || '').trim(); return '<div class="d2msg me"><small>' + esc(n || 'ты') + '</small>' + esc(m ? m[1].replace(/„/g, '«').replace(/“/g, '»') : mv.text) + '</div>'; }
+  function mineBubble(U, mv, sty) { var m = /«([\s\S]*)»/.exec(mv.text), n = String(ex(U).nick || '').trim(); return '<div class="d2msg me"' + (sty ? ' style="' + sty + '"' : '') + '><small>' + esc(n || 'ты') + '</small>' + esc(m ? m[1].replace(/„/g, '«').replace(/“/g, '»') : mv.text) + '</div>'; }
   /* «Ещё одно на сегодня» привязано к дню Дела: внутри сцены — день этого Дела, в Бестиарии — по состоянию главного экрана */
   function inDay(sc, fn) { var old = LDAY; LDAY = sc && sc.lday ? sc.lday : null; try { return fn(); } finally { LDAY = old; } }
+  /* порции сцены (w0-19, A5): число порций по стадиям; ключ состояния — «сцена|стадия» */
+  var STG_TOT = { move: 2, thread: 2, found: 3, crumbs: 4 };
+  function crDecided(c) { return c.status !== 'new'; }
+  function sceneStg(U, sc, d) {
+    if (!sc.stg || !STG_TOT[d.stage]) return null;
+    var key = sc.key + '|' + d.stage, total = STG_TOT[d.stage];
+    if (!STG[key]) {
+      var n0 = 1, d1 = 0, db = 0, rows = sc.rows(U), mv = mvOf(d, sc);
+      if (d.stage === 'move') { if (d.asked) n0 = 2; /* F10: «Спросить Даню» уже нажато — после перезагрузки сразу «Что делаешь?» с ответом Дани, без кнопки порции */ else db = ((sc.quest ? 1 : 0) + rows.length - 1) * 600 + 800; } /* последнее сообщение + 0,4 с проявления + 0,4 с */
+      else if (d.stage === 'thread') {
+        /* перезагрузка: если игрок уже действовал внутри второй порции (назвал сообщение, открыл панель, закреп), стадия открывается сразу на ней (A0.7) */
+        var acted = Object.keys(d.rows).length || d.open !== null || d.chk || d.fb || d.hint;
+        if (acted) n0 = 2; else d1 = (Math.max(1, (sc.mine && mv ? 1 : 0) + (mv ? mv.say.length : 0)) - 1) * 600 + 700;
+      } else if (d.stage === 'crumbs') n0 = d.cr.length && d.cr.every(crDecided) ? 4 : (d.cr[0] && crDecided(d.cr[0]) ? 3 : 1);
+      stgGet(key, n0, d1, db);
+    }
+    return { key: key, total: total, sg: STG[key], n: stgN(key, total) };
+  }
   function sceneBody(U, sc) {
-    var d = d2state(U, sc), mv = mvOf(d, sc), thread = d.stage === 'thread', rows = sc.rows(U), press = pressureIdx(U, sc);
+    var d = d2state(U, sc), mv = mvOf(d, sc), thread = d.stage === 'thread', rows = sc.rows(U), press = pressureIdx(U, sc), sg = sceneStg(U, sc, d), moving = sg && d.stage === 'move';
     var pinned = d.chk && rows[d.chk.r][3] && rows[d.chk.r][3].proof ? '<div class="d2pin"><span class="mono">закреплено · ' + esc(rows[d.chk.r][3].by) + '</span>«' + esc(rows[d.chk.r][3].proof) + '»</div>' : '';
-    var ph = '<div class="msgs d2m' + (thread ? ' thread' : '') + '"><div class="day mono">' + sc.day(U) + '</div>' + pinned + (sc.quest ? myBubble(U) : '') + rows.map(function (m, i) {
-      var st = d.rows[i], tap = thread && !st;
-      return '<div class="d2msg' + (m[2] !== 'ЧИСТО' ? ' tg' : '') + (st ? ' seen' : '') + (tap ? ' tappable' + (d.open === i ? ' open' : '') : '') + '" style="animation-delay:' + ((sc.quest ? i + 1 : i) * 0.1) + 's"' +
+    /* стиль появления сообщения: у сцен с порциями — по одному (шаг 0,6 с) в стадии хода и для новых ответов в стадии «Кто давил?»; остальные стоят на месте */
+    var msgSty = function (i, fresh) {
+      if (!sg) return 'animation-delay:' + ((sc.quest ? i + 1 : i) * 0.1) + 's';
+      return fresh && sg.sg.arr ? 'animation-delay:' + stgDelay(sg.sg, i, 0.6) : 'animation:none';
+    };
+    var tapOk = thread && (!sg || sg.n >= 2);
+    var ph = '<div class="msgs d2m' + (thread ? ' thread' : '') + '"><div class="day mono">' + sc.day(U) + '</div>' + pinned + (sc.quest ? myBubble(U, sg ? msgSty(0, moving) : '') : '') + rows.map(function (m, i) {
+      var st = d.rows[i], tap = tapOk && !st;
+      return '<div class="d2msg' + (m[2] !== 'ЧИСТО' ? ' tg' : '') + (st ? ' seen' : '') + (tap ? ' tappable' + (d.open === i ? ' open' : '') : '') + '" style="' + msgSty(sc.quest ? i + 1 : i, moving) + '"' +
         (tap ? ' data-d2="tag" data-r="' + i + '" role="button" tabindex="0" aria-label="Сообщение от ' + esc(m[0]) + ': ' + esc(m[1]) + '. Тапни, чтобы разобрать"' : '') + '><small>' + m[0] + '</small>' + esc(m[1]) +
         (tap ? '<span class="tag2lab mono" aria-hidden="true">что тут?</span>' : '') +
         (st ? '<span class="vizhu' + (st === 'clean' ? ' clean' : '') + '">' + (st === 'clean' ? 'Без подвоха' : tray(m[2])) + '</span>' : '') + avaImg(m[0]) + '</div>';
-    }).join('') + (d.asked ? '<div class="d2msg re"><small>Даня</small>' + esc(ASK_DANYA) + '</div>' : '') +
-      (sc.mine && mv ? mineBubble(U, mv) : '') +
-      (mv ? mv.say.map(function (r) { return '<div class="d2msg re"><small>' + r[0] + (r[2] ? ' · в личке' : '') + '</small>' + esc(r[1]) + '</div>'; }).join('') : '') + '</div>';
-    var side = '', top = '';
+    }).join('') + (d.asked ? '<div class="d2msg re"' + (sg ? ' style="animation:none"' : '') + '><small>Даня</small>' + esc(ASK_DANYA) + '</div>' : '') +
+      (sc.mine && mv ? mineBubble(U, mv, sg ? msgSty(0, thread) : '') : '') +
+      (mv ? mv.say.map(function (r, j) { return '<div class="d2msg re"' + (sg ? ' style="' + msgSty((sc.mine ? 1 : 0) + j, thread) + '"' : '') + '><small>' + r[0] + (r[2] ? ' · в личке' : '') + '</small>' + esc(r[1]) + '</div>'; }).join('') : '') + '</div>';
+    var side = '', top = '', K = sg && sg.key, tailBtn = '', sideSty = '';
     if (!d.move) {
+      var inner = '';
       if (sc.ask && U.S().basis === 'socrates') {
-        side += d.asked ? '<p class="narr">' + ASK_NARR + '</p>' : '<div class="d2btns askrow"><button class="btn" type="button" data-d2="ask">Спросить Даню, кто там будет</button></div>';
+        inner += d.asked ? '<p class="narr">' + ASK_NARR + '</p>' : '<div class="d2btns askrow"><button class="btn" type="button" data-d2="ask">Спросить Даню, кто там будет</button></div>';
       }
-      side += '<h2 class="q2-ask">Что делаешь?</h2><p class="narr">' + esc(sc.pre) + '</p><div class="slips">' +
-        sc.moves.map(function (m) { return '<button class="slip" type="button" data-d2="move" data-m="' + m.id + '">' + esc(m.text) + '</button>'; }).join('') + '</div>';
+      inner += '<h2 class="q2-ask">Что делаешь?</h2><p class="narr">' + esc(sc.pre) + '</p><div class="slips">' +
+        sc.moves.map(function (m, i) { return '<button class="slip" type="button" data-d2="move" data-m="' + m.id + '"' + (sg ? ' data-cas style="--i:' + i + '"' : '') + '>' + esc(m.text) + '</button>'; }).join('') + '</div>';
+      /* A5, порция 1 — шапка и телефон (кнопка K7 под ними), порция 2 — «Что делаешь?» с ответами */
+      if (sg) { side = stgPt(2, inner); tailBtn = stgBtn(K, 1, PBTN.K7); if (sg.n < 2) sideSty = ' style="min-height:0"'; /* G2: пока открыта первая порция, пустая правая часть не держит высоту экрана */ } /* F11(д): кнопка K7 стоит вне сетки .d2grid, в самом .scbody, иначе прилипание ограничено крошечной ячейкой */
+      else side = inner;
     } else if (d.stage === 'thread' || d.stage === 'found') {
-      side = thread ? costHTML(mv.cost) : '';
+      side = thread && !sg ? costHTML(mv.cost) : '';
       if (thread) {
-        var named = press.filter(function (x) { return d.rows[x] === 'named'; }).length;
-        top = '<div class="d2top"><h2 class="q2-ask">Кто давил?</h2><p class="narr q2-press">' + esc(sc.press) + '</p></div>';
-        side += chkHTML(d, rows) + fbHTML(d);
+        var named = press.filter(function (x) { return d.rows[x] === 'named'; }).length, tail = '';
+        top = '<div class="d2top"' + (sg ? ' data-pt="2"' : '') + '><h2 class="q2-ask">Кто давил?</h2><p class="narr q2-press">' + esc(sc.press) + '</p></div>';
+        tail += chkHTML(d, rows) + fbHTML(d);
         if (d.open !== null) {
           var wr = d.wrong[d.open] || [];
-          side += '<div class="d2k mono" style="margin-top:14px">Сообщение · ' + esc(rows[d.open][0]) + '</div><blockquote class="qquote">' + esc(rows[d.open][1]) + '</blockquote><div class="qline">Что в этой фразе?</div>' + (d.hint ? '<div class="hint2">' + esc(d.hint) + '</div>' : '') +
+          tail += '<div class="d2k mono" style="margin-top:14px">Сообщение · ' + esc(rows[d.open][0]) + '</div><blockquote class="qquote">' + esc(rows[d.open][1]) + '</blockquote><div class="qline">Что в этой фразе?</div>' + (d.hint ? '<div class="hint2">' + esc(d.hint) + '</div>' : '') +
             '<div class="opts4"><button class="opt chkbtn" type="button" data-d2="check"' + (d.chk ? ' disabled' : '') + '>Глянуть закреп<small>' + (d.chk ? 'Закреп уже открыт — одна проверка на чат' : 'откроет закреплённое сообщение чата, один раз') + '</small></button>' +
             (d.ord && d.ord.length === sceneTags(sc).length ? d.ord : sceneTags(sc)).map(function (n) { return '<button class="opt' + (n === 'ЧИСТО' ? ' clean' : '') + (wr.indexOf(n) >= 0 ? ' no' : '') + '" type="button" data-d2="opt" data-n="' + n + '">' + tray(n) + '</button>'; }).join('') + '</div>';
         } else {
-          side += (named ? '<p class="prompt mono d2more">Есть ещё сообщение, где давят. Тапни его.</p>' : '') + (d.hint ? '<div class="hint2">' + esc(d.hint) + '</div>' : '');
+          tail += (named ? '<p class="prompt mono d2more">Есть ещё сообщение, где давят. Тапни его.</p>' : '') + (d.hint ? '<div class="hint2">' + esc(d.hint) + '</div>' : '');
         }
-        side += '<div class="d2btns"><button class="btn" type="button" data-d2="allclean">Никто не давил</button></div>';
+        /* пока открыта панель сообщения, «Никто не давил» под пятью ответами читается как шестой ответ про то же сообщение: на сценах с порциями её нет (A5) */
+        if (!(sg && d.open !== null)) tail += '<div class="d2btns"><button class="btn" type="button" data-d2="allclean">Никто не давил</button></div>';
+        if (sg) side = stgPt(1, costHTML(mv.cost), { gone: 2, key: K, label: PBTN.K8 }) + stgPt(2, tail); else side += tail;
       } else {
-        side += press.map(function (x) { var rt = (rows[x][4] || {}).rev || REVEAL[rows[x][2]].t; return '<div class="reveal fbk rvk"><div class="rvh">Разбор · ' + esc(rows[x][0]) + '</div>' + revP(rt) + '</div>'; }).join('') +
-          costHTML(mv.cost) + monoHTML(mv.view, mv.mono) + hotyaHTML(mv.hotya.text) +
-          (sc.quest ? '<div class="d2next"><button class="btn seen" type="button" data-d2="qnext">Дальше</button></div>'
-                    : '<div class="d2next"><button class="btn seen" type="button" data-d2="tocr">Дальше</button></div>');
+        var rv = press.map(function (x) { var rt = (rows[x][4] || {}).rev || REVEAL[rows[x][2]].t; return '<div class="reveal fbk rvk"><div class="rvh">Разбор · ' + esc(rows[x][0]) + '</div>' + revP(rt) + '</div>'; }).join('');
+        var nx = sc.quest ? '<div class="d2next"><button class="btn seen" type="button" data-d2="qnext">Дальше</button></div>'
+                          : '<div class="d2next"><button class="btn seen" type="button" data-d2="tocr">Дальше</button></div>';
+        /* «Что это тебе стоило» на сценах с порциями в этой стадии не выводится: оно уже было своей порцией (A5) */
+        if (sg) side = stgPt(1, rv, { key: K, label: PBTN.K2 }) + stgPt(2, monoHTML(mv.view, mv.mono), { key: K, label: PBTN.K3 }) + stgPt(3, hotyaHTML(mv.hotya.text) + nx);
+        else side += rv + costHTML(mv.cost) + monoHTML(mv.view, mv.mono) + hotyaHTML(mv.hotya.text) + nx;
       }
     } else if (d.stage === 'crumbs') {
       var k = EXT.counts(U), pend = d.cr.every(function (c) { return c.status !== 'new'; });
-      side = '<h2 class="q2-ask">Два вывода из этой истории</h2><p class="narr">Из этой истории — два вывода. Они спорят между собой, и это нормально: у тебя может быть и один, и другой, и ни одного.</p>' +
-        '<p class="narr">' + esc(sc.crNarr) + '</p>' +
-        d.cr.map(function (c, i) { return crCard(c, i, 2, d.cr.filter(function (x) { return x.id === c.contra; })[0]); }).join('') +
-        '<div class="pocket mono"><span>В Кодексе: ' + k.sheet + ' из 12</span><div class="slots">' + slotsHTML(k) + '</div></div>' +
+      var h0 = '<h2 class="q2-ask">Два вывода из этой истории</h2><p class="narr">Из этой истории — два вывода. Они спорят между собой, и это нормально: у тебя может быть и один, и другой, и ни одного.</p>' +
+        '<p class="narr">' + esc(sc.crNarr) + '</p>';
+      var cards = d.cr.map(function (c, i) { return crCard(c, i, 2, d.cr.filter(function (x) { return x.id === c.contra; })[0]); });
+      var pk = '<div class="pocket mono"><span>В Кодексе: ' + k.sheet + ' из 12</span><div class="slots">' + slotsHTML(k) + '</div></div>' +
         '<div class="d2next"><button class="btn seen" type="button" data-d2="tolupa"' + (pend ? '' : ' disabled') + '>Дальше</button>' + (pend ? '' : '<p class="prompt mono d2hold">Сначала реши, что делать с каждым выводом.</p>') + '</div>';
+      /* A5: порция 1 — заголовок и абзацы (K13), 2 — первая карточка, 3 — вторая (сама, когда первая решена), 4 — счёт и «Дальше» (сама, когда решены обе) */
+      side = sg ? stgPt(1, h0, { key: K, label: PBTN.K13 }) + stgPt(2, cards[0]) + stgPt(3, cards[1]) + stgPt(4, pk) : h0 + cards.join('') + pk;
     } else {
       var L = inDay(sc, function () { return lupaState(U); });
       if (!d.lupaGo && !L.fin) {
@@ -1114,7 +1367,15 @@
     }
     return '<div class="d2grid">' + top + '<div class="phone warm d2p"><div class="sbar"><span>' + sc.time + '</span><span class="ic">▮▮▮</span></div>' +
       '<div class="chead"><span class="back" aria-hidden="true">‹</span><span class="ava g">' + sc.ava + '</span><div><b>' + sc.chat + '</b><small>' + sc.members + '</small></div></div>' + ph +
-      '<div class="cinput" aria-hidden="true"><i>＋</i><span>Сообщение</span><i>➤</i></div></div><div class="d2side">' + side + '</div></div>';
+      '<div class="cinput" aria-hidden="true"><i>＋</i><span>Сообщение</span><i>➤</i></div></div><div class="d2side"' + sideSty + '>' + side + '</div></div>' + tailBtn;
+  }
+  /* после каждой сборки тела сцены с порциями: привязать корень, проставить скрытие, разметить каскад карточек выводов */
+  function sceneAfter(U, el, sc) {
+    var b = $('.scbody', el); if (!b || !sc.stg) return;
+    var d = d2state(U, sc); if (!STG_TOT[d.stage]) return;
+    var key = sc.key + '|' + d.stage; if (!STG[key]) return;
+    stgApply(b, key, STG_TOT[d.stage]);
+    [].forEach.call(b.querySelectorAll('.cr2-act'), function (box) { [].forEach.call(box.querySelectorAll('button'), function (x, i) { x.setAttribute('data-cas', ''); x.style.setProperty('--i', i); }); });
   }
   function slotsHTML(k) {
     var ps = '', base = k.sheet - k.newOnSheet;
@@ -1141,19 +1402,30 @@
   /* обработчик кликов сцены: один на экран, сцена лежит в el._sc (экран «Дела» и экран шага 2 квеста) */
   function sceneWire(U, el, sc) {
     el._sc = sc;
+    sceneAfter(U, el, sc);
     if (el._wired) return;
     el._wired = true;
-    var redraw = function () { var b = $('.scbody', el); if (b) b.innerHTML = sceneBody(U, el._sc); };
+    var redraw = function () { var b = $('.scbody', el); if (b) { b.innerHTML = sceneBody(U, el._sc); sceneAfter(U, el, el._sc); } };
+    /* кнопка порции: открыть следующую, пересобрать тело (в стадии «Кто давил?» сообщения становятся нажимаемыми, ярлыки приходят по одному) и показать её */
+    el._scPress = function (key, n) {
+      var sg = STG[key]; if (!sg || n <= sg.n) return;
+      sg.n = n; redraw(); stgReveal(key, n);
+      if (key.slice(-7) === '|thread' && n === 2) stgCas($('.d2m', el), '.tag2lab', .2);
+    };
     var onTap = function (e) {
       var sc = el._sc, dd = d2state(U, sc);
       var lp = e.target.closest('[data-lp]'); if (lp) { U.S().real = true; U.buzz(8); inDay(sc, function () { lupaAct(U, lp); }); redraw(); return; }
       var ca = e.target.closest('.cr2 [data-a]');
       if (ca) {
         var art = ca.closest('.cr2'), c = dd.cr.filter(function (x) { return x.id === art.getAttribute('data-c'); })[0];
-        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Лежит в Кодексе, пока не решишь.'; redraw(); return;
+        U.S().real = true; U.buzz(10); crAct(c, ca.getAttribute('data-a'), ca, art); if (c.status === 'pocket') c.doneMsg = 'Положено в карман. Лежит в Кодексе, пока не решишь.'; redraw();
+        /* A5: вторая карточка приходит сама, когда у первого вывода статус больше не «new»; счёт и «Дальше» — когда решены оба */
+        var kc = sc.key + '|crumbs', sg2 = STG[kc];
+        if (sg2 && sc.stg) { var want = dd.cr.every(crDecided) ? 4 : (crDecided(dd.cr[0]) ? 3 : 1); if (want > sg2.n) { sg2.n = want; redraw(); stgReveal(kc, want); } }
+        return;
       }
       var b = e.target.closest('[data-d2]'); if (!b) return;
-      var k = b.getAttribute('data-d2'); U.S().real = true; U.buzz(10);
+      var k = b.getAttribute('data-d2'); U.S().real = true; U.buzz(10); var stg0 = dd.stage;
       if (k === 'end') { if (!dd.fin) { dd.fin = true; dd.finTs = Date.now(); } return; }
       if (k === 'qnext') { if (U.questNext) U.questNext(); return; }
       var caught = null;
@@ -1189,8 +1461,13 @@
       else if (k === 'tocr') { d2makeCr(dd, sc); dd.stage = 'crumbs'; }
       else if (k === 'tolupa') { dd.stage = 'lupa'; }
       redraw();
-      scrollAfter(el, sc, k, dd);
+      /* F6: порция, пришедшая сменой стадии (found, crumbs), получает проявление, фокус и свою одну прокрутку; старые прокрутки в режиме порций с ней не спорят */
+      var stgGo = sc.stg && dd.stage !== stg0 && (dd.stage === 'found' || dd.stage === 'crumbs') && STG[sc.key + '|' + dd.stage] ? sc.key + '|' + dd.stage : null;
+      if (!stgGo) scrollAfter(el, sc, k, dd);
+      else if (!(caught && sc.beasts[caught] && U.catchBeast)) stgReveal(stgGo, 1);
+      if (sc.stg && k === 'tag' && dd.open !== null) stgCas($('.d2side .opts4', el), '.opt'); /* пять кнопок панели — каскадом, «Глянуть закреп» первой */
       if (caught && sc.beasts[caught] && U.catchBeast) U.catchBeast(sc.beasts[caught], function () {
+        if (stgGo) { stgReveal(stgGo, 1); return; } /* F6: после карточки поимки порция «Найдено» появляется с проявлением; прокрутка одна */
         if (dd.stage === 'found' && sc.quest) { var sd = $('.d2side', el); if (sd && sd.scrollIntoView) sd.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         else if (dd.stage === 'found' && sceneNarrow()) sceneScroll(el, '.d2side');
       });
@@ -1983,7 +2260,7 @@
   var THR_DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="thr" x1="0" x2="1"><stop offset="0" stop-color="' + TONE.quiet + '"/><stop offset="1" stop-color="' + TONE.thorn + '"/></linearGradient></defs></svg>';
   function d7Row(c, n, from) {
     var tn = TONE[VIEWS[c.view].tone];
-    return '<li class="srow d7row" style="--tc:' + tn + '"><span class="sn">' + n + '</span><span class="sab"><b>' + VIEWS[c.view].ab + '</b></span><div class="sb"><q>' + esc(c.text) + '</q><div class="ss mono">' + VIEWS[c.view].name + (from ? ' · ' + esc(from) : '') + '</div></div></li>';
+    return '<li class="srow d7row" style="--tc:' + tn + '"><span class="sn">' + n + '</span><span class="sab"><b' + vattr(c.view) + '>' + VIEWS[c.view].ab + '</b></span><div class="sb"><q>' + esc(c.text) + '</q><div class="ss mono">' + vtext(c.view, VIEWS[c.view].name) + (from ? ' · ' + esc(from) : '') + '</div></div></li>';
   }
   function d7PairHTML(U, d) {
     var A = d7find(U, d.pair[0]), B = d7find(U, d.pair[1]);
@@ -2029,7 +2306,7 @@
   }
   function d7RevCardHTML(U, d, c, done) {
     var v = VIEWS[c.view], from = d7From(R7.from, d.day);
-    return '<article class="cr2 d7rev st-' + (done ? (c.status === 'out' ? 'out' : 'keep') : 'mine') + '" data-c="' + c.id + '"><q>' + esc(c.text) + '</q><div class="bsrc mono"><span class="vstamp" style="--tc:' + TONE[v.tone] + '">' + v.name + '</span>' + (from ? ' <span class="from">' + esc(from) + '</span>' : '') + '</div>' +
+    return '<article class="cr2 d7rev st-' + (done ? (c.status === 'out' ? 'out' : 'keep') : 'mine') + '" data-c="' + c.id + '"><q>' + esc(c.text) + '</q><div class="bsrc mono"><span class="vstamp"' + vattr(c.view) + ' style="--tc:' + TONE[v.tone] + '">' + v.name + '</span>' + (from ? ' <span class="from">' + esc(from) + '</span>' : '') + '</div>' +
       (done ? '<div class="cr2-done"><span class="stp keep mono">' + esc(END7.outcome[d.rev]) + '</span></div>' : '') + '</article>';
   }
   function d7CrumbsHTML(U, d) {
@@ -2422,7 +2699,6 @@
 
 
   /* ================= ЭКРАН: кодекс ================= */
-  var SILH = 'M-.07 -.87 a.07 .07 0 1 0 .14 0 a.07 .07 0 1 0 -.14 0 Z M-.03 -.79 L.03 -.79 L.03 -.76 Q.17 -.74 .19 -.68 L.22 -.41 L.15 -.41 L.13 -.58 L.11 -.29 L.11 0 L.04 0 L.04 -.27 L-.04 -.27 L-.04 0 L-.11 0 L-.11 -.29 L-.13 -.58 L-.15 -.41 L-.22 -.41 L-.19 -.68 Q-.17 -.74 -.03 -.76 Z';
   function cxInit(U) {
     var s = ex(U), cx = s.cx;
     if (!cx) {
@@ -2455,26 +2731,82 @@
     });
     return w;
   }
-  function shadowSVG(cx, big) {
-    var w = cxWeights(cx), keys = Object.keys(w).sort(function (a, b) { return VIEWS[a].ang - VIEWS[b].ang; }), mx = 0;
-    keys.forEach(function (k) { mx = Math.max(mx, w[k]); });
-    /* серое пересечение — две крупицы каталожной пары cA/cB, обе на листе; взгляды берутся из самих крупиц, а не зашиты */
-    var cA = crumbBy(cx, 'cA'), cB = crumbBy(cx, 'cB'), pair = !!(cA && cB && cA.status === 'mine' && cB.status === 'mine' && w[cA.view] && w[cB.view]), pv = pair ? [cA.view, cB.view] : ['minimal', 'achiev'];
-    var FY = 372, Lcap = 345, lenOf = function (k) { return Lcap * (.5 + .5 * (w[k] / (mx || 1))); };
-    var tf = function (k, L) { return 'translate(300 ' + FY + ') rotate(' + VIEWS[k].ang + ') scale(' + L + ')'; };
-    var svg = '<svg class="shadows" viewBox="0 0 600 400" role="img" aria-label="Тени взглядов за силуэтом: длина тени — доля твоих выводов у этого взгляда">' +
-      '<defs><radialGradient id="sg" cx="50%" cy="100%" r="85%"><stop offset="0" stop-color="#3a3050"/><stop offset="1" stop-color="#15121d"/></radialGradient>' +
-      '<clipPath id="cpT"><path d="' + SILH + '" transform="' + tf(pv[0], lenOf(pv[0]) || 200) + '"/></clipPath></defs>' +
-      '<rect width="600" height="400" fill="url(#sg)"/><rect x="0" y="' + FY + '" width="600" height="28" fill="#0d0b13"/><path d="M0 ' + FY + 'H600" stroke="rgba(239,234,244,.2)" stroke-width="1.2"/><g style="mix-blend-mode:screen">';
-    keys.forEach(function (k) {
-      svg += '<path d="' + SILH + '" fill="' + TONE[VIEWS[k].tone] + '" fill-opacity=".62" transform="' + tf(k, lenOf(k)) + '"/>';
-    });
-    svg += '</g>';
-    if (pair) {
-      svg += '<g clip-path="url(#cpT)"><path d="' + SILH + '" fill="#D9D4E6" fill-opacity=".96" transform="' + tf(pv[1], lenOf(pv[1])) + '"/></g>';
+  /* «Арена» (w0-19, часть C): светлая круглая сцена в перспективе, в центре фигурка (картинка в стиле персонажей), от неё на пол ложатся тени — её же силуэт, окрашенный в тон взгляда;
+     длина тени — доля выводов у взгляда (168–250 единиц). Спорящая пара (та же, что лист Кодекса показывает строкой «спор: тянут в разные стороны») соединена красной молнией. Значки взглядов у голов теней нажимаются. Рисунок статичный. */
+  var ARENA_HERO = { file: 'art/hero-back.webp', bbox: [0.219, 0.007, 0.748, 0.992], ar: 667 / 1000 };
+  var CODEX_MAP = {
+    arena: 'Это твоя арена. Каждая тень — взгляд, из которого у тебя есть выводы: чем их больше, тем длиннее тень. Красная молния — два твоих вывода спорят между собой. Тапни значок или название, и узнаешь, что это за взгляд.',
+    arenaShort: 'Это твоя арена. Каждая тень — взгляд, из которого у тебя есть выводы: чем их больше, тем длиннее тень. Тапни значок или название, и узнаешь, что это за взгляд.',
+    empty: 'Пока на арене только ты. Тени появятся с первым выводом.'
+  };
+  var ARENA_DEEP = { cold: '#1F93E6', quiet: '#F0A21C', thorn: '#E3257C' }, ARENA_HI = { cold: '#C9F3FF', thorn: '#FFC2DA', quiet: '#FFEFB8' }, ARENA_LO = { cold: '#1787D1', thorn: '#C41A60', quiet: '#E8961A' };
+  var arenaSeq = 0; /* у каждого рисунка свои идентификаторы градиентов и фильтров */
+  function r1(n) { return Math.round(n * 10) / 10; }
+  function arenaZig(x1, y1, x2, y2, amp, segs) {
+    var dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / len, ny = dx / len, p = 'M' + r1(x1) + ' ' + r1(y1);
+    for (var i = 1; i < segs; i++) { var t = i / segs, sg = i % 2 ? 1 : -1; p += ' L' + r1(x1 + dx * t + nx * amp * sg) + ' ' + r1(y1 + dy * t + ny * amp * sg); }
+    return p + ' L' + r1(x2) + ' ' + r1(y2);
+  }
+  function arenaBadge(x, y, R, it, id) {
+    return '<g class="vb"' + vattr(it.k) + '>' +
+      '<circle cx="' + r1(x) + '" cy="' + r1(y + 3) + '" r="' + R + '" fill="#0B1633" fill-opacity=".55"/>' +
+      '<circle cx="' + r1(x) + '" cy="' + r1(y) + '" r="' + R + '" fill="url(#' + id + '-h-' + it.tone + ')" stroke="#0B1633" stroke-width="3.5"/>' +
+      '<circle class="vb-ring" cx="' + r1(x) + '" cy="' + r1(y) + '" r="' + (R + 6) + '" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="7 4"/>' +
+      '<ellipse cx="' + r1(x - R * .22) + '" cy="' + r1(y - R * .46) + '" rx="' + r1(R * .5) + '" ry="' + r1(R * .22) + '" fill="#fff" fill-opacity=".55"/>' +
+      '<text x="' + r1(x) + '" y="' + r1(y + R * .3) + '" text-anchor="middle" font-family="\'Russo One\', sans-serif" font-size="' + r1(R * .86) + '" fill="#0B1633">' + esc(it.ab) + '</text></g>';
+  }
+  /* пара для молнии — та же, что лист показывает строкой «спор»: соседние выводы листа, у одного contra на другой и связь действует; оба взгляда должны быть на арене */
+  function arenaPair(cx, w) {
+    var live = cx.crumbs.filter(function (c) { return c.status === 'mine'; }).concat(cx.crumbs.filter(function (c) { return c.status === 'pocket'; }));
+    for (var i = 0; i < live.length - 1; i++) {
+      var c = live[i], nx = live[i + 1];
+      if (c.status === 'mine' && nx.status === 'mine' && c.contra && nx.id === c.contra && tensOn(cx, c) && c.view !== nx.view && w[c.view] && w[nx.view]) return [c.view, nx.view];
     }
-    svg += '<path d="' + SILH + '" fill="#08070c" transform="translate(300 ' + FY + ') scale(150)"/></svg>';
-    return svg;
+    return null;
+  }
+  function arenaItems(w) {
+    return Object.keys(w).sort(function (a, b) { return VIEWS[a].ang - VIEWS[b].ang; }).map(function (k) { return { k: k, ab: VIEWS[k].ab, tone: VIEWS[k].tone, w: w[k] }; });
+  }
+  /* подпись состава арены: те же взгляды, те же веса, та же пара спора — значит, рисунок можно не пересоздавать */
+  function arenaSig(cx) { var w = cxWeights(cx), p = arenaPair(cx, w); return Object.keys(w).sort().map(function (k) { return k + ':' + w[k]; }).join(',') + '|' + (p ? p.join('+') : ''); }
+  function shadowSVG(cx, big) {
+    var w = cxWeights(cx), items = arenaItems(w), pair = arenaPair(cx, w), n = items.length, mx = 0, id = 'ar' + (++arenaSeq);
+    var W = 600, H = 452, CX = 300, CY = 224, SQ = .72, HF = 172, LMIN = 168, LMAX = 250, R = 23, WS = 54, FR = 284;
+    /* по часовой от «назад»: первый взгляд слева-сзади, последний справа-сзади; сектор ±40° за спиной фигурки свободен */
+    var angOf = function (i) { return n === 1 ? 215 : (n === 2 ? (i ? 110 : 250) : 320 - 280 * i / (n - 1)); };
+    items.forEach(function (it) { mx = Math.max(mx, it.w); });
+    var hero = ARENA_HERO, bb = hero.bbox, bw = bb[2] - bb[0], bh = bb[3] - bb[1], bcx = (bb[0] + bb[2]) / 2, url = AB + hero.file;
+    var img = function (fw, fh, extra) { var iw = fw / bw, ih = fh / bh; return '<image href="' + url + '" x="' + r1(-bcx * iw) + '" y="' + r1(-bb[3] * ih) + '" width="' + r1(iw) + '" height="' + r1(ih) + '" preserveAspectRatio="none"' + (extra || '') + '/>'; };
+    var pos = {};
+    var s = '<svg class="shadows" viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="Тени взглядов: чем длиннее тень, тем больше твоих выводов у этого взгляда"><defs>' +
+      '<linearGradient id="' + id + '-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101A52"/><stop offset="1" stop-color="#1D2A7A"/></linearGradient>' +
+      '<radialGradient id="' + id + '-floor" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".42" stop-color="#EEEBFF"/><stop offset=".8" stop-color="#BEC3FA"/><stop offset="1" stop-color="#8E98EE"/></radialGradient>' +
+      '<radialGradient id="' + id + '-feet" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#1B1F5E" stop-opacity=".5"/><stop offset="1" stop-color="#1B1F5E" stop-opacity="0"/></radialGradient>';
+    ['cold', 'quiet', 'thorn'].forEach(function (t) {
+      s += '<filter id="' + id + '-s-' + t + '" x="-60%" y="-10%" width="220%" height="120%" color-interpolation-filters="sRGB"><feFlood flood-color="' + ARENA_DEEP[t] + '" result="c"/><feComposite in="c" in2="SourceAlpha" operator="in" result="s"/><feGaussianBlur in="s" stdDeviation="2.6"/></filter>' +
+        '<linearGradient id="' + id + '-h-' + t + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + ARENA_HI[t] + '"/><stop offset=".5" stop-color="' + TONE[t] + '"/><stop offset="1" stop-color="' + ARENA_LO[t] + '"/></linearGradient>';
+    });
+    s += '</defs><rect width="' + W + '" height="' + H + '" fill="url(#' + id + '-bg)"/>' +
+      '<g transform="translate(' + CX + ' ' + CY + ') scale(1 ' + SQ + ')">' +
+      '<circle r="' + (FR + 6) + '" cy="26" fill="#0B1238" fill-opacity=".6"/>' +
+      '<circle r="' + FR + '" cy="15" fill="#5562D6"/>' +
+      '<circle r="' + FR + '" fill="url(#' + id + '-floor)" stroke="#fff" stroke-opacity=".85" stroke-width="3"/>' +
+      '<circle r="' + LMAX + '" fill="none" stroke="#2C3A9E" stroke-opacity=".2" stroke-width="2" stroke-dasharray="3 10"/>' +
+      '<circle r="' + LMIN + '" fill="none" stroke="#2C3A9E" stroke-opacity=".14" stroke-width="2" stroke-dasharray="3 10"/>' +
+      '<g style="mix-blend-mode:multiply">';
+    items.forEach(function (it, i) {
+      var th = angOf(i), L = LMIN + (LMAX - LMIN) * (it.w / (mx || 1)), rad = th * Math.PI / 180, Lb = L - 12;
+      pos[it.k] = { x: CX + Lb * Math.sin(rad), y: CY - SQ * Lb * Math.cos(rad) };
+      s += '<g transform="rotate(' + r1(th) + ')" opacity=".86">' + img(WS, L, ' filter="url(#' + id + '-s-' + it.tone + ')"') + '</g>';
+    });
+    s += '</g><circle r="70" fill="url(#' + id + '-feet)"/></g>';
+    if (pair) {
+      var pa = pos[pair[0]], pb = pos[pair[1]], dz = arenaZig(pa.x, pa.y, pb.x, pb.y, 9, 6);
+      s += '<path class="bolt" d="' + dz + '" fill="none" stroke="#0B1633" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><path class="bolt" d="' + dz + '" fill="none" stroke="#FF4B3A" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    }
+    s += '<g transform="translate(' + CX + ' ' + CY + ')">' + img(HF * (bw / bh) * hero.ar, HF) + '</g>';
+    items.forEach(function (it) { var p = pos[it.k]; s += arenaBadge(p.x, p.y, R, it, id); });
+    return s + '</svg>';
   }
   function crumbBy(cx, id) { return cx.crumbs.filter(function (c) { return c.id === id; })[0]; }
   /* связь contradicts: каталожная (предложение игры) живёт, пока игрок не ответил «нет»; ответ «да» делает её действующей */
@@ -2485,16 +2817,16 @@
     var out = cx.crumbs.filter(function (c) { return c.status === 'out' && VIEWS[c.view]; });
     if (!out.length) return '';
     return '<details class="dropped"' + (cxDropOpen ? ' open' : '') + '><summary class="mono">Выброшенные · ' + out.length + '</summary><ul class="droplist">' + out.map(function (c) {
-      return '<li><q>' + esc(c.text) + '</q><span class="ss mono">' + VIEWS[c.view].name + '</span><button class="btn" type="button" data-cx="ret" data-id="' + esc(c.id) + '">Вернуть</button></li>';
+      return '<li><q>' + esc(c.text) + '</q><span class="ss mono">' + vtext(c.view, VIEWS[c.view].name) + '</span><button class="btn" type="button" data-cx="ret" data-id="' + esc(c.id) + '">Вернуть</button></li>';
     }).join('') + '</ul></details>';
   }
   function cxSheet(cx) {
     var rows = '', live = cx.crumbs.filter(function (c) { return c.status === 'mine'; }).concat(cx.crumbs.filter(function (c) { return c.status === 'pocket'; }));
     live.forEach(function (c, i) {
-      var tn = TONE[VIEWS[c.view].tone], sub = VIEWS[c.view].name + (c.view2 ? ' и ' + VIEWS[c.view2].name : '');
+      var tn = TONE[VIEWS[c.view].tone], sub = vtext(c.view, VIEWS[c.view].name) + (c.view2 ? ' и ' + vtext(c.view2, VIEWS[c.view2].name) : '');
       var pair = tensOn(cx, c);
       rows += '<li class="srow' + (c.own ? ' own' : '') + (c.status === 'pocket' ? ' pocket' : '') + '" style="--tc:' + tn + (c.view2 ? ';--tc2:' + TONE[VIEWS[c.view2].tone] : '') + '"><span class="sn">' + (c.status === 'pocket' ? '·' : i + 1) + '</span>' +
-        '<span class="sab"><b>' + VIEWS[c.view].ab + '</b></span><div class="sb"><q>' + esc(c.text) + '</q><div class="ss mono">' + sub +
+        '<span class="sab"><b' + vattr(c.view) + '>' + VIEWS[c.view].ab + '</b></span><div class="sb"><q>' + esc(c.text) + '</q><div class="ss mono">' + sub +
         (c.own ? ' · <em>моя формулировка</em>' : '') + (c.scope !== undefined && c.scope !== '' && SCOPES[+c.scope] ? ' · ' + SCOPES[+c.scope] : '') + (c.status === 'pocket' ? ' · <em class="pk">отложено</em>' : '') +
         (pair && c.own ? ' · спорит с №' + (live.indexOf(crumbBy(cx, c.contra)) + 1) : '') + '</div>' +
         (cxConfirm === c.id ? '<div class="sconf" role="group" aria-label="Выбросить вывод"><span>Выбросить этот вывод?</span> <button class="btn seen" type="button" data-cx="dropyes" data-id="' + esc(c.id) + '">Да, не моё</button> <button class="btn" type="button" data-cx="dropno">Оставить</button></div>'
@@ -2515,7 +2847,7 @@
       var items = cx.crumbs.filter(function (c) { return c.status !== 'out' && c.sph.indexOf(sp[0]) >= 0; });
       var spar = items.some(function (c) { return tensOn(cx, c) && items.some(function (d) { return d.id === c.contra; }); });
       out += '<div class="sph' + (items.length ? '' : ' none') + '"><span class="sl mono">' + sp[1] + '</span><span class="sd">' + (items.length ? items.map(function (c) {
-        return '<i title="' + VIEWS[c.view].name + '" style="background:' + TONE[VIEWS[c.view].tone] + '"></i>'; }).join('') : '<em>пока пусто</em>') + '</span>' +
+        return '<i title="' + VIEWS[c.view].name + '"' + vattr(c.view) + ' style="background:' + TONE[VIEWS[c.view].tone] + '"></i>'; }).join('') : '<em>пока пусто</em>') + '</span>' +
         (spar ? '<span class="sm mono">тут ты меняешь мнение</span>' : '') + '</div>';
     });
     return out;
@@ -2523,7 +2855,7 @@
   function cxLegend(cx) {
     var w = cxWeights(cx);
     return Object.keys(w).sort(function (a, b) { return VIEWS[a].ang - VIEWS[b].ang; }).map(function (k) {
-      return '<span class="vchip" style="--tc:' + TONE[VIEWS[k].tone] + '">' + VIEWS[k].name + ' ×' + (w[k] % 1 ? w[k].toFixed(1).replace('.', ',') : w[k]) + '</span>'; }).join('');
+      var n = w[k] % 1 ? w[k].toFixed(1).replace('.', ',') : w[k]; return '<span class="vchip"' + vattr(k, ' ×' + n) + ' style="--tc:' + TONE[VIEWS[k].tone] + '">' + VIEWS[k].name + ' ×' + n + '</span>'; }).join('');
   }
   function cxPanel(cx, U) {
     var live = cx.crumbs.filter(function (c) { return c.status !== 'out'; });
@@ -2558,14 +2890,15 @@
     if (o.step === 'compose') cx.compose = true;
     if (cx.panel === 'bk') cx.panel = 'card'; /* сохранения со старой вкладкой копии */
     var mineL = cx.crumbs.filter(function (c) { return c.status === 'mine'; }), pockL = cx.crumbs.filter(function (c) { return c.status === 'pocket'; });
+    var oldBox = o.keep ? document.querySelector('#scr-codex .shadowbox') : null, sig = arenaSig(cx), reuse = !!(oldBox && oldBox.getAttribute('data-sig') === sig && oldBox.querySelector('svg.shadows'));
     var slots = ''; for (var i = 0; i < 12; i++) slots += '<i class="' + (i < mineL.length ? 'on' : '') + '"></i>';
     var own = mineL.filter(function (c) { return c.own; }).length;
     var inner = '<div class="wrap"><div class="cx-wrap"><div class="cx-main">' +
       '<div class="cx-head"><div class="kick mono"><span class="dot" style="background:var(--seen)"></span><span>Только на этом устройстве</span></div><h1>Мой кодекс</h1>' +
       '<p class="sub">Это твои выводы. Не школьные и не наши — твои. Любой можно выбросить, а потом вернуть. Хранятся только на этом телефоне.</p>' + (mineL.length + pockL.length ? '' : '<p class="sub emptyline">Тут будут твои выводы. Пока пусто: ни один не забран.</p>') +
       '<div class="cx-count mono"><span>' + mineL.length + ' из 12' + (pockL.length ? ' · отложено ' + pockL.length : '') + '</span><div class="slots">' + slots + '</div></div></div>' +
-      '<section class="shadowbox" aria-label="Картина мира">' + shadowSVG(cx) + '</section>' +
-      '<div class="legend">' + cxLegend(cx) + '</div><p class="lgnote">Длина тени — доля твоих выводов у этого взгляда. Серое пересечение — два твоих вывода спорят друг с другом.</p>' +
+      '<section class="shadowbox" data-sig="' + sig + '" aria-label="Картина мира">' + (reuse ? '' : shadowSVG(cx)) + '</section>' +
+      (Object.keys(cxWeights(cx)).length ? '<div class="legend">' + cxLegend(cx) + '</div><p class="lgnote">' + (arenaPair(cx, cxWeights(cx)) ? CODEX_MAP.arena : CODEX_MAP.arenaShort) + '</p>' : '<p class="lgnote arena-empty">' + CODEX_MAP.empty + '</p>') +
       '<h2 class="sect rus">По сферам</h2><p class="lgnote" style="margin-top:2px">Где у тебя какие взгляды. Одинаковые цвета в одной сфере — взгляды там сходятся, разные — ты ещё ищешь.</p>' +
       '<div class="spheres">' + cxSpheres(cx) + '</div>' +
       '<h2 class="sect rus">12 мест для выводов</h2><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="thr" x1="0" x2="1"><stop offset="0" stop-color="' + TONE.quiet + '"/><stop offset="1" stop-color="' + TONE.thorn + '"/></linearGradient></defs></svg>' +
@@ -2576,6 +2909,7 @@
       '<aside class="cside" aria-label="Карточка">' +
       '<div class="panel" id="cxpanel">' + cxPanel(cx, U) + '</div><div class="forkbox" id="forkbox" hidden></div></aside></div>' + cxDropped(cx) + '</div>';
     var el = mount(U, 'scr-codex', 'codex', inner);
+    if (reuse) { var nbx = el.querySelector('.shadowbox'); if (nbx && nbx.parentNode) nbx.parentNode.replaceChild(oldBox, nbx); } /* состав не изменился: прежний узел с уже растеризованными тенями возвращается на место */
     if (!el._wired) {
       el._wired = true;
       el.addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('dropped')) cxDropOpen = e.target.open; }, true);
@@ -2790,12 +3124,21 @@
     if (left <= 0) { qlExpire(U); return; }
     U.later(function () { qlTick(U, tk); }, 250);
   }
+  /* A6: таймер стартует, когда открыта вторая порция (кнопка «Засекай»); на первой время не идёт */
+  function qlStart(U) { var L = lupaState(U, true); L.started = true; QT.tk++; QT.t0 = performance.now(); qlTick(U, QT.tk); }
   function qlupaMount(U, host) {
-    QT.tk++; QT.t0 = performance.now(); /* отсчёт — с показа экрана; до вставки разметки, чтобы первая отрисовка взяла полное время */
+    /* задание уже начато (таймер запускался, есть ответ на строку, итог) — экран сразу на второй порции и ведёт себя как до w0-19; иначе — с первой */
+    var L0 = lupaState(U, true), began = !!(L0.started || L0.fin || (L0.sel !== null && L0.sel !== undefined) || Object.keys(L0.done || {}).length);
+    stgGet('q3', began || stgOff() ? 2 : 1);
+    var running = stgN('q3', 2) >= 2;
+    QT.tk++; QT.t0 = running ? performance.now() : 0; /* отсчёт — с показа второй порции; до вставки разметки, чтобы первая отрисовка взяла полное время */
+    STGH.q3 = function (n) { if (n === 2) qlStart(U); };
     host.innerHTML ='<div class="wrap q3"><div class="q3head"><div class="kick mono"><span class="dot"></span><span>Магазин «Витрина»</span></div><h1 class="q3-h">Найди, где давят</h1>' +
       '<p class="narr q3-intro">Пока ты разбираешься с чатом, телефон, как всегда, подкидывает своё. Магазин «Витрина» очень хочет, чтобы в субботу на тебе была новая толстовка.</p>' +
       '<p class="narr q3-task">В уведомлении четыре строки. Где-то давят, где-то нет. Тапни строку и скажи, что там.</p>' +
-      '<p class="narr q3-task">На всё — две минуты. Это не экзамен, просто чтобы не зависать. Не успеешь — покажем разбор, и всё.</p></div><div class="lupa-host" id="q3lupa">' + qlupaHTML(U) + '</div></div>';
+      '<p class="narr q3-task">На всё — две минуты. Это не экзамен, просто чтобы не зависать. Не успеешь — покажем разбор, и всё.</p></div>' + stgBtn('q3', 1, PBTN.K9) + '<div class="lupa-host" id="q3lupa" data-pt="2">' + qlupaHTML(U) + '</div></div>';
+    stgApply(host, 'q3', 2);
+    if (!stgOff() && !stgRed()) [].forEach.call(host.querySelectorAll('#q3lupa .lz'), function (z, i) { z.setAttribute('data-cas', ''); z.style.setProperty('--i', i); }); /* F5: четыре строки приходят каскадом при открытии порции (A6) */
     if (!host._wired) {
       host._wired = true;
       host.addEventListener('click', function (e) {
@@ -2803,9 +3146,10 @@
         if (nx) { U.S().real = true; U.buzz(10); if (U.questNext) U.questNext(); return; }
         if (!lp) return;
         U.S().real = true; U.buzz(8); lupaAct(U, lp, true);
+        if (lp.getAttribute('data-lp') === 'zone') stgCas($('#q3lupa .opts4', host), '.opt'); /* пять ответов — каскадом */
       });
     }
-    qlTick(U, QT.tk);
+    if (running) { if (QT.t0) { var L1 = lupaState(U, true); L1.started = true; } qlTick(U, QT.tk); }
   }
   function bestiaryFound(U) { var s = ex(U), b = (s.beasts || []).slice(); if (s.flameCaught && b.indexOf('loss') < 0) b.push('loss'); return b; }
   function bestiaryCards(U) {
@@ -2936,7 +3280,7 @@
       '<div class="d2btns"><a class="btn seen" href="#s=home">Понятно</a><a class="btn" href="#s=bestiary">В Бестиарий</a></div></div>');
   }
 
-  var EXT = window.EXT = { bestiaryN: function (U) { return bestiaryFound(U).length; }, monoSplit: monoSplit, dowOf: dowOf, nextLabel: nextLabel, unlockAt: unlockAt, rawMode: rawMode, VIEWS: VIEWS, TONE: TONE, TRAPS: TRAPS, BEASTS: BEASTS, MOVES: MOVES, CLIFF: CLIFF, d2rows: d2rows, debtRows: debtRows, DEBT: DEBT, SCENES: SCENES, REVEAL: REVEAL, ASK_DANYA: ASK_DANYA, d2state: d2state, markPressure: markPressure, questScene: questScene, qlupaMount: qlupaMount, qlExpire: qlExpire, lupaStateQ: function (U) { return lupaState(U, true); }, LUPA_Q: LUPA_Q, beastTag: beastTag, creature: creature, VERDICTS: VERDICTS, LUPA: LUPA, weekCells: weekCells, modeOf: modeOf, TIMUR_D2: TIMUR_D2, counts: function (U) { return EXT_counts(U); }, crCard: crCard, crAct: crAct, costHTML: costHTML, monoHTML: monoHTML, hotyaHTML: hotyaHTML, tray: tray, TRAY: TRAY, cliff3: cliff3, cliff4: cliff4, cliff5: cliff5, cliff6: cliff6, WAIT6: WAIT6, WALL: WALL, wallRows: wallRows, DANYA_D4: DANYA_D4, CLAIM_LABEL: CLAIM_LABEL, CLAIM_ROLIK: CLAIM_ROLIK, CLAIM_ZNAYU: CLAIM_ZNAYU, SOSED: SOSED, sosedRows: sosedRows, DANYA_D5: DANYA_D5, CLAIM_NOTE: CLAIM_NOTE, CLAIM_ZAYDI: CLAIM_ZAYDI, PAINT: PAINT, paintRows: paintRows, LEVA_D3: LEVA_D3, CLAIM_KASSA: CLAIM_KASSA, leadHTML: leadHTML, QUEST_TRAY: QUEST_TRAY, zoneWhy: zoneWhy, words: words, slotsHTML: slotsHTML, sphName: sphName,
+  var EXT = window.EXT = { nbv: nbv, layerClosed: layerClosed, bestiaryN: function (U) { return bestiaryFound(U).length; }, monoSplit: monoSplit, dowOf: dowOf, nextLabel: nextLabel, unlockAt: unlockAt, rawMode: rawMode, VIEWS: VIEWS, TONE: TONE, TRAPS: TRAPS, BEASTS: BEASTS, MOVES: MOVES, CLIFF: CLIFF, d2rows: d2rows, debtRows: debtRows, DEBT: DEBT, SCENES: SCENES, REVEAL: REVEAL, ASK_DANYA: ASK_DANYA, d2state: d2state, markPressure: markPressure, questScene: questScene, qlupaMount: qlupaMount, PBTN: PBTN, STGH: STGH, stgReset: stgReset, stgGet: stgGet, stgN: stgN, stgApply: stgApply, stgBtn: stgBtn, stgPt: stgPt, stgReveal: stgReveal, stgOpen: stgOpen, stgCas: stgCas, stgScroll: stgScroll, stgDelay: stgDelay, stgState: function (k) { return STG[k]; }, qlExpire: qlExpire, lupaStateQ: function (U) { return lupaState(U, true); }, LUPA_Q: LUPA_Q, beastTag: beastTag, creature: creature, VERDICTS: VERDICTS, LUPA: LUPA, weekCells: weekCells, modeOf: modeOf, TIMUR_D2: TIMUR_D2, counts: function (U) { return EXT_counts(U); }, crCard: crCard, crAct: crAct, VIEW_CARD: VIEW_CARD, CODEX_MAP: CODEX_MAP, shadowSVG: shadowSVG, openView: viewSheetOpen, closeView: viewSheetClose, costHTML: costHTML, monoHTML: monoHTML, hotyaHTML: hotyaHTML, tray: tray, TRAY: TRAY, cliff3: cliff3, cliff4: cliff4, cliff5: cliff5, cliff6: cliff6, WAIT6: WAIT6, WALL: WALL, wallRows: wallRows, DANYA_D4: DANYA_D4, CLAIM_LABEL: CLAIM_LABEL, CLAIM_ROLIK: CLAIM_ROLIK, CLAIM_ZNAYU: CLAIM_ZNAYU, SOSED: SOSED, sosedRows: sosedRows, DANYA_D5: DANYA_D5, CLAIM_NOTE: CLAIM_NOTE, CLAIM_ZAYDI: CLAIM_ZAYDI, PAINT: PAINT, paintRows: paintRows, LEVA_D3: LEVA_D3, CLAIM_KASSA: CLAIM_KASSA, leadHTML: leadHTML, QUEST_TRAY: QUEST_TRAY, zoneWhy: zoneWhy, words: words, slotsHTML: slotsHTML, sphName: sphName,
     HOME6: HOME6, WAIT7: WAIT7, cliff7: cliff7, PLOTS: PLOTS, ZLINES: ZLINES, ZTIMUR: ZTIMUR, ZASADA: ZASADA, ZUI: ZUI, ZCHECK: ZCHECK, ZLIGHT: ZLIGHT, END6: END6, ZSHARE: ZSHARE, ZFRIEND: ZFRIEND, ZTECH: ZTECH,
     zVerdict: zVerdict, zLight: zLight, zEncode: zEncode, zDecode: zDecode, zOrder: zOrder, zLayout: zLayout, zPos: zPos, zDay: zDay, zStart: zStart, zShareText: zShareText, nb: nb, zPose: zPose,
     d6Caught: function (U) { var d = ex(U).d6; return d && d.picks && d.picks.every(Boolean) ? zVerdict(d.picks).caughtN : 0; },
